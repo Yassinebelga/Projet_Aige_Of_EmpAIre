@@ -8,9 +8,6 @@ class Unit:
         self.speed=speed
         self.cost=cost
 
-class Swordsman(Unit):
-    def __init__(self, type, training_time, hp, attack, speed, cost):
-        super().__init__(type, training_time, hp, attack, speed, cost)
 
 class Horseman(Unit):
     def __init__(self, type, training_time, hp, attack, speed, cost):

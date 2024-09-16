@@ -1,3 +1,4 @@
+
 class Building(Entity):
     def __init__(self,cost,build_time,hp,size):
         self.cost=cost
