@@ -1,39 +1,19 @@
+from entity import Entity
 
 class Building(Entity):
-    def __init__(self,cost,build_time,hp,size):
+    def __init__(self,cost,build_time,hp,SQ_size,walkable,build,drop_point,player):
         self.cost=cost
         self.build_time=build_time
         self.hp=hp
-        self.size=size
+        self.SQ_size=SQ_size
+        self.walkable=walkable
+        self.build=build
+        self.drop_point=drop_point
+        self.player=player
+    
+    def building():
+        pass
 
-class TownCenter(Building):
-    def __init__(self, cost, build_time, hp, size):
-        super().__init__(cost, build_time, hp, size)
 
-class House(Building):
-    def __init__(self, cost, build_time, hp, size):
-        super().__init__(cost, build_time, hp, size)
-
-class Camp(Building):
-    def __init__(self, cost, build_time, hp, size):
-        super().__init__(cost, build_time, hp, size)
-
-class Farm(Building):
-    def __init__(self, cost, build_time, hp, size):
-        super().__init__(cost, build_time, hp, size)
-
-class Barracks(Building):
-    def __init__(self, cost, build_time, hp, size):
-        super().__init__(cost, build_time, hp, size)
-
-class Stable(Building):
-    def __init__(self, cost, build_time, hp, size):
-        super().__init__(cost, build_time, hp, size)
-
-class Archery(Building):
-    def __init__(self, cost, build_time, hp, size):
-        super().__init__(cost, build_time, hp, size)
-
-class Keep(Building):
-    def __init__(self, cost, build_time, hp, size):
-        super().__init__(cost, build_time, hp, size)
+    def building_time():
+        pass
