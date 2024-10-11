@@ -1,4 +1,4 @@
-class Team(self):
+class Team():
     def __init__(self, name, color, units, buildings, player):
         self.name = name
         self.color = color
