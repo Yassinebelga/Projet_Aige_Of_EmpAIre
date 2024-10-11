@@ -4,3 +4,4 @@ class Entity():
         self.name = name
         self.SQ_size = SQ_size
         self.representation = representation
+        self.team = team
