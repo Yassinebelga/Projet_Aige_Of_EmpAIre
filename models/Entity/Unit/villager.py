@@ -4,8 +4,12 @@ from time import*
 
 class Villager(Unit):
 
-    def __init__(self,position,SQ_size, player, training_time, hp, attack, speed, cost,carry,collect,inventory):
-        super().__init__(player,position,SQ_size=1, training_time=25, hp=25, attack=2, speed=0.8, cost={"F":50},collect=25,carry=20,inventory={"W":0,"G":0,"F":0})
+    def __init__(self, position, name, team, representation, SQ_size , hp, cost,training_time,speed,attack,range,carry,collect,inventory):
+        super().__init__(position, name, team, representation="v",SQ_size=1, hp=25, cost = {"F":50}, training_time=25, speed=0.8, attack=20, range=1)
+        self.carry=20, 
+        self.collect=25,
+        self.carry=20,
+        self.inventory={"W":0,"G":0,"F":0},
 
     def build_building(self,building):
         if map.is_area_free(self.position):
