@@ -11,8 +11,8 @@ class Building(Entity):
         self.drop_point=drop_point
         self.player=player
     
-    def building():
-        pass
+    def building(self):
+        self.build=True
 
 
     def building_time():
