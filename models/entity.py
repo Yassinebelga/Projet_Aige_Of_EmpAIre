@@ -1,9 +1,9 @@
 class Entity():
-    def __init__(self, position, name, hp, size, representation):
+    def __init__(self, position, name, hp, SQ_size, representation):
         self.position = position
         self.name = name
         self.hp = hp
-        self.size = size
+        self.SQ_size = SQ_size
         self.representation = representation
 
 
