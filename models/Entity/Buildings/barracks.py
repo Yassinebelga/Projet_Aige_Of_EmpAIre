@@ -1,8 +1,9 @@
 from building import Building
 
 class Barracks(Building):
-    def __init__(player ,build, SQ_size, build_time, cost, hp, walkable, drop_point, population):
-        super().__init__(player, SQ_size=3, build_time=50, cost={"W":175}, build=False, hp=500, walkable=False, drop_point=False)
+    def __init__(self, position, team, name = "Barracks", representation = "B", SQ_size = 3, hp = 500, cost = {"W" : 175}, build_time = 50, walkable = False, unit_spawn = None):
+        super().__init__(position, team, name, representation, SQ_size, hp, cost, build_time, walkable)
+        self.unit_spawn = unit_spawn
 
     def spawn_swordsmen():
         pass

@@ -2,8 +2,8 @@ from ...entity import Entity
 
 class Unit(Entity):
 
-    def __init(self, position, name, team, representation, SQ_size , hp, cost,training_time,speed,attack,range=1):
-        super().__init(position, name, team, representation, SQ_size=1)
+    def __init(self, position, team, name, representation, SQ_size , hp, cost,training_time,speed,attack,range=1):
+        super().__init(position, team, name, representation, SQ_size=1)
         self.hp = hp
         self.training_time=training_time
         self.attack=attack

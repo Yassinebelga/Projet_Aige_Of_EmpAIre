@@ -1,15 +1,12 @@
 from entity import Entity
 
 class Building(Entity):
-    def __init__(self,cost,build_time,hp,SQ_size,walkable,build,drop_point,player):
+    def __init__(self, position, team, name, representation, SQ_size, hp, cost, build_time, walkable):
+        super().__init__(position, team, name, representation, SQ_size)
+        self.hp=hp
         self.cost=cost
         self.build_time=build_time
-        self.hp=hp
-        self.SQ_size=SQ_size
         self.walkable=walkable
-        self.build=build
-        self.drop_point=drop_point
-        self.player=player
     
     def building():
         pass
