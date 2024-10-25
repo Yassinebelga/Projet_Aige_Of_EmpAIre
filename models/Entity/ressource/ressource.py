@@ -1,4 +1,4 @@
 class Ressource(Entity):
-    def __init__(self,type,quantity):
-        self.type=type
+    def __init__(self, _type,quantity):
+        self.type= _type
         self.quantity=quantity
