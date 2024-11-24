@@ -1,7 +1,8 @@
-from unit import Unit
+from Entity.Unit.unit import *
+class HorseMan(Unit):
 
-class Horseman(Unit):
-    def __init(self, position, team, name = "Horseman", representation = "h", SQ_size =1 , hp = 45, cost = {"F":80,"G":20},training_time = 30 ,speed = 1.2 ,attack = 4):
-        super().__init(position, team, name, representation, SQ_size, hp, cost, training_time, speed, attack)
-    
-
+    def __init__(self, cell_Y, cell_X, position, team, representation = 'h', hp = 45, cost = 80, training_time = 30*ONE_SEC, speed = 1.2, attack = 4):
+        global HORSEMAN_ARRAY_4D
+        super().__init__(cell_X, cell_Y, position, team, representation, hp, cost, training_time, speed, attack)
+        self.image = HORSEMAN_ARRAY_4D
+        self.animation_speed = [30,70,45,30]

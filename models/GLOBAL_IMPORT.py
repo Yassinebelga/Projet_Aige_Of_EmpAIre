@@ -1,0 +1,5 @@
+from PACKAGE_IMPORT import *
+PACKAGE_DYNAMIC_IMPORT("Projectile")
+PACKAGE_DYNAMIC_IMPORT("Entity.Building")
+PACKAGE_DYNAMIC_IMPORT("Entity.Resources")
+PACKAGE_DYNAMIC_IMPORT("Entity.Unit")
