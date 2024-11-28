@@ -8,7 +8,7 @@ class Unit(Entity):
         self.training_time=training_time
         self.cost=cost
 
-        self.attack=attack
+        self.attack = attack
         self.attack_speed = attack_speed
         self.range= _range
 
@@ -28,7 +28,8 @@ class Unit(Entity):
         self.animation_direction = 0 # direction index for display
         self.last_animation_time = pygame.time.get_ticks()
         self.animation_speed = []  # Animation frame interval in milliseconds for each unit_state
-    
+        self.linked_map = None
+
     def set_target(self, entity_target):
         self.entity_target = entity_target
 
@@ -42,28 +43,33 @@ class Unit(Entity):
 
             self.animation_frame = (self.animation_frame + 1)%len(self.image[self.state][0][0]) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
 
-    def check_cell_position(self):
-        distance_cell_to_unit = TILE_SIZE_2D * 10 # big enough to start the sort 
-        updated_cell_X, updated_cell_Y =None, None
-        current_cell_position = PVector2(self.cell_X*TILE_SIZE_2D +TILE_SIZE_2D/2, self.cell_Y*TILE_SIZE_2D +TILE_SIZE_2D/2)
+    def changed_cell_position(self):
+        topleft = PVector2(self.cell_X*TILE_SIZE_2D, self.cell_Y*TILE_SIZE_2D)
+        bottomright = PVector2((self.cell_X + 1)*TILE_SIZE_2D, (self.cell_Y + 1)*TILE_SIZE_2D)
 
-        #if (self.position.abs_distance(current_cell_position) > TILE_SIZE_2D/2)
+        return not(self.position < bottomright and self.position > topleft)
 
-        for offset_Y in range(-1,2):
-            for offset_X in range(-1,2):
-                current_cell_X = self.cell_X + offset_X
-                current_cell_Y = self.cell_Y + offset_Y
+    def track_cell_position(self):
+        if (self.changed_cell_position()):
+            distance_cell_to_unit = TILE_SIZE_2D * 10 # big enough to start the sort 
+            updated_cell_X, updated_cell_Y =None, None
+            current_cell_position = PVector2(self.cell_X*TILE_SIZE_2D +TILE_SIZE_2D/2, self.cell_Y*TILE_SIZE_2D +TILE_SIZE_2D/2)
 
-                current_cell_position.x = current_cell_X*TILE_SIZE_2D + TILE_SIZE_2D/2
-                current_cell_position.y = current_cell_Y*TILE_SIZE_2D + TILE_SIZE_2D/2
-                
-                current_distance = self.position.abs_distance(current_cell_position)
+            for offset_Y in range(-1,2):
+                for offset_X in range(-1,2):
+                    current_cell_X = self.cell_X + offset_X
+                    current_cell_Y = self.cell_Y + offset_Y
 
-                if current_distance < distance_cell_to_unit:
-                    distance_cell_to_unit = current_distance
-                    updated_cell_X, updated_cell_Y = current_cell_X, current_cell_Y
+                    current_cell_position.x = current_cell_X*TILE_SIZE_2D + TILE_SIZE_2D/2
+                    current_cell_position.y = current_cell_Y*TILE_SIZE_2D + TILE_SIZE_2D/2
+                    
+                    current_distance = self.position.abs_distance(current_cell_position)
 
-        self.cell_X, self.cell_Y = updated_cell_X, updated_cell_Y
+                    if current_distance < distance_cell_to_unit:
+                        distance_cell_to_unit = current_distance
+                        updated_cell_X, updated_cell_Y = current_cell_X, current_cell_Y
+
+            self.cell_X, self.cell_Y = updated_cell_X, updated_cell_Y
 
     def move_to_position(self,current_time, position):
         if (current_time - self.last_time_moved > ONE_SEC/(self.speed*self.move_per_sec)):
@@ -72,10 +78,14 @@ class Unit(Entity):
             self.direction = self.position.alpha_angle(position)
             self.set_direction_index()
 
-            self.position.x += math.cos(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
-            self.position.y += math.sin(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
+            amount_x = math.cos(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
+            amount_y = math.sin(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
 
-            self.check_cell_position()
+            self.position.x += amount_x
+            self.position.y += amount_y 
+                            
+
+            self.track_cell_position()
 
     def try_to_move(self,current_time,position):
         if self.state == UNIT_WALKING:
@@ -106,3 +116,7 @@ class Unit(Entity):
 
         return (topleft>ent_topleft and topleft<ent_bottomright) or \
                 (bottomright>ent_topleft and bottomright<ent_bottomright)
+
+    def check_collision_around(self):
+        pass
+        
