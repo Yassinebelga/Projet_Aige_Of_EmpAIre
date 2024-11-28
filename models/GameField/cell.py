@@ -8,16 +8,7 @@ class Cell:
         self.Y = _Y
         self.X = _X
         self.position = _position
-        self.linked_entity = None
-        self.entity_representation = None
 
-
-
-    def link_entity(self, _entity):
-        self.linked_entity = _entity
-    
-    def unlink_entity(self, _entity):
-        self.linked_entity = None
 
     def display(self, screen, camera):
         iso_x, iso_y = camera.convert_to_isometric_2d( self.position.x, self.position.y)

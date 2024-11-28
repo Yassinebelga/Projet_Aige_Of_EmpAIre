@@ -1,4 +1,5 @@
 from Entity.entity import *
+
 class Unit(Entity):
 
     def __init__(self, cell_Y, cell_X, position, team, representation, hp, cost, training_time, speed, attack, attack_speed = ONE_SEC, _range=1):
@@ -63,6 +64,7 @@ class Unit(Entity):
                     updated_cell_X, updated_cell_Y = current_cell_X, current_cell_Y
 
         self.cell_X, self.cell_Y = updated_cell_X, updated_cell_Y
+
     def move_to_position(self,current_time, position):
         if (current_time - self.last_time_moved > ONE_SEC/(self.speed*self.move_per_sec)):
             self.last_time_moved = current_time
@@ -85,9 +87,22 @@ class Unit(Entity):
                 self.move_to_position(current_time, position)
 
 
-    def display(self, current_time, screen, camera):
-
+    def display(self, current_time, screen, camera, g_width, g_height):
+        
         iso_x, iso_y = camera.convert_to_isometric_2d(self.position.x, self.position.y)
-        if (camera.check_in_point_of_view(iso_x, iso_y)):
+        
+        if (camera.check_in_point_of_view(iso_x, iso_y, g_width, g_height)):
+            
+            camera.draw_box(screen, self)
             self.update_animation_frame(current_time)
             display_image(self.image[self.state][camera.zoom][self.animation_direction][self.animation_frame], iso_x, iso_y, screen, 0x04)
+
+    def check_collision_with(self, _entity):
+        topleft = PVector2(self.position.x - self.box_size, self.position.y - self.box_size)
+        bottomright = PVector2(self.position.x + self.box_size, self.position.y + self.box_size)
+
+        ent_topleft = PVector2(_entity.position.x - _entity.box_size, _entity.position.y - _entity.box_size)
+        ent_bottomright = PVector2(_entity.position.x + _entity.box_size, _entity.position.y + _entity.box_size )
+
+        return (topleft>ent_topleft and topleft<ent_bottomright) or \
+                (bottomright>ent_topleft and bottomright<ent_bottomright)

@@ -65,7 +65,10 @@ current_time = pygame.time.get_ticks()
 
 while running:
     current_time = pygame.time.get_ticks()
+    SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_width(), screen.get_height()
+    
     mouse_x, mouse_y = pygame.mouse.get_pos()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -97,7 +100,7 @@ while running:
     
     screen.fill((0, 0, 0))
 
-    tmap.display(current_time, screen, camera)
+    tmap.display(current_time, screen, camera, SCREEN_WIDTH, SCREEN_HEIGHT)
     archer.attacking(current_time, horse)
 
     if dragging:
