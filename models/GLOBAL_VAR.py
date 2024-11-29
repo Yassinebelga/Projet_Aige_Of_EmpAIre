@@ -1,9 +1,9 @@
 import math
 import random
 
-INITIAL_ZOOM = 0
-MAX_ZOOM = 5
-TILE_SIZE_2ISO = 10
+INITIAL_ZOOM = 1
+MAX_ZOOM = 4
+TILE_SIZE_2ISO = 15
 TILE_SIZE_2D = 40
 ONE_SEC = 1000 # 1000 millisec
 SCREEN_WIDTH = 1280
@@ -77,7 +77,7 @@ def MAP_ANGLE_INDEX(angle, angle_map):
  
 
 pygame.init() 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
 pygame.display.set_caption("AOE2")
 
 camera = Camera()

@@ -32,13 +32,10 @@ class Archer(Unit):
             arrow = Arrow(PVector2(self.position.x -TILE_SIZE_2D/2 , self.position.y -TILE_SIZE_2D/2), self.entity_target)
             self.arrow_array.append(arrow)
 
-    def display(self, current_time, screen, camera):
+    def display(self, current_time, screen, camera, g_width, g_height):
         
-        iso_x, iso_y = camera.convert_to_isometric_2d(self.position.x, self.position.y)
-        if (camera.check_in_point_of_view(iso_x, iso_y)):
-            self.update_animation_frame(current_time)
-            display_image(self.image[self.state][camera.zoom][self.animation_direction][self.animation_frame], iso_x, iso_y, screen, 0x04)
-       
+        super().display(current_time, screen, camera, g_width, g_height)
+        
         for arrow_index in range(len(self.arrow_array)): # tmp test
             
              
