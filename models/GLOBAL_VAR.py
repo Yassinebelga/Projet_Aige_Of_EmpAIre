@@ -2,7 +2,7 @@ import math
 import random
 
 INITIAL_ZOOM = 1
-MAX_ZOOM = 4
+ZOOM_LEVELS = [1, 1.3, 1.6, 2, 2.3, 2.6, 3, 3.3]
 TILE_SIZE_2ISO = 15
 TILE_SIZE_2D = 40
 ONE_SEC = 1000 # 1000 millisec
@@ -113,22 +113,47 @@ pygame.display.set_caption("AOE2")
 camera = Camera()
 font = pygame.font.Font(None, 24)
 
-GRASS_ARRAY_1D = zoomlevels_sprite("Sprites/grass.webp", camera)
+GRASS= load_sprite("Sprites/grass.webp")
 
-ARCHERYRANGE_1D = zoomlevels_sprite("Sprites/Building/archery_range.webp", camera)
-BARRACKS_ARRAY_1D = zoomlevels_sprite("Sprites/Building/barracks.webp", camera)
-CAMP_ARRAY_1D = zoomlevels_sprite("Sprites/Building/camp.webp", camera)
-KEEP_ARRAY_1D = zoomlevels_sprite("Sprites/Building/keep.webp", camera)
-TOWNCENTER_ARRAY_1D = zoomlevels_sprite("Sprites/Building/town_center_1.webp", camera)
-FARM_ARRAY_1D = zoomlevels_sprite("Sprites/Building/farm.webp", camera)
-GOLD_ARRAY_2D = zoomlevels_load_single_sprites("Sprites/Resources/gold.webp",7, camera)
-TREES_ARRAY_2D = zoomlevels_load_single_sprites("Sprites/Resources/trees.webp",42, camera)
-STABLE_ARRAY_2D = zoomlevels_load_single_sprites("Sprites/Building/stable.webp", 27, camera)
-HOUSES_ARRAY_2D = zoomlevels_load_single_sprites("Sprites/Building/houses.webp",3, camera)
-HORSEMAN_ARRAY_4D = state_zoomlevels_load_sprite_sheet("Sprites/Unit/horseman", camera)
-ARCHER_ARRAY_4D =  state_zoomlevels_load_sprite_sheet("Sprites/Unit/archer", camera)
-SWORDMAN_ARRAY_4D =state_zoomlevels_load_sprite_sheet("Sprites/Unit/swordman", camera)
-VILLAGER_ARRAY_4D =state_zoomlevels_load_sprite_sheet("Sprites/Unit/villager", camera)
+ARCHERYRANGE= load_sprite("Sprites/Building/archery_range.webp")
+BARRACKS = load_sprite("Sprites/Building/barracks.webp")
+CAMP = load_sprite("Sprites/Building/camp.webp")
+KEEP = load_sprite("Sprites/Building/keep.webp")
+TOWNCENTER = load_sprite("Sprites/Building/town_center_1.webp")
+FARM = load_sprite("Sprites/Building/farm.webp")
+GOLD_ARRAY_1D = load_single_sprites("Sprites/Resources/gold.webp",7)
+TREES_ARRAY_1D = load_single_sprites("Sprites/Resources/trees.webp",42)
+STABLE_ARRAY_1D = load_single_sprites("Sprites/Building/stable.webp", 27)
+HOUSES_ARRAY_1D = load_single_sprites("Sprites/Building/houses.webp",3)
+HORSEMAN_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/horseman")
+ARCHER_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/archer")
+SWORDMAN_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/swordman")
+VILLAGER_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/villager")
 
-ARROW_ARRAY_3D = zoomlevels_load_sprite_sheet("Sprites/Projectile/arrow.webp",32, 11, camera, skip_row = 2, limit_col = 1)
-CURSOR_IMG = pygame.image.load("Sprites/cursor.png")
+ARROW_ARRAY_2D = load_sprite_sheet("Sprites/Projectile/arrow.webp",32, 11, skip_row = 2, limit_col = 1)
+
+META_SPRITES = {
+    'G': {zoom: resize(GRASS,camera.img_scale * zoom) for zoom in ZOOM_LEVELS},
+    'A': {zoom: resize(ARCHERYRANGE,camera.img_scale * zoom) for zoom in ZOOM_LEVELS},
+    'C': {zoom: resize(CAMP, camera.img_scale *zoom) for zoom in ZOOM_LEVELS},
+    'K': {zoom: resize(KEEP, camera.img_scale *zoom) for zoom in ZOOM_LEVELS},
+    'T': {zoom: resize(TOWNCENTER, camera.img_scale *zoom) for zoom in ZOOM_LEVELS},
+    'F': {zoom: resize(FARM,camera.img_scale * zoom) for zoom in ZOOM_LEVELS},
+    'g': {zoom: resize(GOLD_ARRAY_1D, camera.img_scale *zoom) for zoom in ZOOM_LEVELS},
+    'w': {zoom: resize(TREES_ARRAY_1D,camera.img_scale * zoom) for zoom in ZOOM_LEVELS},
+    'S': {zoom: resize(STABLE_ARRAY_1D,camera.img_scale * zoom) for zoom in ZOOM_LEVELS},
+    'H': {zoom: resize(HOUSES_ARRAY_1D, camera.img_scale *zoom) for zoom in ZOOM_LEVELS},
+    'h': {zoom: resize(HORSEMAN_ARRAY_3D, camera.img_scale *zoom) for zoom in ZOOM_LEVELS},
+    'a': {zoom: resize(ARCHER_ARRAY_3D,camera.img_scale * zoom) for zoom in ZOOM_LEVELS},
+    's': {zoom: resize(SWORDMAN_ARRAY_3D, camera.img_scale *zoom) for zoom in ZOOM_LEVELS},
+    'v': {zoom: resize(VILLAGER_ARRAY_3D, camera.img_scale *zoom) for zoom in ZOOM_LEVELS},
+    'p': {zoom: resize(ARROW_ARRAY_2D, camera.img_scale *zoom) for zoom in ZOOM_LEVELS}
+}
+
+
+
+
+
+
+
+CURSOR_IMG = pygame.image.load("Sprites/cursor.png").convert_alpha()

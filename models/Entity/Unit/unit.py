@@ -44,7 +44,7 @@ class Unit(Entity):
         if current_time - self.last_animation_time > ONE_SEC/self.animation_speed[self.state]:
             self.last_animation_time = current_time
 
-            self.animation_frame = (self.animation_frame + 1)%len(self.image[self.state][0][0]) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
+            self.animation_frame = (self.animation_frame + 1)%len(self.image[self.state][0]) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
 
     def changed_cell_position(self):
         topleft = PVector2(self.cell_X*TILE_SIZE_2D, self.cell_Y*TILE_SIZE_2D)
@@ -149,7 +149,7 @@ class Unit(Entity):
             
             camera.draw_box(screen, self)
             self.update_animation_frame(current_time)
-            display_image(self.image[self.state][camera.zoom][self.animation_direction][self.animation_frame], iso_x, iso_y, screen, 0x04, 1)
+            display_image(META_SPRITES.get(self.representation, None).get(ZOOM_LEVELS[camera.zoom])[self.state][self.animation_direction][self.animation_frame], iso_x, iso_y, screen, 0x04, 1)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)
 
     def check_collision_with(self, new_x, new_y, _entity):

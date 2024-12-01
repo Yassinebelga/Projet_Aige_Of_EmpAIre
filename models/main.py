@@ -93,10 +93,9 @@ while running:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_p]:
-        
-        camera.adjust_zoom(1)
+        camera.adjust_zoom(current_time, 0.1)
     if keys[pygame.K_o]:
-        camera.adjust_zoom(-1)
+        camera.adjust_zoom(current_time, -0.1)
     
     screen.fill((0, 0, 0))
 

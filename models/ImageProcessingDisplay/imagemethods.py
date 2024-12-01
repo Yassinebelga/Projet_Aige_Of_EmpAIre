@@ -2,11 +2,14 @@ import pygame
 import pygame.gfxdraw
 import math
 from GLOBAL_VAR import *
+
 def resize_sprite(image, scale):
     width, height = image.get_size()
     return pygame.transform.smoothscale(image, (int(width * scale), int(height * scale)))
 
-def load_sprite_sheet(sprite_sheet, num_row, num_col, scale,skip_row = 1, limit_col = 1):
+def load_sprite_sheet(path, num_row, num_col,skip_row = 1, limit_col = 1):
+    print(f"[::] Loading images from {path}")
+    sprite_sheet = pygame.image.load(path).convert_alpha()
     sheet_width, sheet_height = sprite_sheet.get_size()
 
     frame_width = sheet_width // num_col
@@ -21,25 +24,17 @@ def load_sprite_sheet(sprite_sheet, num_row, num_col, scale,skip_row = 1, limit_
             y = row * frame_height
 
             frame_image = sprite_sheet.subsurface(pygame.Rect(x, y, frame_width, frame_height))
-            frame_image = resize_sprite(frame_image, scale)
 
             angle_frames.append(frame_image)
 
         img_array.append(angle_frames)
-    
+    print(f"[+] Success")
     return img_array
 
-def zoomlevels_load_sprite_sheet(path, num_row, num_col, camera, skip_row = 1, limit_col = 1): # for each zoom level return the 2d array of images
+
+def state_load_sprite_sheet(path): # define for each state ( attacking, walking ...) the 3d of zoom levels of the 2d array of images
     print(f"[::] Loading images from {path}")
-    sprite_sheet = pygame.image.load(path).convert_alpha()
-    zoomlevels_3d_array = [load_sprite_sheet(sprite_sheet, num_row, num_col, (i + 1) * camera.img_scale, skip_row, limit_col) for i in range(camera.max_zoom)]
-    print(f"[+] Success")
-    return zoomlevels_3d_array
-
-
-def state_zoomlevels_load_sprite_sheet(path, camera): # define for each state ( attacking, walking ...) the 3d of zoom levels of the 2d array of images
-
-    state_zoomlevels_4d_array = []
+    state_zoomlevels_3d_array = []
 
     with open(path+"/size_each.txt", "r") as file: # get the size of array for each animation
         content = file.read()
@@ -55,13 +50,19 @@ def state_zoomlevels_load_sprite_sheet(path, camera): # define for each state ( 
 
     for image_index in range(image_range):
         current_row, current_col = content[image_index]
-        state_zoomlevels_4d_array.append(zoomlevels_load_sprite_sheet(path+"/img_"+str(image_index)+".webp",current_row,current_col,camera))
+
+        current_path = path+"/img_"+str(image_index)+".webp"
+
+        state_zoomlevels_3d_array.append(load_sprite_sheet(current_path,current_row,current_col))
+
+    print(f"[+] Success")
+    return state_zoomlevels_3d_array # for animated entites
 
 
-    return state_zoomlevels_4d_array # for animated entites
+def load_single_sprites(path, col_num):
+    print(f"[::] Loading images from {path}")
+    image = pygame.image.load(path).convert_alpha()
 
-
-def load_single_sprites(image, col_num, scale=1):  
     image_width, image_height = image.get_width(), image.get_height()
     
     sprite_width = image_width // col_num
@@ -75,25 +76,17 @@ def load_single_sprites(image, col_num, scale=1):
         sprite = image.subsurface(rect).copy()
         
         # Scale the sprite if needed
-        sprite = resize_sprite(sprite, scale)
         sprites.append(sprite)
-
+    print(f"[+] Success")
     return sprites
 
-def zoomlevels_load_single_sprites(path, num_col, camera):
-    print(f"[::] Loading images form {path}")
-    sprite = pygame.image.load(path).convert_alpha()
-    zoomlevels_2d_array = [load_single_sprites(sprite, num_col, (i + 1)*camera.img_scale) for i in range(camera.max_zoom)]
-    print(f"[+] Success")
 
-    return zoomlevels_2d_array
 
-def zoomlevels_sprite(path, camera): # different scaled for each zoom level
+def load_sprite(path): # different scaled for each zoom level
     print(f"[::] Loading images from {path}")
     sprite = pygame.image.load(path).convert_alpha()
-    zoomlevels_1d_array = [resize_sprite(sprite, (i + 1) * camera.img_scale) for i in range(camera.max_zoom)] 
     print(f"[+] Success")
-    return zoomlevels_1d_array # for static entities
+    return sprite # for static entities
 
 def display_image(image, x, y, screen, flags=0x00, team = 0, glow_radius = 3): # flags to display in the center or the top left
     im_width, im_height = image.get_size()
@@ -103,7 +96,7 @@ def display_image(image, x, y, screen, flags=0x00, team = 0, glow_radius = 3): #
         final_x, final_y = x - im_width // 2, y - im_height // 2
     else:
         final_x, final_y = x, y
-        
+
     
     # Blit the main image onto the screen
     screen.blit(image, (final_x, final_y))
@@ -120,7 +113,7 @@ def draw_rectangle_with_borders(screen, topleftx, toplefty, bottomrightx, bottom
 
 def draw_percentage_bar(screen,camera, iso_x, iso_y, _current , _max, sq_size, color = (255, 0, 0)):
 
-    factor = (camera.zoom + 1)*max(1,sq_size/1.5)
+    factor = (ZOOM_LEVELS[camera.zoom])*max(1,sq_size/1.5)
     topleftx = iso_x - factor*BARBOX_WIDTH//2
     toplefty = iso_y - BARBOX_HEIGHT//2
 
@@ -130,5 +123,18 @@ def draw_percentage_bar(screen,camera, iso_x, iso_y, _current , _max, sq_size, c
     max_bar = pygame.Rect(topleftx, toplefty, factor*BARBOX_WIDTH, BARBOX_HEIGHT)
 
     pygame.draw.rect(screen, color, current_bar)
-    pygame.draw.rect(screen, (0, 0, 0), max_bar, 2)
+    pygame.draw.rect(screen, BLACK_COLOR, max_bar, 2)
 
+def resize(item, scale):
+        if isinstance(item, pygame.Surface):  # Single image
+            return resize_sprite(item, scale)
+        elif isinstance(item, list):  # Array of images (1D, 2D, or 3D)
+            return [resize(sub_item, scale) for sub_item in item]
+        else:
+            raise ValueError("Unsupported type in META_SPRITES")
+"""
+def resize_images(meta_sprites, scale):
+    # Update the meta_sprites dictionary with resized values
+    for key in meta_sprites:
+        meta_sprites[key] = resize(meta_sprites[key])
+"""
