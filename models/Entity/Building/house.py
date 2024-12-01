@@ -11,3 +11,4 @@ class House(Building):
         if (camera.check_in_point_of_view(iso_x, iso_y, g_width, g_height)):
             camera.draw_box(screen, self)
             display_image(self.image[camera.zoom][self.display_choice],iso_x, iso_y, screen, 0x04)
+            draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)

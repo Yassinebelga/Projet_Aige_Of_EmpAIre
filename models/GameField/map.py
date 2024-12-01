@@ -38,11 +38,11 @@ class Map:
         _entity.position = (bottomright_cell + topleft_cell ) * (0.5)
         _entity.box_size = bottomright_cell.x - _entity.position.x  # distance from the center to the corners of the collision box
 
-        if isinstance(_entity, Unit): 
-            _entity.box_size += TILE_SIZE_2D/(2*2) 
+        if isinstance(_entity, Unit):
+            _entity.box_size += TILE_SIZE_2D/(2 * 3)
             _entity.linked_map = self
         else:
-            _entity.box_size += TILE_SIZE_2D/2
+            _entity.box_size += TILE_SIZE_2D/(2 * 2)
         
         return 1 # added the entity succesfully
     
@@ -67,7 +67,6 @@ class Map:
         start_X, start_Y, end_X, end_Y = camera.indexes_in_point_of_view(self.nb_CellY, self.nb_CellX, g_width, g_height)
 
         entity_to_display = set()
-
 
         for Y_to_display in range(start_Y, end_Y + 1):
             for X_to_display in range(start_X, end_X + 1):

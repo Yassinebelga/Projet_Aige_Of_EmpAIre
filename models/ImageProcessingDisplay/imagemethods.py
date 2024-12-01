@@ -1,5 +1,7 @@
 import pygame
+import pygame.gfxdraw
 import math
+from GLOBAL_VAR import *
 def resize_sprite(image, scale):
     width, height = image.get_size()
     return pygame.transform.smoothscale(image, (int(width * scale), int(height * scale)))
@@ -93,14 +95,17 @@ def zoomlevels_sprite(path, camera): # different scaled for each zoom level
     print(f"[+] Success")
     return zoomlevels_1d_array # for static entities
 
-def display_image(image, x, y, screen, flags=0x00): # flags to display in the center or the top left
+def display_image(image, x, y, screen, flags=0x00, team = 0, glow_radius = 3): # flags to display in the center or the top left
     im_width, im_height = image.get_size()
 
+    # Calculate final position based on flags
     if flags == 0x04:
         final_x, final_y = x - im_width // 2, y - im_height // 2
     else:
         final_x, final_y = x, y
+        
     
+    # Blit the main image onto the screen
     screen.blit(image, (final_x, final_y))
 
 def draw_rectangle_with_borders(screen, topleftx, toplefty, bottomrightx, bottomrighty, color=(255, 255, 255), border_thickness=1):
@@ -112,3 +117,18 @@ def draw_rectangle_with_borders(screen, topleftx, toplefty, bottomrightx, bottom
     rect = pygame.Rect(topleftx, toplefty, width, height)
     # Draw the rectangle's border
     pygame.draw.rect(screen, color, rect, border_thickness)
+
+def draw_percentage_bar(screen,camera, iso_x, iso_y, _current , _max, sq_size, color = (255, 0, 0)):
+
+    factor = (camera.zoom + 1)*max(1,sq_size/1.5)
+    topleftx = iso_x - factor*BARBOX_WIDTH//2
+    toplefty = iso_y - BARBOX_HEIGHT//2
+
+    percentage = _current/_max
+    
+    current_bar = pygame.Rect(topleftx, toplefty, factor*BARBOX_WIDTH * percentage, BARBOX_HEIGHT)
+    max_bar = pygame.Rect(topleftx, toplefty, factor*BARBOX_WIDTH, BARBOX_HEIGHT)
+
+    pygame.draw.rect(screen, color, current_bar)
+    pygame.draw.rect(screen, (0, 0, 0), max_bar, 2)
+

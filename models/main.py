@@ -13,7 +13,7 @@ position = None
 team =1
 tmap.generate_map(num_players=3)
 
-horse = HorseMan( cell_Y_h, cell_X_h, position, team)
+horse = Villager( cell_Y_h, cell_X_h, position, team)
 archer = Archer( cell_Y_a, cell_X_a, position, team)
 tmap.add_entity(horse)
 tmap.add_entity(archer)
@@ -101,7 +101,7 @@ while running:
     screen.fill((0, 0, 0))
 
     tmap.display(current_time, screen, camera, SCREEN_WIDTH, SCREEN_HEIGHT)
-    archer.attacking(current_time, horse)
+    #archer.attacking(current_time, horse)
 
     if dragging:
         camera.view_port.position.x = last_offset_x + (mouse_x - last_mouse_x)

@@ -1,10 +1,12 @@
 from Entity.entity import *
+from AITools.a_star import *
 
 class Unit(Entity):
 
     def __init__(self, cell_Y, cell_X, position, team, representation, hp, cost, training_time, speed, attack, attack_speed = ONE_SEC, _range=1):
         super().__init__(cell_Y, cell_X, position, team, representation)
         self.hp = hp
+        self.max_hp = hp
         self.training_time=training_time
         self.cost=cost
 
@@ -18,7 +20,8 @@ class Unit(Entity):
         self.speed=speed
         self.last_time_moved = pygame.time.get_ticks()
         self.move_per_sec = TILE_SIZE_2D
-
+        self.path_to_position = None
+        self.current_to_position = None
         self.direction = 0
         self.state = UNIT_IDLE
         
@@ -72,29 +75,70 @@ class Unit(Entity):
             self.cell_X, self.cell_Y = updated_cell_X, updated_cell_Y
 
     def move_to_position(self,current_time, position):
-        if (current_time - self.last_time_moved > ONE_SEC/(self.speed*self.move_per_sec)):
+        if (current_time - self.last_time_moved > ONE_SEC/(self.move_per_sec*self.speed)):
+
             self.last_time_moved = current_time
+            print(self.path_to_position)
 
-            self.direction = self.position.alpha_angle(position)
-            self.set_direction_index()
+            if self.path_to_position != None and self.current_to_position == position:
+                print("I MOVING")
+                
+                if len(self.path_to_position) <= 1:
+                    print("LAST ONE")
+                    self.direction = self.position.alpha_angle(position)
+                    self.set_direction_index()
 
-            amount_x = math.cos(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
-            amount_y = math.sin(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
+                    amount_x = math.cos(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
+                    amount_y = math.sin(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
+                    
+                    self.position.x += amount_x
+                    self.position.y += amount_y 
 
-            self.position.x += amount_x
-            self.position.y += amount_y 
-                            
+                    if self.position == position:
+                        self.path_to_position = None
+                else:
+                    for i in range(len(self.path_to_position) - 1):
+                        
+                        (X1, Y1) = self.path_to_position[i]
+                        (X2, Y2) = self.path_to_position[i + 1]
+                        
+                        
+                        iso_x1, iso_y1 = camera.convert_to_isometric_2d(X1 * TILE_SIZE_2D + TILE_SIZE_2D/2, Y1 * TILE_SIZE_2D + TILE_SIZE_2D/2)
+                        iso_x2, iso_y2 = camera.convert_to_isometric_2d(X2 * TILE_SIZE_2D + TILE_SIZE_2D/2, Y2 * TILE_SIZE_2D + TILE_SIZE_2D/2)
+                        
+                        # Draw a line between these two points
+                        pygame.draw.line(screen, (255, 0, 0), (iso_x1, iso_y1), (iso_x2, iso_y2), 2)
+
+                    current_path_node_position = PVector2(self.path_to_position[0][0] * TILE_SIZE_2D + TILE_SIZE_2D/2, self.path_to_position[0][1] * TILE_SIZE_2D + TILE_SIZE_2D/2)
+                    self.direction = self.position.alpha_angle(current_path_node_position)
+                    self.set_direction_index()
+
+                    amount_x = math.cos(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
+                    amount_y = math.sin(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
+                    
+                    self.position.x += amount_x
+                    self.position.y += amount_y 
+
+                    if self.position == current_path_node_position:
+                        self.path_to_position = self.path_to_position[1:]
+            else:
+                self.path_to_position = A_STAR(self.cell_X, self.cell_Y, math.floor(position.x/TILE_SIZE_2D), math.floor(position.y/TILE_SIZE_2D), self.linked_map)
+                self.current_to_position = PVector2(position.x, position.y)
+                if self.path_to_position != None:
+                    self.path_to_position = self.path_to_position[1:] # we skip the tile we are on, no need to pass by the center of the unit cell
+                
 
             self.track_cell_position()
-
     def try_to_move(self,current_time,position):
         if self.state == UNIT_WALKING:
             if self.position == position:
-                self.state = UNIT_IDLE
+                print("STOPPED")
+                self.state = UNIT_TASK
                 self.animation_frame = 0
         
             if self.state == UNIT_WALKING:
                 self.move_to_position(current_time, position)
+                
 
 
     def display(self, current_time, screen, camera, g_width, g_height):
@@ -105,11 +149,12 @@ class Unit(Entity):
             
             camera.draw_box(screen, self)
             self.update_animation_frame(current_time)
-            display_image(self.image[self.state][camera.zoom][self.animation_direction][self.animation_frame], iso_x, iso_y, screen, 0x04)
+            display_image(self.image[self.state][camera.zoom][self.animation_direction][self.animation_frame], iso_x, iso_y, screen, 0x04, 1)
+            draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)
 
-    def check_collision_with(self, _entity):
-        topleft = PVector2(self.position.x - self.box_size, self.position.y - self.box_size)
-        bottomright = PVector2(self.position.x + self.box_size, self.position.y + self.box_size)
+    def check_collision_with(self, new_x, new_y, _entity):
+        topleft = PVector2(new_x - self.box_size, new_y - self.box_size)
+        bottomright = PVector2(new_x + self.box_size, new_y + self.box_size)
 
         ent_topleft = PVector2(_entity.position.x - _entity.box_size, _entity.position.y - _entity.box_size)
         ent_bottomright = PVector2(_entity.position.x + _entity.box_size, _entity.position.y + _entity.box_size )
@@ -119,4 +164,6 @@ class Unit(Entity):
 
     def check_collision_around(self):
         pass
-        
+
+
+ 
