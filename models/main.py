@@ -100,7 +100,7 @@ while running:
     screen.fill((0, 0, 0))
 
     tmap.display(current_time, screen, camera, SCREEN_WIDTH, SCREEN_HEIGHT)
-    #archer.attacking(current_time, horse)
+    archer.attacking(current_time, horse)
 
     if dragging:
         camera.view_port.position.x = last_offset_x + (mouse_x - last_mouse_x)

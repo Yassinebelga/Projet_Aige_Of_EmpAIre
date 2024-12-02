@@ -27,7 +27,7 @@ def load_sprite_sheet(path, num_row, num_col,skip_row = 1, limit_col = 1):
 
             angle_frames[col] = frame_image
 
-        img_array[row] = angle_frames
+        img_array[row//skip_row] = angle_frames
     print(f"[+] Success")
     return img_array
 

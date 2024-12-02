@@ -61,7 +61,7 @@ class Projectile:
 
         if current_time - self.last_animation_time > self.time_to_get_target/11:
             self.last_animation_time = current_time
-            self.animation_frame = (self.animation_frame + 1)%len(self.image[0][0])
+            self.animation_frame = (self.animation_frame + 1)%len(self.image.get(0,None))
         
     def display(self, current_time, screen, camera):
         

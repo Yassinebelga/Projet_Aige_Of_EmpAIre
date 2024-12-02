@@ -155,7 +155,6 @@ HORSEMAN_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/horseman")
 ARCHER_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/archer")
 SWORDMAN_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/swordman")
 VILLAGER_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/villager")
-
 ARROW_ARRAY_2D = load_sprite_sheet("Sprites/Projectile/arrow.webp",32, 11, skip_row = 2, limit_col = 1)
 
 SPRITES = {
@@ -181,7 +180,7 @@ META_SPRITES_CACHE ={}
 def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys): # returns image to display
 
     global META_SPRITES_CACHE
-
+    print(f"-->  {list_keys[0]}")
     current_dict = META_SPRITES_CACHE.get(zoom_level, None)
 
     if (current_dict == None):
