@@ -11,5 +11,5 @@ class House(Building):
         iso_x, iso_y = camera.convert_to_isometric_2d(self.position.x, self.position.y)
         if (camera.check_in_point_of_view(iso_x, iso_y, g_width, g_height)):
             camera.draw_box(screen, self)
-            display_image(META_SPRITES.get(self.representation, None).get(ZOOM_LEVELS[camera.zoom])[self.display_choice],iso_x, iso_y, screen, 0x04)
+            display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.display_choice]),iso_x, iso_y, screen, 0x04)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)

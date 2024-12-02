@@ -3,29 +3,29 @@ from GLOBAL_VAR import *
 class Camera:
     def __init__(self, position = PVector2(0,0), _tile_size_2iso = TILE_SIZE_2ISO, _tile_size_2d = TILE_SIZE_2D): 
 
-        self.zoom = 0 
+        self.zoom = 1
         self.cell_X = 0
         self.cell_Y = 0
         self.tile_size_2d = _tile_size_2d
         self.tile_size_2iso = _tile_size_2iso #display size
-        self.img_scale = _tile_size_2iso/50 # img_scale is a value to scale the loaded images so the tiles are aligned, 50 is the choosen value after many tries
+        self.img_scale = _tile_size_2iso/50# img_scale is a value to scale the loaded images so the tiles are aligned, 50 is the choosen value after many tries
         
         self.last_time_adjusted_zoom = pygame.time.get_ticks()
-        self.num_zoom_per_sec = 3
+        self.num_zoom_per_sec = 30
         
         self.view_port = ViewPort(position,SCREEN_WIDTH, SCREEN_HEIGHT)
 
     def convert_to_isometric_2d(self, x, y): #convert (x,y) cooridnates to iso_x iso_y
 
-        iso_x = int((y - x)*(self.tile_size_2iso/self.tile_size_2d) * (ZOOM_LEVELS[self.zoom] ) + self.view_port.position.x * (ZOOM_LEVELS[self.zoom] ))
-        iso_y = int(((y + x)/2)*(self.tile_size_2iso/self.tile_size_2d) * (ZOOM_LEVELS[self.zoom]  ) + self.view_port.position.y * (ZOOM_LEVELS[self.zoom] ))
+        iso_x = int((y - x)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom ) + self.view_port.position.x * (self.zoom ))
+        iso_y = int(((y + x)/2)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom  ) + self.view_port.position.y * (self.zoom ))
 
         return iso_x, iso_y
 
     def convert_from_isometric_2d(self, iso_x, iso_y):
 
-        x_p = (iso_x/(ZOOM_LEVELS[self.zoom] ) - self.view_port.position.x )*(self.tile_size_2d/self.tile_size_2iso)
-        y_p = (iso_y/(ZOOM_LEVELS[self.zoom] ) - self.view_port.position.y )*(self.tile_size_2d/self.tile_size_2iso)
+        x_p = (iso_x/(self.zoom ) - self.view_port.position.x )*(self.tile_size_2d/self.tile_size_2iso)
+        y_p = (iso_y/(self.zoom ) - self.view_port.position.y )*(self.tile_size_2d/self.tile_size_2iso)
 
         x = (2*y_p - x_p)/2
         y = (2*y_p + x_p)/2
@@ -33,8 +33,8 @@ class Camera:
         return x, y
 
     def convert_to_isometric_3d(self, x, y, z): #convert (x,y,z) projectile cooridnates to iso_x iso_y
-        iso_x = int((y - x)*(self.tile_size_2iso/self.tile_size_2d) * (ZOOM_LEVELS[self.zoom] ) + self.view_port.position.x * (ZOOM_LEVELS[self.zoom] ))
-        iso_y = int(((y + x - z)/2)*(self.tile_size_2iso/self.tile_size_2d) * (ZOOM_LEVELS[self.zoom] ) + self.view_port.position.y * (ZOOM_LEVELS[self.zoom] ))
+        iso_x = int((y - x)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom) + self.view_port.position.x * (self.zoom ))
+        iso_y = int(((y + x - z)/2)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom) + self.view_port.position.y * (self.zoom ))
         
         return iso_x, iso_y 
 
@@ -70,6 +70,8 @@ class Camera:
             return True
 
     def adjust_zoom(self, current_time, amount):
+
+        """
         if current_time - self.last_time_adjusted_zoom > ONE_SEC/self.num_zoom_per_sec:
             self.last_time_adjusted_zoom = current_time
 
@@ -77,6 +79,10 @@ class Camera:
                 self.zoom = min(self.zoom + 1, len(ZOOM_LEVELS) - 1)
             else:
                 self.zoom = max(self.zoom - 1, 0)
+        """
+        if current_time - self.last_time_adjusted_zoom > ONE_SEC/self.num_zoom_per_sec:
+            self.last_time_adjusted_zoom = current_time
+            self.zoom = max(1, min(4, self.zoom + amount))
 
     def draw_box(self, screen, _entity):
         topleft_x, topleft_y = _entity.position.x - _entity.box_size, _entity.position.y - _entity.box_size

@@ -15,26 +15,26 @@ def load_sprite_sheet(path, num_row, num_col,skip_row = 1, limit_col = 1):
     frame_width = sheet_width // num_col
     frame_height = sheet_height // num_row
     
-    img_array = []
+    img_array = {}
     
     for row in range(0,num_row,skip_row): #  to skip unwanted angles ( in aoe2 sprites are in 16 angles, but to simplify the complexite in memory, we will use 8 )
-        angle_frames = []
+        angle_frames = {}
         for col in range(int(num_col/limit_col)):
             x = col * frame_width
             y = row * frame_height
 
             frame_image = sprite_sheet.subsurface(pygame.Rect(x, y, frame_width, frame_height))
 
-            angle_frames.append(frame_image)
+            angle_frames[col] = frame_image
 
-        img_array.append(angle_frames)
+        img_array[row] = angle_frames
     print(f"[+] Success")
     return img_array
 
 
 def state_load_sprite_sheet(path): # define for each state ( attacking, walking ...) the 3d of zoom levels of the 2d array of images
     print(f"[::] Loading images from {path}")
-    state_zoomlevels_3d_array = []
+    state_zoomlevels_3d_array = {}
 
     with open(path+"/size_each.txt", "r") as file: # get the size of array for each animation
         content = file.read()
@@ -53,7 +53,7 @@ def state_load_sprite_sheet(path): # define for each state ( attacking, walking 
 
         current_path = path+"/img_"+str(image_index)+".webp"
 
-        state_zoomlevels_3d_array.append(load_sprite_sheet(current_path,current_row,current_col))
+        state_zoomlevels_3d_array[image_index] = load_sprite_sheet(current_path,current_row,current_col)
 
     print(f"[+] Success")
     return state_zoomlevels_3d_array # for animated entites
@@ -68,7 +68,7 @@ def load_single_sprites(path, col_num):
     sprite_width = image_width // col_num
     sprite_height = image_height  # Assumes sprites are vertically aligned
 
-    sprites = []
+    sprites = {}
     
     for col in range(col_num):
         # Extract the sub-surface for each sprite
@@ -76,7 +76,7 @@ def load_single_sprites(path, col_num):
         sprite = image.subsurface(rect).copy()
         
         # Scale the sprite if needed
-        sprites.append(sprite)
+        sprites[col] = sprite
     print(f"[+] Success")
     return sprites
 
@@ -113,7 +113,7 @@ def draw_rectangle_with_borders(screen, topleftx, toplefty, bottomrightx, bottom
 
 def draw_percentage_bar(screen,camera, iso_x, iso_y, _current , _max, sq_size, color = (255, 0, 0)):
 
-    factor = (ZOOM_LEVELS[camera.zoom])*max(1,sq_size/1.5)
+    factor = camera.zoom*max(1,sq_size/1.5)
     topleftx = iso_x - factor*BARBOX_WIDTH//2
     toplefty = iso_y - BARBOX_HEIGHT//2
 

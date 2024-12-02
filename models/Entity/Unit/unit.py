@@ -44,7 +44,7 @@ class Unit(Entity):
         if current_time - self.last_animation_time > ONE_SEC/self.animation_speed[self.state]:
             self.last_animation_time = current_time
 
-            self.animation_frame = (self.animation_frame + 1)%len(self.image[self.state][0]) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
+            self.animation_frame = (self.animation_frame + 1)%len(self.image.get(self.state,None).get(0, None)) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
 
     def changed_cell_position(self):
         topleft = PVector2(self.cell_X*TILE_SIZE_2D, self.cell_Y*TILE_SIZE_2D)
@@ -78,13 +78,13 @@ class Unit(Entity):
         if (current_time - self.last_time_moved > ONE_SEC/(self.move_per_sec*self.speed)):
 
             self.last_time_moved = current_time
-            print(self.path_to_position)
+            #print(self.path_to_position)
 
             if self.path_to_position != None and self.current_to_position == position:
-                print("I MOVING")
+                
                 
                 if len(self.path_to_position) <= 1:
-                    print("LAST ONE")
+                    
                     self.direction = self.position.alpha_angle(position)
                     self.set_direction_index()
 
@@ -149,7 +149,7 @@ class Unit(Entity):
             
             camera.draw_box(screen, self)
             self.update_animation_frame(current_time)
-            display_image(META_SPRITES.get(self.representation, None).get(ZOOM_LEVELS[camera.zoom])[self.state][self.animation_direction][self.animation_frame], iso_x, iso_y, screen, 0x04, 1)
+            display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.state, self.animation_direction, self.animation_frame]), iso_x, iso_y, screen, 0x04, 1)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)
 
     def check_collision_with(self, new_x, new_y, _entity):

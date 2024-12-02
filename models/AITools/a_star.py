@@ -71,21 +71,20 @@ def A_STAR(start_X, start_Y, end_X, end_Y, _map):
                 cell_walkable = True 
 
                 #check if the current cellX and cellY contains entities 
-                entities = _map.entity_matrix.get((neighbor_Y, neighbor_X), None)
+                region = _map.entity_matrix.get((neighbor_Y//_map.region_division, neighbor_X//_map.region_division), None)
 
-                if(entities): # entities exists so the cell is occupied
-        
-                    for entity in entities:
-                        #if not(isinstance(entity, Unit)): # we can skip units, so if it is not a unit check
-                        if isinstance(entity, Building): # some building can be walkable
-                            if not(entity.walkable):    # if it is not , False and break
+                if (region != None):
+                    entities = region.get((neighbor_Y, neighbor_X), None)
+                    if(entities): # entities exists so the cell is occupied
+            
+                        for entity in entities:
+                            #if not(isinstance(entity, Unit)): # we can skip units, so if it is not a unit check
+                            if isinstance(entity, Building): # some building can be walkable
+                                if not(entity.walkable):    # if it is not , False and break
+                                    cell_walkable = False
+                                    break
+                            elif isinstance(entity, Resources):
                                 cell_walkable = False
-                                break
-                            else:
-                                cell_walkable = False # it is not a building, resources or smth else, so not walkable, so False and break
-                                break
-                        elif isinstance(entity, Resources):
-                            cell_walkable = False
 
                 if not(cell_walkable):
                     continue
