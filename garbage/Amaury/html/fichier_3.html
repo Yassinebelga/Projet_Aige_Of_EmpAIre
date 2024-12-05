@@ -1,5 +1,4 @@
 
-html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -163,7 +162,7 @@ html_content = """
                     <li>
                         <span>Villager</span> :
                         <ul>
-                            <li>Villager 1 : <li class="unit" > 5, 6<li class="unit" > 4, 3)</li>
+                            <li>Villager 1 : HP = 20, Position = (7, 9)</li>
                         </ul>
                     </li>
                 </ul>
@@ -176,8 +175,7 @@ html_content = """
                     <li>
                         <span>Finished</span> :
                         <ul>
-                            <li>Towncenter 2 : <li class="building" > <unit.Buildings.Position object at 0x000001F49F942240><li class="building" > <unit.Buildings.Position object at 0x000001F49F9422A0></li>
-                            <li>House 2 : <li class="building" > <unit.Buildings.Position object at 0x000001F49F942240><li class="building" > <unit.Buildings.Position object at 0x000001F49F9422A0></li>
+                            <li>Towncenter 2 : Position = (4, 7)</li>
                         </ul>
                     </li>
                     <li>
@@ -193,11 +191,3 @@ html_content = """
 </body>
 </html>
 
-"""
-
-file_name="fichier_3.html"
-
-with open(file_name,"w",) as file:
-     file.write(html_content)
-
-print(f"Fichier HTML crée : {file_name}")
