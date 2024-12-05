@@ -8,9 +8,20 @@ class Map:
         self.nb_CellX = _nb_CellX
         self.nb_CellY = _nb_CellY
         self.tile_size_2d = TILE_SIZE_2D
-        self.cell_matrix = {} #sparse matrix
-        self.entity_array = []
-    
+        self.region_division = REGION_DIVISION
+        self.entity_matrix = {} #sparse matrix
+
+    def check_cell(self, Y_to_check, X_to_check):
+        REG_Y_to_check, REG_X_to_check = Y_to_check//self.region_division, X_to_check//self.region_division
+
+        region = self.entity_matrix.get((REG_Y_to_check, REG_X_to_check),None)
+
+        if (region):
+            if region.get((Y_to_check, X_to_check), None) != None:
+                return True 
+        
+        return False 
+
     def add_entity(self,_entity):
         assert (_entity != None), 0x0001 # to check if the entity is not null in case there were some problem in the implementation
 
@@ -23,28 +34,39 @@ class Map:
        
         for Y_to_check in range(_entity.cell_Y,_entity.cell_Y - _entity.sq_size, -1):
             for X_to_check in range(_entity.cell_X,_entity.cell_X - _entity.sq_size, -1):
-
-                if self.cell_matrix.get((Y_to_check,X_to_check),None) != None:
-                    
+                
+                if self.check_cell(Y_to_check, X_to_check):
                     return 0 # not all the cells are free to put the entity 
-
-
+        
         for Y_to_set in range(_entity.cell_Y,_entity.cell_Y - _entity.sq_size, -1):
             for X_to_set in range(_entity.cell_X,_entity.cell_X - _entity.sq_size, -1):
-                self.cell_matrix[(Y_to_set, X_to_set)] = Cell(Y_to_set,X_to_set, PVector2(self.tile_size_2d/2 + X_to_set*self.tile_size_2d, self.tile_size_2d/2 + Y_to_set*self.tile_size_2d))
-                self.cell_matrix[(Y_to_set, X_to_set)].entity_representation = "-"
-                self.cell_matrix[(Y_to_set, X_to_set)].link_entity(_entity) 
 
+                REG_Y_to_set, REG_X_to_set = Y_to_set//self.region_division, X_to_set//self.region_division
+                current_region = self.entity_matrix.get((REG_Y_to_set, REG_X_to_set),None)
 
-        topleft = self.cell_matrix[(_entity.cell_Y - (_entity.sq_size - 1), _entity.cell_X - (_entity.sq_size - 1))].position
-        bottomright = self.cell_matrix[(_entity.cell_Y, _entity.cell_X)].position
+                if (current_region == None):
+                    self.entity_matrix[(REG_Y_to_set, REG_X_to_set)] = {}
+                    current_region = self.entity_matrix.get((REG_Y_to_set, REG_X_to_set),None)
 
-        _entity.position = (bottomright + topleft) * (0.5)
+                current_cell = current_region.get((Y_to_set, X_to_set), None)
+                
+                if (current_cell == None):
+                    current_region[(Y_to_set, X_to_set)] = set()
+                    current_cell = current_region.get((Y_to_set, X_to_set), None)
+                
+                current_cell.add(_entity)
 
-        self.entity_array.insert(_entity.find_insert_position(self.entity_array), _entity)
+        topleft_cell = PVector2(self.tile_size_2d/2 + ( _entity.cell_X - (_entity.sq_size - 1))*self.tile_size_2d, self.tile_size_2d/2 + (_entity.cell_Y - (_entity.sq_size - 1))*self.tile_size_2d) 
+        bottomright_cell =  PVector2(self.tile_size_2d/2 + ( _entity.cell_X )*self.tile_size_2d, self.tile_size_2d/2 + (_entity.cell_Y )*self.tile_size_2d) 
 
-        self.cell_matrix[(_entity.cell_Y ,_entity.cell_X)].entity_representation = _entity.representation
-      
+        _entity.position = (bottomright_cell + topleft_cell ) * (0.5)
+        _entity.box_size = bottomright_cell.x - _entity.position.x  # distance from the center to the corners of the collision box
+
+        if isinstance(_entity, Unit):
+            _entity.box_size += TILE_SIZE_2D/(2 * 3)
+            _entity.linked_map = self
+        else:
+            _entity.box_size += TILE_SIZE_2D/(2 * 2)
         
         return 1 # added the entity succesfully
     
@@ -52,64 +74,68 @@ class Map:
 
         assert(_entity != None), 0x0011
         
-        del self.cell_matrix[(_entity.Cell_Y, _entity.Cell_X)] # not finished yet !!!
+        del self.entity_matrix[(_entity.Cell_Y, _entity.Cell_X)] # not finished yet !!!
         
     
         return 1 # added the entity succesfully
 
-    def update_cell_matrix(self):
-        for Y_to_check, X_to_check in list(self.cell_matrix.keys()):
-            current_cell = self.cell_matrix.get((Y_to_check, X_to_check), None)
-            
-            if (current_cell):
-                if (current_cell.entity_representation != "-"):
-                    self.cell_matrix[(current_cell.linked_entity.cell_Y, current_cell.linked_entity.cell_X)] = self.cell_matrix.pop((Y_to_check, X_to_check))
+    def update_dynamic_entity_matrix(self):
+        pass 
     
-    def display(self, current_time, screen, camera):
+    def display(self, current_time, screen, camera, g_width, g_height):
         
-        self.update_cell_matrix()
 
         tmp_cell = Cell(0,0,PVector2(0,0))
-        tmp_iso_x = 0
-        tmp_iso_y = 0
-        start_X, start_Y, end_X, end_Y = camera.indexes_in_point_of_view(self.nb_CellY, self.nb_CellX)
+        tmp_topleft = PVector2(0, 0)
+        tmp_bottomright = PVector2(0, 0)
 
-        cell_to_display = {}
-        entity_to_display = {}
+        start_X, start_Y, end_X, end_Y = camera.indexes_in_point_of_view(self.nb_CellY, self.nb_CellX, g_width, g_height)
         
-        RENDER_DIS = 1
+        region_start_X, region_start_Y, region_end_X, region_end_Y = \
+            start_X //self.region_division, start_Y //self.region_division, end_X //self.region_division, end_Y //self.region_division
 
-        cell_matrix_keys_sorted = sorted(self.cell_matrix.keys(), key = lambda k: (k[0], k[1]))
-
-        for Y_to_add, X_to_add in cell_matrix_keys_sorted:
-            if Y_to_add>=start_Y  and Y_to_add<=end_Y  and X_to_add>=start_X  and X_to_add<=end_X :
-                entity_to_display[(Y_to_add, X_to_add)] = True
-
-                for offset_Y in range(-RENDER_DIS, RENDER_DIS + 1):
-                    for offset_X in range(-RENDER_DIS, RENDER_DIS + 1):
-
-                        current_X = X_to_add + offset_X 
-                        current_Y = Y_to_add + offset_Y 
-
-                        if ( current_X >= 0 and current_X < self.nb_CellX and current_Y>=0 and current_Y < self.nb_CellY):
-
-                            if ((current_Y, current_X) not in cell_to_display):
-                                cell_to_display[(current_Y, current_X)] = True 
+        entity_to_display = set()
                 
-        # Check if this cell is within the visible bounds
         
-        for Y_to_display, X_to_display in sorted(cell_to_display.keys(), key=lambda k: (k[0],k[1])):
-        #
-            tmp_cell.position.x = X_to_display*camera.tile_size_2d + camera.tile_size_2d/2
-            tmp_cell.position.y = Y_to_display*camera.tile_size_2d + camera.tile_size_2d/2
-            tmp_cell.display(screen, camera)
-            
-        for Y_to_display, X_to_display in entity_to_display.keys():
-            current_cell = self.cell_matrix.get((Y_to_display,X_to_display),None)
-            if (current_cell):
-                current_cell.linked_entity.display(current_time, screen ,camera)
 
+        for region_Y_to_display in range(region_start_Y, region_end_Y + 1):
+            for region_X_to_display in range(region_start_X, region_end_X + 1):
+                if region_Y_to_display >= 0 and region_Y_to_display < self.nb_CellY//self.region_division \
+                    and region_X_to_display>=0 and region_X_to_display < self.nb_CellX//self.region_division:
+                    #print(f"REG_Y: {region_Y_to_display}, REG_X: {region_X_to_display}")
+                    REG_X, REG_Y = region_X_to_display * (self.region_division ), region_Y_to_display * (self.region_division )
+                    
+                    tmp_topleft.x = TILE_SIZE_2D/2 + REG_X*TILE_SIZE_2D
+                    tmp_topleft.y = TILE_SIZE_2D/2 + REG_Y*TILE_SIZE_2D
 
+                    tmp_bottomright.x = TILE_SIZE_2D/2 + (REG_X + (self.region_division - 1))*TILE_SIZE_2D
+                    tmp_bottomright.y = TILE_SIZE_2D/2 + (REG_Y + (self.region_division - 1))*TILE_SIZE_2D
+
+                    tmp_cell.position = (tmp_bottomright + tmp_topleft) * (0.5)
+
+                    tmp_cell.display(screen, camera)
+
+                    #check if this region contains entity
+                    if ((region_Y_to_display, region_X_to_display) in self.entity_matrix):
+                        
+                        region_entities = self.entity_matrix.get((region_Y_to_display, region_X_to_display), None)
+
+                        for entities in region_entities.values(): # each value the region is a dict of the cells
+                            for entity in entities:
+                                entity_to_display.add(entity)
+        """             
+        for Y_to_display in range(start_Y, end_Y + 1):
+            for X_to_display in range(start_X, end_X + 1):
+                
+                tmp_cell.position.x = X_to_display*camera.tile_size_2d + camera.tile_size_2d/2
+                tmp_cell.position.y = Y_to_display*camera.tile_size_2d + camera.tile_size_2d/2
+                iso_x, iso_y = camera.convert_to_isometric_2d(tmp_cell.position.x, tmp_cell.position.y)
+
+                pygame.draw.circle(screen, (255, 0, 0), (iso_x, iso_y), 1, 0) 
+        """
+        for current_entity in sorted(entity_to_display, key=lambda entity: (entity.position.y + entity.position.x, entity.position.y)):
+            current_entity.display(current_time, screen, camera, g_width, g_height)
+        
     
     def generate_map(self, num_players=2):
         
@@ -142,7 +168,7 @@ class Map:
 
                 # Add tree if position is valid and unoccupied
                 if 0 <= tree_X < self.nb_CellX and 0 <= tree_Y < self.nb_CellY:
-                    if (tree_Y, tree_X) not in self.cell_matrix:
+                    if not(self.check_cell(tree_Y, tree_X)):
                         tree = Tree(tree_Y, tree_X, None)
                         self.add_entity(tree)
     
@@ -166,7 +192,7 @@ class Map:
 
                 # Add gold if position is valid and unoccupied
                 if 0 <= gold_X < self.nb_CellX and 0 <= gold_Y < self.nb_CellY:
-                    if (gold_Y, gold_X) not in self.cell_matrix:
+                    if not(self.check_cell(gold_Y, gold_X)):
                         gold = Gold(gold_Y, gold_X, None)
                         self.add_entity(gold)
     
@@ -184,7 +210,7 @@ class Map:
             center_X = max(0, min(self.nb_CellX - 1, base_X + offset_X))  # Keep within bounds
             center_Y = max(0, min(self.nb_CellY - 1, base_Y + offset_Y))  
 
-            if (center_Y, center_X) not in self.cell_matrix:
+            if not(self.check_cell(center_Y, center_X)) :
                 town_center = TownCenter(center_Y, center_X, None, team=i + 1)
                 self.add_entity(town_center)
                 
@@ -196,7 +222,7 @@ class Map:
         for offset_X, offset_Y in [(-GEN_DIS_G, GEN_DIS_G), (GEN_DIS_G, -GEN_DIS_G), (GEN_DIS_G, GEN_DIS_G)]:
             gold_X = center_X + offset_X
             gold_Y = center_Y + offset_Y
-            if (gold_Y, gold_X) not in self.cell_matrix:
+            if not(self.check_cell(gold_X, gold_Y)):
                 
                 gold = Gold(gold_Y, gold_X, None)
                 self.add_entity(gold)
@@ -204,7 +230,6 @@ class Map:
         for offset_X, offset_Y in [(GEN_DIS_T, GEN_DIS_T), (GEN_DIS_T, -GEN_DIS_T), (-GEN_DIS_T, GEN_DIS_T)]:
             tree_X = center_X + offset_X
             tree_Y = center_Y + offset_Y
-            if (tree_Y, tree_X) not in self.cell_matrix:
-                
+            if not(self.check_cell(tree_Y, tree_Y)):  
                 tree = Tree(tree_Y, tree_X, None)
                 self.add_entity(tree)

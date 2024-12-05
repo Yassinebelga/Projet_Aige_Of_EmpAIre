@@ -23,7 +23,7 @@ class Projectile:
         
         self.projectile_peak = self.position.abs_distance(entity_target.position)
         self.projectile_z_pos = 0
-
+        self.representation = 'p'
     def update_position(self, current_time):
         time_elapsed = current_time - self.last_time_changed_pos
         
@@ -61,7 +61,7 @@ class Projectile:
 
         if current_time - self.last_animation_time > self.time_to_get_target/11:
             self.last_animation_time = current_time
-            self.animation_frame = (self.animation_frame + 1)%len(self.image[0][0])
+            self.animation_frame = (self.animation_frame + 1)%len(self.image.get(0,None))
         
     def display(self, current_time, screen, camera):
         
@@ -69,4 +69,4 @@ class Projectile:
 
         self.update_animation_frame(current_time)
         iso_x, iso_y = camera.convert_to_isometric_3d(self.position.x, self.position.y,self.projectile_z_pos)
-        display_image(self.image[camera.zoom][self.animation_direction][self.animation_frame],iso_x, iso_y, screen, 0x04)
+        display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.animation_direction, self.animation_frame]),iso_x, iso_y, screen, 0x04)

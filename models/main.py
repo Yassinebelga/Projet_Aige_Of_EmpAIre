@@ -13,7 +13,7 @@ position = None
 team =1
 tmap.generate_map(num_players=3)
 
-horse = HorseMan( cell_Y_h, cell_X_h, position, team)
+horse = Villager( cell_Y_h, cell_X_h, position, team)
 archer = Archer( cell_Y_a, cell_X_a, position, team)
 tmap.add_entity(horse)
 tmap.add_entity(archer)
@@ -65,7 +65,10 @@ current_time = pygame.time.get_ticks()
 
 while running:
     current_time = pygame.time.get_ticks()
+    SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_width(), screen.get_height()
+    
     mouse_x, mouse_y = pygame.mouse.get_pos()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -90,14 +93,13 @@ while running:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_p]:
-        
-        camera.adjust_zoom(1)
+        camera.adjust_zoom(current_time, 0.1)
     if keys[pygame.K_o]:
-        camera.adjust_zoom(-1)
+        camera.adjust_zoom(current_time, -0.1)
     
     screen.fill((0, 0, 0))
 
-    tmap.display(current_time, screen, camera)
+    tmap.display(current_time, screen, camera, SCREEN_WIDTH, SCREEN_HEIGHT)
     archer.attacking(current_time, horse)
 
     if dragging:
