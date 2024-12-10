@@ -1,5 +1,4 @@
 
-html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,7 +95,7 @@ html_content = """
                 <h3>Resources</h3>
                 <ul>
                     <li><span>Wood</span> : 500</li>
-                    <li><span>Gold</span> : 300</li>
+                    <li><span>Gold</span> : 350</li>
                     <li><span>Food</span> : 700</li>
                 </ul>
             </div>
@@ -192,12 +191,3 @@ html_content = """
     </div>
 </body>
 </html>
-
-"""
-
-file_name="fichier_3.html"
-
-with open(file_name,"w",) as file:
-     file.write(html_content)
-
-print(f"Fichier HTML crée : {file_name}")

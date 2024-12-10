@@ -1,5 +1,4 @@
 
-html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,7 +95,7 @@ html_content = """
                 <h3>Resources</h3>
                 <ul>
                     <li><span>Wood</span> : 500</li>
-                    <li><span>Gold</span> : 300</li>
+                    <li><span>Gold</span> : 350</li>
                     <li><span>Food</span> : 700</li>
                 </ul>
             </div>
@@ -176,8 +175,8 @@ html_content = """
                     <li>
                         <span>Finished</span> :
                         <ul>
-                            <li>Towncenter 2 : <li class="building" > <unit.Buildings.Position object at 0x000001F49F942240><li class="building" > <unit.Buildings.Position object at 0x000001F49F9422A0></li>
-                            <li>House 2 : <li class="building" > <unit.Buildings.Position object at 0x000001F49F942240><li class="building" > <unit.Buildings.Position object at 0x000001F49F9422A0></li>
+                            <li>Towncenter 2 : <li class="building" > <unit.Buildings.Position object at 0x0000017F8C342240><li class="building" > <unit.Buildings.Position object at 0x0000017F8C3422A0></li>
+                            <li>House 2 : <li class="building" > <unit.Buildings.Position object at 0x0000017F8C342240><li class="building" > <unit.Buildings.Position object at 0x0000017F8C3422A0></li>
                         </ul>
                     </li>
                     <li>
@@ -192,12 +191,3 @@ html_content = """
     </div>
 </body>
 </html>
-
-"""
-
-file_name="fichier_3.html"
-
-with open(file_name,"w",) as file:
-     file.write(html_content)
-
-print(f"Fichier HTML crée : {file_name}")
