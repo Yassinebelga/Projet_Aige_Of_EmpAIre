@@ -16,13 +16,17 @@ def generate_html_file(buildings, units):
     for building in buildings:
         building_list_html+=f"""<li class="building" > {building.get_position()}"""
     
+
     unit_list_html = ""
-    for unit in units:
-        unit_list_html+=f'<li class="unit" > {unit.get_x()}, {unit.get_y()}'
+    for i, unit in enumerate(units, start=1):
+        unit_list_html += f'<li class="unit">Villager{i} : {unit.get_x()}, {unit.get_y()}</li>'
+    # unit_list_html = ""
+    # for unit in units:
+    #     unit_list_html+=f'<li class="unit" > {unit.get_x()}, {unit.get_y()}'
     
     # Replace the placeholder in the template with the actual building list
     html_content = html_content.replace("{{BUILDINGS}}", building_list_html)
-    html_content = html_content.replace("{{UNITS}}", f"{(unit_list_html[i] for i in range(2))}")
+    html_content = html_content.replace("{{UNITS}}", unit_list_html)
 
     # Write the modified HTML content to a new file
     with open("game_map.html", "w") as output_file:

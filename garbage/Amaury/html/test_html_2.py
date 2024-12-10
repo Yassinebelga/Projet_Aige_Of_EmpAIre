@@ -161,12 +161,7 @@
                 <ul>
                     <li>
                         <span>Villager</span> :
-                        <ul>
-                            <li>Villager 1 : {{UNITS}}</li>
-                        </ul>
-                        <ul>
-                            <li>illager 2 : {{UNITS}}</li>
-                        </ul>
+                            {{UNITS}}
                     </li>
                 </ul>
             </div>
