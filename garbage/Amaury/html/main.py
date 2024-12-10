@@ -22,7 +22,7 @@ def generate_html_file(buildings, units):
     
     # Replace the placeholder in the template with the actual building list
     html_content = html_content.replace("{{BUILDINGS}}", building_list_html)
-    html_content = html_content.replace("{{UNITS}}", unit_list_html)
+    html_content = html_content.replace("{{UNITS}}", f"{(unit_list_html[i] for i in range(2))}")
 
     # Write the modified HTML content to a new file
     with open("game_map.html", "w") as output_file:
