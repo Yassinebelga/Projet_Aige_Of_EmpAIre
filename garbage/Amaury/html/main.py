@@ -19,7 +19,7 @@ def generate_html_file(buildings, units):
 
     unit_list_html = ""
     for i, unit in enumerate(units, start=1):
-        unit_list_html += f'<li class="unit">Villager{i} : {unit.get_x()}, {unit.get_y()}</li>'
+        unit_list_html += f'<li class="unit">Villager {i} : {unit.get_x()}, {unit.get_y()}</li>'
     # unit_list_html = ""
     # for unit in units:
     #     unit_list_html+=f'<li class="unit" > {unit.get_x()}, {unit.get_y()}'
