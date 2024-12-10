@@ -1,5 +1,5 @@
 # main.py
-
+# passer par des dictionnaires
 # Importer les classes nécessaires
 from map.Map_debutant import Map
 from map.Cell_debutant import Cell
