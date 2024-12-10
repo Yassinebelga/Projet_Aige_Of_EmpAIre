@@ -25,6 +25,7 @@ TEAM_COLORS = {
     2: RED_COLOR,
     3:GREEN_COLOR
 }
+
 UNIT_IDLE = 0
 UNIT_WALKING = 1
 UNIT_ATTACKING = 2
@@ -180,7 +181,6 @@ META_SPRITES_CACHE ={}
 def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys): # returns image to display
 
     global META_SPRITES_CACHE
-    print(f"-->  {list_keys[0]}")
     current_dict = META_SPRITES_CACHE.get(zoom_level, None)
 
     if (current_dict == None):

@@ -38,17 +38,17 @@ class Camera:
         
         return iso_x, iso_y 
 
-    def indexes_in_point_of_view(self,nb_CellY, nb_CellX, g_width = None, g_height = None, corner_x = 0,corner_y = 0,ext_x =0, ext_y = 0):
+    def indexes_in_point_of_view(self, nb_CellY, nb_CellX, g_width = None, g_height = None, topcorner_x = 0,topcorner_y = 0,bottomcorner_x =0, bottomcorner_y = 0):
         
-        vp_x = corner_x
-        vp_y = corner_y
+        vp_x = topcorner_x
+        vp_y = topcorner_y
 
         if g_width and g_height:
             height = g_height
             width = g_width
         else:
-            height = corner_y
-            width = corner_x
+            height = topcorner_y
+            width = topcorner_x
 
         topleft_x, topleft_y = self.convert_from_isometric_2d(vp_x, vp_y) #gives us starting y
         bottomright_x, bottomright_y= self.convert_from_isometric_2d(vp_x + width, vp_y + height) #gives us ending y

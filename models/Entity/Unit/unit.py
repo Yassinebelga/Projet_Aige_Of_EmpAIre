@@ -45,7 +45,6 @@ class Unit(Entity):
             self.last_animation_time = current_time
 
             self.animation_frame = (self.animation_frame + 1)%len(self.image.get(self.state,None).get(0, None)) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
-
     def changed_cell_position(self):
         topleft = PVector2(self.cell_X*TILE_SIZE_2D, self.cell_Y*TILE_SIZE_2D)
         bottomright = PVector2((self.cell_X + 1)*TILE_SIZE_2D, (self.cell_Y + 1)*TILE_SIZE_2D)
@@ -97,6 +96,7 @@ class Unit(Entity):
                     if self.position == position:
                         self.path_to_position = None
                 else:
+                    """
                     for i in range(len(self.path_to_position) - 1):
                         
                         (X1, Y1) = self.path_to_position[i]
@@ -108,7 +108,7 @@ class Unit(Entity):
                         
                         # Draw a line between these two points
                         pygame.draw.line(screen, (255, 0, 0), (iso_x1, iso_y1), (iso_x2, iso_y2), 2)
-
+                    """
                     current_path_node_position = PVector2(self.path_to_position[0][0] * TILE_SIZE_2D + TILE_SIZE_2D/2, self.path_to_position[0][1] * TILE_SIZE_2D + TILE_SIZE_2D/2)
                     self.direction = self.position.alpha_angle(current_path_node_position)
                     self.set_direction_index()
@@ -133,11 +133,12 @@ class Unit(Entity):
         if self.state == UNIT_WALKING:
             if self.position == position:
                 print("STOPPED")
-                self.state = UNIT_TASK
+                self.state = UNIT_IDLE
                 self.animation_frame = 0
         
             if self.state == UNIT_WALKING:
                 self.move_to_position(current_time, position)
+        
                 
 
 

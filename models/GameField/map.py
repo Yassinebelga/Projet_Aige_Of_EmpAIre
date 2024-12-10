@@ -22,7 +22,7 @@ class Map:
         
         return False 
 
-    def add_entity(self,_entity):
+    def add_entity(self, _entity):
         assert (_entity != None), 0x0001 # to check if the entity is not null in case there were some problem in the implementation
 
         entity_in_matrix = (_entity.cell_X - (_entity.sq_size - 1) >= 0 and _entity.cell_Y - (_entity.sq_size - 1) >= 0) and ( _entity.cell_X < self.nb_CellX and _entity.cell_Y < self.nb_CellY)
@@ -96,13 +96,14 @@ class Map:
 
         entity_to_display = set()
                 
-        
-
         for region_Y_to_display in range(region_start_Y, region_end_Y + 1):
             for region_X_to_display in range(region_start_X, region_end_X + 1):
                 if region_Y_to_display >= 0 and region_Y_to_display < self.nb_CellY//self.region_division \
                     and region_X_to_display>=0 and region_X_to_display < self.nb_CellX//self.region_division:
                     #print(f"REG_Y: {region_Y_to_display}, REG_X: {region_X_to_display}")
+
+                    # these are the real X Y of the region in the sparse matrix
+
                     REG_X, REG_Y = region_X_to_display * (self.region_division ), region_Y_to_display * (self.region_division )
                     
                     tmp_topleft.x = TILE_SIZE_2D/2 + REG_X*TILE_SIZE_2D
@@ -116,9 +117,8 @@ class Map:
                     tmp_cell.display(screen, camera)
 
                     #check if this region contains entity
-                    if ((region_Y_to_display, region_X_to_display) in self.entity_matrix):
-                        
-                        region_entities = self.entity_matrix.get((region_Y_to_display, region_X_to_display), None)
+                    region_entities = self.entity_matrix.get((region_Y_to_display, region_X_to_display), None)
+                    if region_entities != None:
 
                         for entities in region_entities.values(): # each value the region is a dict of the cells
                             for entity in entities:
@@ -132,11 +132,16 @@ class Map:
                 iso_x, iso_y = camera.convert_to_isometric_2d(tmp_cell.position.x, tmp_cell.position.y)
 
                 pygame.draw.circle(screen, (255, 0, 0), (iso_x, iso_y), 1, 0) 
-        """
+        """ # debug purposes 
         for current_entity in sorted(entity_to_display, key=lambda entity: (entity.position.y + entity.position.x, entity.position.y)):
+        
             current_entity.display(current_time, screen, camera, g_width, g_height)
         
-    
+    def display_terminal_view(self, current_time, screen, camera, g_width, g_height):
+        pass
+                                
+        
+
     def generate_map(self, num_players=2):
         
         # Ensure consistent random generation

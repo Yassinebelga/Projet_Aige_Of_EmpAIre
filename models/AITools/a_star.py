@@ -81,10 +81,10 @@ def A_STAR(start_X, start_Y, end_X, end_Y, _map):
                             #if not(isinstance(entity, Unit)): # we can skip units, so if it is not a unit check
                             if isinstance(entity, Building): # some building can be walkable
                                 if not(entity.walkable):    # if it is not , False and break
-                                    cell_walkable = False
+                                    cell_walkable = True
                                     break
                             elif isinstance(entity, Resources):
-                                cell_walkable = False
+                                cell_walkable = True
 
                 if not(cell_walkable):
                     continue
