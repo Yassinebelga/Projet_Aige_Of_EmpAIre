@@ -38,13 +38,30 @@ class Sequence(ctrlNode):
 
     
 class Fallback(ctrlNode):
-    pass
+    
+    def update(self):
+        for i in (len(self.childlist)):
+            if (self.childlist[i].update(self.childlist[i])=="success"): #if the child process returns a success, the fallback stops updating its branches and returns success
+                self.status="success"
+                return self.status
+        else:
+            self.status="failure"   #if the fallback arrives at the end of its childlist without encountering any success, it returns failure
+            return self.status
 
 class UntilSuccess(decoNode):
-    pass
+    
+    def update(self):
+        while (self.child.status!="success"):  #I know theres a mistake here, working on it
+            self.child.update(self.child)
+        self.status="success"
+        return self.status
 
 class UntilFail(decoNode):
-    pass
+    def update(self):
+        while (self.child.status!="failure"):  #I know theres a mistake here, working on it
+            self.child.update(self.child)
+        self.status="success"
+        return self.status
 
 class ForceFail(decoNode):
     
@@ -56,9 +73,9 @@ class ForceFail(decoNode):
 class Invert(decoNode):
     
     def update(self):
-        if (self.child.update(self.child)=="success"):
+        if (self.child.update(self.child)=="success"):  #I know theres a mistake here, working on it
             self.status="failure"
-        elif (self.child.update(self.child)=="failure"):
+        elif (self.child.update(self.child)=="failure"):  #I know theres a mistake here, working on it
             self.status="success"
         return self.status       
 
