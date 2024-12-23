@@ -15,6 +15,7 @@ class GameLoop:
     def run(self):
         running = True
         while running:
+            current_time = pygame.time.get_ticks()
             SCREEN_WIDTH, SCREEN_HEIGHT = self.state.screen.get_width(), self.state.screen.get_height()
             # Gestion des événements
             for event in pygame.event.get():
@@ -67,7 +68,7 @@ class GameLoop:
             if self.state.states == START:
                 self.state.menu.draw()
             else:
-                self.state.map.display(self.clock, self.state.screen, self.state.camera, SCREEN_WIDTH, SCREEN_HEIGHT)
+                self.state.map.display(current_time, self.state.screen, self.state.camera, SCREEN_WIDTH, SCREEN_HEIGHT)
 
             # Rafraîchissement de l'affichage
             pygame.display.flip()
