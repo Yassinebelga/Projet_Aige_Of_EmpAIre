@@ -1,15 +1,16 @@
 import pygame
+from GLOBAL_VAR import *
 
 class UserInterface:
     def __init__(self, screen):
         self.screen = screen
         self.map_options = ["Carte Normal", "Carte Centrée"]
-        self.selected_map_index = 0
+        self.selected_map_index = MAP_NORMAL
         
         self.game_mode_options = ["Lean", "Mean", "Marines"]
-        self.selected_mode_index = 0
+        self.selected_mode_index = LEAN
         
-        self.display_mode = "2.5D"  # Default display mode
+        self.display_mode = TERMINAL  # Default display mode
         self.buttons = {
             "left_map": pygame.Rect(0, 0, 50, 50),  # Left button for map
             "right_map": pygame.Rect(0, 0, 50, 50),  # Right button for map
@@ -50,8 +51,8 @@ class UserInterface:
         self._draw_button("right_mode", ">")  # Right button for game mode
 
         # Draw display mode buttons
-        self._draw_button("Terminal", "Terminal", self.display_mode == "Terminal")
-        self._draw_button("2.5D", "2.5D", self.display_mode == "2.5D")
+        self._draw_button("Terminal", "Terminal", self.display_mode == TERMINAL)
+        self._draw_button("2.5D", "2.5D", self.display_mode == ISO2D)
 
         # Draw launch game button
         self._draw_button("Lancer la Partie", "Lancer la Partie")
@@ -84,9 +85,9 @@ class UserInterface:
         elif self.buttons["right_mode"].collidepoint(pos):
             self.selected_mode_index = (self.selected_mode_index + 1) % len(self.game_mode_options)
         elif self.buttons["Terminal"].collidepoint(pos):
-            self.display_mode = "Terminal"
+            self.display_mode = TERMINAL
         elif self.buttons["2.5D"].collidepoint(pos):
-            self.display_mode = "2.5D"
+            self.display_mode = ISO2D
         elif self.buttons["Lancer la Partie"].collidepoint(pos):
             return True  # Indicate that the game can start
 
