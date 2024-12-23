@@ -133,7 +133,8 @@ class Map:
 
                 pygame.draw.circle(screen, (255, 0, 0), (iso_x, iso_y), 1, 0) 
         """ # debug purposes 
-        for current_entity in sorted(entity_to_display, key=lambda entity: (entity.position.y + entity.position.x, entity.position.y)):
+                                                                                # priority to the farm ( they are like grass so the ground is displayed first) then the normal deep sort 
+        for current_entity in sorted(entity_to_display, key=lambda entity: (not(isinstance(entity, Farm)), entity.position.y + entity.position.x, entity.position.y)):
         
             current_entity.display(current_time, screen, camera, g_width, g_height)
         

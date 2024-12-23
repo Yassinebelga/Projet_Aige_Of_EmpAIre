@@ -109,9 +109,13 @@ def MAP_ANGLE_INDEX(angle, angle_map):
  
 
 pygame.init() 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.FULLSCREEN)
 pygame.display.set_caption("AOE2")
-
+flags = pygame.display.get_surface().get_flags()
+if flags & pygame.HWSURFACE:
+    print("Hardware acceleration is enabled!")
+else:
+    print("Hardware acceleration is not enabled.")
 camera = Camera()
 font = pygame.font.Font(None, 24)
 
