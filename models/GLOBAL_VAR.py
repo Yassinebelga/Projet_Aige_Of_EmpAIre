@@ -26,6 +26,28 @@ TEAM_COLORS = {
     3:GREEN_COLOR
 }
 
+#state
+
+START = 0
+PLAY = 1
+PAUSE = 2
+
+
+#map
+
+MAP_NORMAL = 0
+MAP_CENTERED = 1
+
+#mode
+
+LEAN = 0
+MEAN = 1
+MARINES = 2
+
+#display
+TERMINAL = 0
+ISO2D = 1
+
 UNIT_IDLE = 0
 UNIT_WALKING = 1
 UNIT_ATTACKING = 2
@@ -55,7 +77,6 @@ BARBOX_HEIGHT = 5
 from pvector2 import *
 from ImageProcessingDisplay.imagemethods import * 
 from ImageProcessingDisplay.viewport import ViewPort
-from ImageProcessingDisplay.camera import Camera
 
 UNIT_ANGLE_MAPPING = {
     0*math.pi/8:6,
@@ -112,7 +133,6 @@ pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
 pygame.display.set_caption("AOE2")
 
-camera = Camera()
 font = pygame.font.Font(None, 24)
 
 """  DONT DELETE THIS SECTION !!!, WE MAY USE IT LATER 
@@ -178,7 +198,7 @@ SPRITES = {
 
 META_SPRITES_CACHE ={}
 
-def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys): # returns image to display
+def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys, camera): # returns image to display
 
     global META_SPRITES_CACHE
     current_dict = META_SPRITES_CACHE.get(zoom_level, None)
@@ -209,6 +229,4 @@ def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys): # returns image to display
     return current_dict 
         
     
-
-        
 CURSOR_IMG = pygame.image.load("Sprites/cursor.png").convert_alpha()
