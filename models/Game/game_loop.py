@@ -57,9 +57,9 @@ class GameLoop:
             if not (self.state.states == START):
                 # Zoom de la caméra
                 if keys[pygame.K_KP_PLUS]:  # Touche + du pavé numérique
-                    self.state.camera.adjust_zoom(pygame.time.get_ticks(), 0.1)
+                    self.state.camera.adjust_zoom(pygame.time.get_ticks(), 0.1, SCREEN_WIDTH, SCREEN_HEIGHT)
                 elif keys[pygame.K_KP_MINUS]:  # Touche - du pavé numérique
-                    self.state.camera.adjust_zoom(pygame.time.get_ticks(), -0.1)
+                    self.state.camera.adjust_zoom(pygame.time.get_ticks(), -0.1, SCREEN_WIDTH, SCREEN_HEIGHT)
 
                 # Basculer le mode d'affichage
                 if keys[pygame.K_t]:

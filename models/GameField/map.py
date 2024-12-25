@@ -99,7 +99,7 @@ class Map:
         tmp_topleft = PVector2(0, 0)
         tmp_bottomright = PVector2(0, 0)
 
-        (top_Y, top_X), (left_Y, left_X), (right_Y, right_X), (bottom_Y, bottom_X) = camera.indexes_in_point_of_view(self.nb_CellY, self.nb_CellX, g_width, g_height)
+        (top_Y, top_X), (left_Y, left_X), (right_Y, right_X), (bottom_Y, bottom_X) = camera.indexes_in_point_of_view(g_width, g_height)
         
         top_Xt = max(0, min(top_X, self.nb_CellX - 1))
         top_Yt = max(0, min(top_Y, self.nb_CellY - 1))

@@ -15,6 +15,8 @@ class Camera:
         self.num_zoom_per_sec = 30
         
         self.position = position
+        self.width = SCREEN_WIDTH
+        self.height = SCREEN_HEIGHT
         self.last_time_moved = pygame.time.get_ticks()
         self.num_move_per_sec = 60
         self.move_flags = 0
@@ -44,7 +46,7 @@ class Camera:
         
         return iso_x, iso_y 
 
-    def indexes_in_point_of_view(self, nb_CellY, nb_CellX, g_width = None, g_height = None, topcorner_x = 0,topcorner_y = 0,bottomcorner_x =0, bottomcorner_y = 0):
+    def indexes_in_point_of_view(self, g_width = None, g_height = None, topcorner_x = 0,topcorner_y = 0,bottomcorner_x =0, bottomcorner_y = 0):
         
         vp_x = topcorner_x
         vp_y = topcorner_y
@@ -81,11 +83,13 @@ class Camera:
         if (-TILE_SIZE_2ISO * (self.zoom + 1) * 3 < x_to_check and x_to_check<g_width + TILE_SIZE_2ISO * (self.zoom + 1)* 3  and -TILE_SIZE_2ISO * (self.zoom + 1)* 3 <y_to_check and y_to_check < g_height + TILE_SIZE_2ISO * (self.zoom + 1)* 3 ):
             return True
 
-    def adjust_zoom(self, current_time, amount):
+    def adjust_zoom(self, current_time, amount, g_width, g_height):
 
         if current_time - self.last_time_adjusted_zoom > ONE_SEC/self.num_zoom_per_sec:
             self.last_time_adjusted_zoom = current_time
             self.zoom = max(1, min(4, self.zoom + amount))
+            self.width = g_width/self.zoom
+            self.height = g_height/self.zoom
 
     def move(self, current_time, amount):
         if (current_time - self.last_time_moved > ONE_SEC/self.num_move_per_sec):

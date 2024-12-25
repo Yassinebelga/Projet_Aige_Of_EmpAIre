@@ -15,7 +15,7 @@ MAP_CELLX = 120
 MAP_CELLY = 120
 REGION_DIVISION = 5
 
-MINIMAP_WIDTH = 200
+MINIMAP_WIDTH = 220
 MINIMAP_HEIGHT = MINIMAP_WIDTH
 #colors
 FPS = 240
@@ -239,4 +239,4 @@ def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys, camera): # returns image to
     
 CURSOR_IMG = pygame.image.load("Sprites/cursor.png").convert_alpha()
 MINIMAP_IMG = pygame.image.load("Sprites/minimap_cus.png").convert_alpha()
-MINIMAP_IMG = adjust_sprite(MINIMAP_IMG, MINIMAP_WIDTH*(2 + 0.25), MINIMAP_HEIGHT/2 *(2 + 0.25))
+MINIMAP_IMG = adjust_sprite(MINIMAP_IMG, MINIMAP_WIDTH*(2 + 0.2), MINIMAP_HEIGHT/2 *(2 + 0.2))

@@ -14,6 +14,9 @@ class MiniMap:
         self.width = MINIMAP_WIDTH
         self.height = MINIMAP_HEIGHT
 
+        self.camera_width = None
+        self.camera_height = None
+
         self.tile_size_2d = TILE_SIZE_2D
         
         
@@ -71,6 +74,12 @@ class MiniMap:
         mini_topleft_x, mini_topleft_y = self.convert_to_minimap_2d(topleft_x, topleft_y)
         mini_bottomright_x, mini_bottomright_y = self.convert_to_minimap_2d(bottomright_x, bottomright_y)
 
+        self.camera_width = (mini_bottomright_x - mini_topleft_x)
+        self.camera_height = (mini_bottomright_y - mini_topleft_y)
+
+        print(f"cam_w:{self.camera_width}, cam_h:{self.camera_height}")
+
+        print(f"offsetx:{int(self.camera_width/2)}, offsety:{int(self.camera_height/2)}")
         draw_rectangle_with_borders(screen, mini_topleft_x, mini_topleft_y, mini_bottomright_x, mini_bottomright_y)
 
     def update_camera(self, camera, mouse_x, mouse_y):
@@ -82,7 +91,8 @@ class MiniMap:
 
         
         if (left_mini_iso_x<mouse_x<right_mini_iso_x and top_mini_iso_y<mouse_y<bottom_mini_iso_y):
-            x, y = (mouse_x - self.position.x - self.width//2)*(camera.tile_size_2iso/(self.width/max(self.nb_CellX, self.nb_CellY))), (mouse_y - self.position.y)*(camera.tile_size_2iso/(self.height/max(self.nb_CellX, self.nb_CellY)))
+
+            x, y = int((mouse_x - self.position.x - self.width//2)*(camera.tile_size_2iso/(self.width/max(self.nb_CellX, self.nb_CellY))) - camera.width/2) , int((mouse_y - self.position.y)*(camera.tile_size_2iso/(self.height/max(self.nb_CellX, self.nb_CellY))) - camera.height/2)
             camera.position.x = x
             camera.position.y = y
 
