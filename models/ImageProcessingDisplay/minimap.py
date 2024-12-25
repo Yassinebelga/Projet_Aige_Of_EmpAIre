@@ -49,7 +49,7 @@ class MiniMap:
         #print(f"width:{right_mini_iso_x - left_mini_iso_x}, height:{bottom_mini_iso_y - top_mini_iso_y}")
         #draw_rectangle_with_borders(screen, left_mini_iso_x, top_mini_iso_y, right_mini_iso_x, bottom_mini_iso_y) # rect for debugging
 
-        draw_diamond(screen, GREEN_COLOR, (top_mini_iso_x, top_mini_iso_y), (right_mini_iso_x, right_mini_iso_y), (bottom_mini_iso_x, bottom_mini_iso_y), (left_mini_iso_x, left_mini_iso_y))
+        draw_diamond(screen, MINIMAP_COLOR, (top_mini_iso_x, top_mini_iso_y), (right_mini_iso_x, right_mini_iso_y), (bottom_mini_iso_x, bottom_mini_iso_y), (left_mini_iso_x, left_mini_iso_y))
         
     def display_on_cart(self, screen, entity):
         point_color = None
