@@ -1,10 +1,13 @@
 import math
 import random
+import os
+import sys
 
 INITIAL_ZOOM = 1
-ZOOM_LEVELS = [1, 1.3, 1.6, 2, 2.3, 2.6, 3, 3.3]
+
 TILE_SIZE_2ISO = 15
 TILE_SIZE_2D = 40
+TILE_SIZE_MINI_2ISO = 2
 ONE_SEC = 1000 # 1000 millisec
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
@@ -13,12 +16,14 @@ MAP_CELLY = 120
 REGION_DIVISION = 5
 
 #colors
-
+FPS = 120
 BLACK_COLOR = (0, 0, 0)
 WHITE_COLOR = (255, 255, 255)
 RED_COLOR = (255, 0, 0)
 GREEN_COLOR = (0,255, 0)
 BLUE_COLOR = (0, 0, 255)
+GOLD_COLOR = (255, 215, 0) 
+BROWN_TREE_COLOR = (139, 69, 19)
 
 TEAM_COLORS = {
     1: BLUE_COLOR,
@@ -76,7 +81,7 @@ BARBOX_WIDTH = 10
 BARBOX_HEIGHT = 5
 from pvector2 import *
 from ImageProcessingDisplay.imagemethods import * 
-from ImageProcessingDisplay.viewport import ViewPort
+
 
 UNIT_ANGLE_MAPPING = {
     0*math.pi/8:6,
@@ -132,8 +137,8 @@ def MAP_ANGLE_INDEX(angle, angle_map):
 pygame.init() 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.FULLSCREEN)
 pygame.display.set_caption("AOE2")
-camera = Camera()
-font = pygame.font.Font(None, 24)
+
+
 
 """  DONT DELETE THIS SECTION !!!, WE MAY USE IT LATER 
 GRASS= load_sprite("Sprites/grass.webp")

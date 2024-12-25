@@ -69,4 +69,4 @@ class Projectile:
 
         self.update_animation_frame(current_time)
         iso_x, iso_y = camera.convert_to_isometric_3d(self.position.x, self.position.y,self.projectile_z_pos)
-        display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.animation_direction, self.animation_frame]),iso_x, iso_y, screen, 0x04)
+        display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.animation_direction, self.animation_frame], camera = camera),iso_x, iso_y, screen, 0x04)

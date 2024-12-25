@@ -8,24 +8,30 @@ class Camera:
         self.cell_Y = 0
         self.tile_size_2d = _tile_size_2d
         self.tile_size_2iso = _tile_size_2iso #display size
+
         self.img_scale = _tile_size_2iso/50# img_scale is a value to scale the loaded images so the tiles are aligned, 50 is the choosen value after many tries
         
         self.last_time_adjusted_zoom = pygame.time.get_ticks()
         self.num_zoom_per_sec = 30
         
-        self.view_port = ViewPort(position,SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.position = position
+        self.last_time_moved = pygame.time.get_ticks()
+        self.num_move_per_sec = 60
+        self.move_flags = 0
 
     def convert_to_isometric_2d(self, x, y): #convert (x,y) cooridnates to iso_x iso_y
 
-        iso_x = int((y - x)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom ) + self.view_port.position.x * (self.zoom ))
-        iso_y = int(((y + x)/2)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom  ) + self.view_port.position.y * (self.zoom ))
+        iso_x = int((y - x)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom ) - self.position.x * (self.zoom ))
+        iso_y = int(((y + x)/2)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom  ) - self.position.y * (self.zoom ))
 
         return iso_x, iso_y
 
+    
+    
     def convert_from_isometric_2d(self, iso_x, iso_y):
 
-        x_p = (iso_x/(self.zoom ) - self.view_port.position.x )*(self.tile_size_2d/self.tile_size_2iso)
-        y_p = (iso_y/(self.zoom ) - self.view_port.position.y )*(self.tile_size_2d/self.tile_size_2iso)
+        x_p = (iso_x/(self.zoom ) + self.position.x )*(self.tile_size_2d/self.tile_size_2iso)
+        y_p = (iso_y/(self.zoom ) + self.position.y )*(self.tile_size_2d/self.tile_size_2iso)
 
         x = (2*y_p - x_p)/2
         y = (2*y_p + x_p)/2
@@ -33,8 +39,8 @@ class Camera:
         return x, y
 
     def convert_to_isometric_3d(self, x, y, z): #convert (x,y,z) projectile cooridnates to iso_x iso_y
-        iso_x = int((y - x)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom) + self.view_port.position.x * (self.zoom ))
-        iso_y = int(((y + x - z)/2)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom) + self.view_port.position.y * (self.zoom ))
+        iso_x = int((y - x)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom) - self.position.x * (self.zoom ))
+        iso_y = int(((y + x - z)/2)*(self.tile_size_2iso/self.tile_size_2d) * (self.zoom) -  self.position.y * (self.zoom ))
         
         return iso_x, iso_y 
 
@@ -50,20 +56,26 @@ class Camera:
             height = topcorner_y
             width = topcorner_x
 
-        topleft_x, topleft_y = self.convert_from_isometric_2d(vp_x, vp_y) #gives us starting y
-        bottomright_x, bottomright_y= self.convert_from_isometric_2d(vp_x + width, vp_y + height) #gives us ending y
+        topleft_x, topleft_y = self.convert_from_isometric_2d(vp_x, vp_y) #
+        bottomright_x, bottomright_y= self.convert_from_isometric_2d(vp_x + width, vp_y + height) 
 
-        topright_x, topright_y = self.convert_from_isometric_2d(vp_x + width, vp_y) #gives usstarting x
-        bottomleft_x, bottomleft_y= self.convert_from_isometric_2d(vp_x, vp_y + height)#gives us ending x
+        topright_x, topright_y = self.convert_from_isometric_2d(vp_x + width, vp_y) #
+        bottomleft_x, bottomleft_y= self.convert_from_isometric_2d(vp_x, vp_y + height) #
 
 
-        start_X = round(max(0,topright_x/(self.tile_size_2d ) - 1))
-        start_Y = round(max(0,topleft_y/(self.tile_size_2d ) - 1))
-        end_X = round(min(bottomleft_x/(self.tile_size_2d ) + 1, nb_CellX - 1))
-        end_Y = round(min(bottomright_y/(self.tile_size_2d ) + 1, nb_CellY - 1))
+        top_X = round(topleft_x/(self.tile_size_2d ) + 1)
+        top_Y  = round(topleft_y/(self.tile_size_2d ) + 1)
+
+        right_X = round(bottomleft_x/(self.tile_size_2d ) + 1)
+        right_Y = round(bottomleft_y/(self.tile_size_2d ) + 1)
+
+        left_X = round(topright_x/(self.tile_size_2d ) + 1)
+        left_Y = round(topright_y/(self.tile_size_2d ) + 1)
+
+        bottom_X = round(bottomright_x/(self.tile_size_2d ) + 1)
+        bottom_Y  = round(bottomright_y/(self.tile_size_2d ) + 1)
         
-        #print(f"startX = {start_X} startY = {start_Y} , endX = {end_X} endY = {end_Y}")
-        return start_X, start_Y, end_X, end_Y
+        return (top_Y, top_X), (left_Y, left_X), (right_Y, right_X), (bottom_Y, bottom_X)
 
     def check_in_point_of_view(self, x_to_check, y_to_check, g_width , g_height):
         if (-TILE_SIZE_2ISO * (self.zoom + 1) * 3 < x_to_check and x_to_check<g_width + TILE_SIZE_2ISO * (self.zoom + 1)* 3  and -TILE_SIZE_2ISO * (self.zoom + 1)* 3 <y_to_check and y_to_check < g_height + TILE_SIZE_2ISO * (self.zoom + 1)* 3 ):
@@ -71,18 +83,27 @@ class Camera:
 
     def adjust_zoom(self, current_time, amount):
 
-        """
-        if current_time - self.last_time_adjusted_zoom > ONE_SEC/self.num_zoom_per_sec:
-            self.last_time_adjusted_zoom = current_time
-
-            if amount > 0:
-                self.zoom = min(self.zoom + 1, len(ZOOM_LEVELS) - 1)
-            else:
-                self.zoom = max(self.zoom - 1, 0)
-        """
         if current_time - self.last_time_adjusted_zoom > ONE_SEC/self.num_zoom_per_sec:
             self.last_time_adjusted_zoom = current_time
             self.zoom = max(1, min(4, self.zoom + amount))
+
+    def move(self, current_time, amount):
+        if (current_time - self.last_time_moved > ONE_SEC/self.num_move_per_sec):
+            if (self.move_flags & 0b0001):
+                self.position.x -= amount
+            
+            if (self.move_flags & 0b0010):
+                self.position.x += amount
+
+            if (self.move_flags & 0b0100):
+                self.position.y += amount
+            
+            if (self.move_flags & 0b1000):
+                self.position.y -= amount
+                
+            self.last_time_moved = current_time
+            self.move_flags = 0 # reset flags
+
 
     def draw_box(self, screen, _entity):
         topleft_x, topleft_y = _entity.position.x - _entity.box_size, _entity.position.y - _entity.box_size

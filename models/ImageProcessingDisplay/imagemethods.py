@@ -132,9 +132,20 @@ def resize(item, scale):
             return [resize(sub_item, scale) for sub_item in item]
         else:
             raise ValueError("Unsupported type in META_SPRITES")
-"""
-def resize_images(meta_sprites, scale):
-    # Update the meta_sprites dictionary with resized values
-    for key in meta_sprites:
-        meta_sprites[key] = resize(meta_sprites[key])
-"""
+
+
+def draw_diamond(screen, color, top, right, bottom, left):
+    
+    points = [
+        (top[0], top[1]),       # Sommet haut
+        (right[0], right[1]),   # Sommet droit
+        (bottom[0], bottom[1]), # Sommet bas
+        (left[0], left[1])      # Sommet gauche
+    ]
+    
+    # Dessiner le losange
+    pygame.draw.polygon(screen, color, points)
+
+def draw_point(screen, color, x, y, radius=2):
+
+    pygame.draw.circle(screen, color, (x, y), radius)

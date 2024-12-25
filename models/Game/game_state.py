@@ -1,6 +1,6 @@
 import pygame
 import random 
-from ImageProcessingDisplay import UserInterface, Camera
+from ImageProcessingDisplay import UserInterface, Camera, TerminalCamera 
 from GameField.map import Map
 from GLOBAL_VAR import *
 
@@ -13,12 +13,14 @@ class GameState:
         self.selected_map_type = MAP_NORMAL
         self.selected_mode = LEAN
         self.camera = Camera()
+        self.terminal_camera = TerminalCamera()
         self.map = Map(MAP_CELLX,MAP_CELLY)
-        self.display_mode = TERMINAL # Mode d'affichage par défaut
+        self.display_mode = ISO2D # Mode d'affichage par défaut
         # Pour gérer le délai de basculement d'affichage
         self.last_switch_time = 0
-        self.switch_cooldown = 200  # Délai de 200ms (0,2 secondes)
-
+        self.switch_cooldown = ONE_SEC*(0.2)  # Délai de 200ms (0,2 secondes)
+        self.full_screen = True
+        self.mouse_held = False
     def start_game(self):
         """Méthode pour démarrer la génération de la carte après que l'utilisateur ait validé ses choix."""
         self.map.generate_map()
@@ -42,15 +44,28 @@ class GameState:
                 self.states = PAUSE
             self.last_switch_time = current_time
 
+    def toggle_fullscreen(self, gameloop):
+        if not(self.full_screen):
+            self.full_screen = True
+            gameloop.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.FULLSCREEN)
+        else:
+            self.full_screen = False
+            gameloop.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
     def set_speed(self, new_speed):
         if new_speed > 0:
             self.speed = new_speed
     
-    def toggle_display_mode(self):
+    def toggle_display_mode(self, gameloop):
         """Bascule entre les modes d'affichage Terminal et 2.5D."""
         current_time = pygame.time.get_ticks()
         if current_time - self.last_switch_time >= self.switch_cooldown:
-            self.display_mode = ISO2D if self.display_mode == TERMINAL else TERMINAL
+            if self.display_mode == ISO2D:
+                self.display_mode = TERMINAL
+                gameloop.screen = None
+            elif self.display_mode == TERMINAL:
+                self.display_mode = ISO2D
+                gameloop.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
+
             self.last_switch_time = current_time
 
     def update(self):

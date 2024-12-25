@@ -1,5 +1,9 @@
 from GameField.cell import *
 from GLOBAL_IMPORT import *
+from ImageProcessingDisplay.minimap import *
+from AITools.isorange import *
+from AITools.raycastingrange import *
+
 class Map:
 
     def __init__(self,_nb_CellX , _nb_CellY):
@@ -10,6 +14,12 @@ class Map:
         self.tile_size_2d = TILE_SIZE_2D
         self.region_division = REGION_DIVISION
         self.entity_matrix = {} #sparse matrix
+
+        self.last_time_refershed = pygame.time.get_ticks() # refresh for the terminal display
+
+
+        # for the minimap
+        self.minimap = MiniMap(PVector2(1000,300), _nb_CellX, _nb_CellY)
 
     def check_cell(self, Y_to_check, X_to_check):
         REG_Y_to_check, REG_X_to_check = Y_to_check//self.region_division, X_to_check//self.region_division
@@ -85,19 +95,40 @@ class Map:
     def display(self, current_time, screen, camera, g_width, g_height):
         
 
-        tmp_cell = Cell(0,0,PVector2(0,0))
+        tmp_cell = Cell(0, 0, PVector2(0,0))
         tmp_topleft = PVector2(0, 0)
         tmp_bottomright = PVector2(0, 0)
 
-        start_X, start_Y, end_X, end_Y = camera.indexes_in_point_of_view(self.nb_CellY, self.nb_CellX, g_width, g_height)
+        (top_Y, top_X), (left_Y, left_X), (right_Y, right_X), (bottom_Y, bottom_X) = camera.indexes_in_point_of_view(self.nb_CellY, self.nb_CellX, g_width, g_height)
         
-        region_start_X, region_start_Y, region_end_X, region_end_Y = \
-            start_X //self.region_division, start_Y //self.region_division, end_X //self.region_division, end_Y //self.region_division
+        top_Xt = max(0, min(top_X, self.nb_CellX - 1))
+        top_Yt = max(0, min(top_Y, self.nb_CellY - 1))
+
+        right_Xt = max(0, min(right_X, self.nb_CellX - 1))
+        right_Yt = max(0, min(right_Y, self.nb_CellY - 1))
+
+        left_Xt = max(0, min(left_X, self.nb_CellX - 1))
+        left_Yt = max(0, min(left_Y, self.nb_CellY - 1))
+
+        bottom_Xt = max(0, min(bottom_X, self.nb_CellX - 1))
+        bottom_Yt  = max(0, min(bottom_Y, self.nb_CellY - 1))
+        
+        top = (top_Yt, top_Xt)
+        left = (left_Yt, left_Xt)
+        right = (right_Yt, right_Xt)
+        bottom = (bottom_Yt, bottom_Xt)
+
+        range_top = (top[0] // self.region_division, top[1] // self.region_division)
+        range_left = (left[0] // self.region_division, left[1] // self.region_division)
+        range_right = (right[0] // self.region_division, right[1] // self.region_division) 
+        range_bottom = (bottom[0] // self.region_division, bottom[1] // self.region_division) 
+ 
+        #print(f"top:{top}, left:{left}, right:{right}")
 
         entity_to_display = set()
-                
-        for region_Y_to_display in range(region_start_Y, region_end_Y + 1):
-            for region_X_to_display in range(region_start_X, region_end_X + 1):
+        
+        for region_Y_to_display, region_X_to_display in isoRange(range_top, range_left, range_right, range_bottom):
+
                 if region_Y_to_display >= 0 and region_Y_to_display < self.nb_CellY//self.region_division \
                     and region_X_to_display>=0 and region_X_to_display < self.nb_CellX//self.region_division:
                     #print(f"REG_Y: {region_Y_to_display}, REG_X: {region_X_to_display}")
@@ -138,8 +169,63 @@ class Map:
         
             current_entity.display(current_time, screen, camera, g_width, g_height)
         
-    def display_terminal_view(self, current_time, screen, camera, g_width, g_height):
-        pass
+        
+
+
+
+        # minimap display 
+        self.minimap.display_ground(screen)
+
+        for current_region in self.entity_matrix.values():
+            for entity_set in current_region.values():
+                for entity in entity_set:
+                    if not(isinstance(entity, Building)):
+                        self.minimap.display_on_cart(screen, entity)
+        
+        self.minimap.display_camera(screen, top_X, top_Y, bottom_X, bottom_Y)
+
+        
+
+    def terminal_display(self, current_time, terminal_camera):
+
+        if current_time - self.last_time_refershed >= ONE_SEC*(0.05):
+
+            startX, startY, endX, endY = terminal_camera.indexes_in_point_of_view_terminal()
+
+            # Clear the terminal screen for animation
+            
+            os.system('cls' if os.name == 'nt' else 'clear') # cls if windows clear if
+
+            sys.stdout.write(f"[+] View Start: ({startX}, {startY}), View End: ({endX}, {endY})\n")
+            endY -= 1 # we took a line for the display info
+
+            for currentY in range(startY, endY + 1):
+                current_string=""
+                for currentX in range(startX, endX + 1):
+                    if 0 <= currentX < self.nb_CellX and 0 <= currentY < self.nb_CellY:
+                        REG_X, REG_Y = currentX // 5, currentY // 5
+
+                        current_region = self.entity_matrix.get((REG_Y, REG_X))
+                        if current_region:
+
+                            current_entity_set = current_region.get((currentY, currentX))
+                            if current_entity_set:
+
+                                for current_entity in current_entity_set:
+                                    current_string += current_entity.representation
+                                    break
+                            else:
+                                current_string += "."
+                        else:
+                            current_string += "."
+                    else:
+                        current_string += " "
+                        
+                sys.stdout.write(current_string)
+                
+                sys.stdout.flush()
+                   
+            self.last_time_refershed = current_time
                                 
         
 

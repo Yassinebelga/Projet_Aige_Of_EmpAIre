@@ -150,7 +150,7 @@ class Unit(Entity):
             
             camera.draw_box(screen, self)
             self.update_animation_frame(current_time)
-            display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.state, self.animation_direction, self.animation_frame]), iso_x, iso_y, screen, 0x04, 1)
+            display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.state, self.animation_direction, self.animation_frame], camera = camera), iso_x, iso_y, screen, 0x04, 1)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)
 
     def check_collision_with(self, new_x, new_y, _entity):

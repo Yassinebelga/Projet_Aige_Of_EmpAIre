@@ -13,4 +13,4 @@ class Cell:
     def display(self, screen, camera):
         iso_x, iso_y = camera.convert_to_isometric_2d( self.position.x, self.position.y)
         
-        display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation]), iso_x, iso_y, screen, 0x04)
+        display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation], camera = camera), iso_x, iso_y, screen, 0x04)
