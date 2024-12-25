@@ -7,6 +7,9 @@ def resize_sprite(image, scale):
     width, height = image.get_size()
     return pygame.transform.smoothscale(image, (int(width * scale), int(height * scale)))
 
+def adjust_sprite(image, width, height):
+    return pygame.transform.smoothscale(image, (int(width), int(height)))
+
 def load_sprite_sheet(path, num_row, num_col,skip_row = 1, limit_col = 1):
     print(f"[::] Loading images from {path}")
     sprite_sheet = pygame.image.load(path).convert_alpha()
@@ -88,7 +91,7 @@ def load_sprite(path): # different scaled for each zoom level
     print(f"[+] Success")
     return sprite # for static entities
 
-def display_image(image, x, y, screen, flags=0x00, team = 0, glow_radius = 3): # flags to display in the center or the top left
+def display_image(image, x, y, screen, flags=0x00, team = 0): # flags to display in the center or the top left
     im_width, im_height = image.get_size()
 
     # Calculate final position based on flags

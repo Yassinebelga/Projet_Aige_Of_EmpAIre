@@ -45,6 +45,7 @@ class GameLoop:
                 else:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         self.state.mouse_held = True
+                        print(f"screen( width:{SCREEN_WIDTH}, {SCREEN_HEIGHT}), mouse( x:{mouse_x}, y:{mouse_y})")
                     elif event.type == pygame.MOUSEBUTTONUP:
                         self.state.mouse_held = False
 

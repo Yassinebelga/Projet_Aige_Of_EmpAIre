@@ -11,9 +11,11 @@ class MiniMap:
 
         self.nb_CellX = nb_CellX
         self.nb_CellY = nb_CellY
+        self.width = MINIMAP_WIDTH
+        self.height = MINIMAP_HEIGHT
 
         self.tile_size_2d = TILE_SIZE_2D
-        self.tile_size_mini_iso2d = TILE_SIZE_MINI_2ISO
+        
         
         self.top = PVector2(0, 0)
         self.right = PVector2(0, (nb_CellY )*TILE_SIZE_2D)
@@ -22,8 +24,8 @@ class MiniMap:
 
     def convert_to_minimap_2d(self, x, y):
         
-        mini_iso_x = int((y - x)*(self.tile_size_mini_iso2d/self.tile_size_2d) + self.position.x + self.nb_CellX//2*self.tile_size_mini_iso2d)
-        mini_iso_y = int(((y + x)/2)*(self.tile_size_mini_iso2d/self.tile_size_2d) + self.position.y )
+        mini_iso_x = int((y - x)*((self.width/max(self.nb_CellX, self.nb_CellY))/self.tile_size_2d) + self.position.x + self.width//2)
+        mini_iso_y = int(((y + x)/2)*((self.height/max(self.nb_CellX, self.nb_CellY))/self.tile_size_2d) + self.position.y )
 
         return mini_iso_x, mini_iso_y
 
@@ -40,6 +42,12 @@ class MiniMap:
 
         bottom_mini_iso_x, bottom_mini_iso_y = self.convert_to_minimap_2d(self.bottom.x, self.bottom.y)
         left_mini_iso_x, left_mini_iso_y = self.convert_to_minimap_2d(self.left.x, self.left.y)
+        
+        display_image(MINIMAP_IMG, left_mini_iso_x + self.width,top_mini_iso_y + self.height//2, screen, 0x04)
+        
+        draw_point(screen, (255, 255, 255), left_mini_iso_x, top_mini_iso_y)
+        #print(f"width:{right_mini_iso_x - left_mini_iso_x}, height:{bottom_mini_iso_y - top_mini_iso_y}")
+        #draw_rectangle_with_borders(screen, left_mini_iso_x, top_mini_iso_y, right_mini_iso_x, bottom_mini_iso_y) # rect for debugging
 
         draw_diamond(screen, GREEN_COLOR, (top_mini_iso_x, top_mini_iso_y), (right_mini_iso_x, right_mini_iso_y), (bottom_mini_iso_x, bottom_mini_iso_y), (left_mini_iso_x, left_mini_iso_y))
         
@@ -74,11 +82,16 @@ class MiniMap:
 
         
         if (left_mini_iso_x<mouse_x<right_mini_iso_x and top_mini_iso_y<mouse_y<bottom_mini_iso_y):
-            x, y = (mouse_x - self.position.x - self.nb_CellX//2*self.tile_size_mini_iso2d)*(camera.tile_size_2iso/self.tile_size_mini_iso2d), (mouse_y - self.position.y)*(camera.tile_size_2iso/self.tile_size_mini_iso2d)
+            x, y = (mouse_x - self.position.x - self.width//2)*(camera.tile_size_2iso/(self.width/max(self.nb_CellX, self.nb_CellY))), (mouse_y - self.position.y)*(camera.tile_size_2iso/(self.height/max(self.nb_CellX, self.nb_CellY)))
             camera.position.x = x
             camera.position.y = y
 
+    def update_position(self, g_width, g_height):
 
+        img_width, img_height = MINIMAP_IMG.get_size()
+
+        self.position.x = g_width - img_width//2 - MINIMAP_WIDTH//2
+        self.position.y = g_height - img_height//2 - MINIMAP_HEIGHT//2
 
 
 

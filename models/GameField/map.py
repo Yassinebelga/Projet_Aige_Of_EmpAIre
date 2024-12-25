@@ -174,6 +174,8 @@ class Map:
 
 
         # minimap display 
+        self.minimap.update_position(g_width, g_height)
+        
         self.minimap.display_ground(screen)
 
         for current_region in self.entity_matrix.values():

@@ -7,7 +7,7 @@ INITIAL_ZOOM = 1
 
 TILE_SIZE_2ISO = 15
 TILE_SIZE_2D = 40
-TILE_SIZE_MINI_2ISO = 2
+
 ONE_SEC = 1000 # 1000 millisec
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
@@ -15,6 +15,8 @@ MAP_CELLX = 120
 MAP_CELLY = 120
 REGION_DIVISION = 5
 
+MINIMAP_WIDTH = 240
+MINIMAP_HEIGHT = MINIMAP_WIDTH
 #colors
 FPS = 120
 BLACK_COLOR = (0, 0, 0)
@@ -134,8 +136,9 @@ def MAP_ANGLE_INDEX(angle, angle_map):
     return animation_index
  
 
-pygame.init() 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.FULLSCREEN)
+pygame.init()
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
 pygame.display.set_caption("AOE2")
 
 
@@ -235,3 +238,5 @@ def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys, camera): # returns image to
         
     
 CURSOR_IMG = pygame.image.load("Sprites/cursor.png").convert_alpha()
+MINIMAP_IMG = pygame.image.load("Sprites/minimap_cus.png").convert_alpha()
+MINIMAP_IMG = adjust_sprite(MINIMAP_IMG, MINIMAP_WIDTH*(2 + 0.25), MINIMAP_HEIGHT/2 *(2 + 0.25))
