@@ -131,8 +131,11 @@ def draw_percentage_bar(screen,camera, iso_x, iso_y, _current , _max, sq_size, c
 def resize(item, scale):
         if isinstance(item, pygame.Surface):  # Single image
             return resize_sprite(item, scale)
-        elif isinstance(item, list):  # Array of images (1D, 2D, or 3D)
-            return [resize(sub_item, scale) for sub_item in item]
+        elif isinstance(item, dict):  # Array of images (1D, 2D, or 3D)
+            res = {}
+            for key in item:
+                res[key] = resize(item.get(key),scale)
+            return res
         else:
             raise ValueError("Unsupported type in META_SPRITES")
 

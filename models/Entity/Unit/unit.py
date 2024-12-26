@@ -10,6 +10,8 @@ class Unit(Entity):
         self.training_time=training_time
         self.cost=cost
 
+
+
         self.attack = attack
         self.attack_speed = attack_speed
         self.range= _range
@@ -17,15 +19,22 @@ class Unit(Entity):
         self.will_attack = False
         self.entity_target = None
 
+
+
         self.speed=speed
         self.last_time_moved = pygame.time.get_ticks()
         self.move_per_sec = TILE_SIZE_2D # 1 tile per speed of each unit ( tile size in the 2d mechanics plane)
+        
         self.path_to_position = None
         self.current_to_position = None
+
         self.direction = 0
+
+
 
         self.state = UNIT_IDLE
         
+
         #animation attributes
         self.image = None
         self.animation_frame = 0
@@ -159,14 +168,21 @@ class Unit(Entity):
     def try_to_move(self, current_time, position):
         if self.state == UNIT_WALKING:
             if self.position == position:
-                print("STOPPED")
-                self.state = UNIT_IDLE
-                self.animation_frame = 0
+                self.change_state(UNIT_IDLE)
         
             if self.state == UNIT_WALKING:
                 self.move_to_position(current_time, position)
         
-                
+    def change_state(self, new_state):
+        self.animation_frame = 0 
+        # to avoid index out of bound in the animationframes list, 
+        # for exmample for Archer 
+        # idle has 60 frames, move has 30
+        # the unit moves on the 58th frame
+        # the state changes, now it is moving, but the frame index is 58
+        # and move has max 30, 58 > 30 ==> unsupported type (Nonetype)
+
+        self.state = new_state  
 
 
     def display(self, current_time, screen, camera, g_width, g_height):

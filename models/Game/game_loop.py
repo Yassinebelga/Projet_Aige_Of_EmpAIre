@@ -22,7 +22,7 @@ class GameLoop:
 
     def run(self):
         
-        horse = HorseMan(5, 5, PVector2(0, 0), 1) # debugging
+        horse = Archer(5, 5, PVector2(0, 0), 1) # debugging
         target_pos = PVector2(0,0)
         self.state.map.add_entity(horse)
 
@@ -55,7 +55,7 @@ class GameLoop:
 
                         target_pos.x = x
                         target_pos.y = y
-                        horse.state = UNIT_WALKING
+                        horse.change_state(UNIT_WALKING)
                         
                         print(f"screen( width:{SCREEN_WIDTH}, {SCREEN_HEIGHT}), mouse( x:{mouse_x}, y:{mouse_y})")
                     elif event.type == pygame.MOUSEBUTTONUP:
