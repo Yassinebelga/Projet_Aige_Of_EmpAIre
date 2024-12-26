@@ -174,6 +174,7 @@ ARCHERYRANGE= load_sprite("Sprites/Building/archery_range.webp")
 BARRACKS = load_sprite("Sprites/Building/barracks.webp")
 CAMP = load_sprite("Sprites/Building/camp.webp")
 KEEP = load_sprite("Sprites/Building/keep.webp")
+
 TOWNCENTER = load_sprite("Sprites/Building/town_center_1.webp")
 FARM = load_sprite("Sprites/Building/farm.webp")
 GOLD_ARRAY_1D = load_single_sprites("Sprites/Resources/gold.webp",7)
@@ -209,8 +210,8 @@ META_SPRITES_CACHE ={}
 def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys, camera): # returns image to display
 
     global META_SPRITES_CACHE
-    
-    print(f"zoom:{zoom_level}, keys:{list_keys}")
+
+    #print(f"zoom:{zoom_level}, keys:{list_keys}")
     current_dict = META_SPRITES_CACHE.get(zoom_level, None)
 
     if (current_dict == None):

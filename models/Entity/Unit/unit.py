@@ -46,8 +46,8 @@ class Unit(Entity):
     def set_target(self, entity_target):
         self.entity_target = entity_target
 
-    def set_direction_index(self, unit_angle_mapping = UNIT_ANGLE_MAPPING):
-        self.animation_direction = MAP_ANGLE_INDEX(self.direction, unit_angle_mapping) # map the animation index for the direction with repect to the sprites sheet
+    def set_direction_index(self):
+        self.animation_direction = MAP_ANGLE_INDEX(self.direction, UNIT_ANGLE_MAPPING) # map the animation index for the direction with repect to the sprites sheet
 
     def update_animation_frame(self, current_time):
         global ONE_SEC

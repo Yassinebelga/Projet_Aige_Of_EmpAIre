@@ -2,7 +2,8 @@ from GameField.cell import *
 from GLOBAL_IMPORT import *
 from ImageProcessingDisplay.minimap import *
 from AITools.isorange import *
-from AITools.raycastingrange import *
+
+#from AITools.raycastingrange import *
 
 class Map:
 
