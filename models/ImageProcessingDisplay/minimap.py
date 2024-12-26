@@ -14,11 +14,7 @@ class MiniMap:
         self.width = MINIMAP_WIDTH
         self.height = MINIMAP_HEIGHT
 
-        self.camera_width = None
-        self.camera_height = None
-
         self.tile_size_2d = TILE_SIZE_2D
-        
         
         self.top = PVector2(0, 0)
         self.right = PVector2(0, (nb_CellY )*TILE_SIZE_2D)
@@ -74,12 +70,6 @@ class MiniMap:
         mini_topleft_x, mini_topleft_y = self.convert_to_minimap_2d(topleft_x, topleft_y)
         mini_bottomright_x, mini_bottomright_y = self.convert_to_minimap_2d(bottomright_x, bottomright_y)
 
-        self.camera_width = (mini_bottomright_x - mini_topleft_x)
-        self.camera_height = (mini_bottomright_y - mini_topleft_y)
-
-        print(f"cam_w:{self.camera_width}, cam_h:{self.camera_height}")
-
-        print(f"offsetx:{int(self.camera_width/2)}, offsety:{int(self.camera_height/2)}")
         draw_rectangle_with_borders(screen, mini_topleft_x, mini_topleft_y, mini_bottomright_x, mini_bottomright_y)
 
     def update_camera(self, camera, mouse_x, mouse_y):

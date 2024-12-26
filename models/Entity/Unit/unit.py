@@ -19,10 +19,11 @@ class Unit(Entity):
 
         self.speed=speed
         self.last_time_moved = pygame.time.get_ticks()
-        self.move_per_sec = TILE_SIZE_2D
+        self.move_per_sec = TILE_SIZE_2D # 1 tile per speed of each unit ( tile size in the 2d mechanics plane)
         self.path_to_position = None
         self.current_to_position = None
         self.direction = 0
+
         self.state = UNIT_IDLE
         
         #animation attributes
@@ -71,7 +72,32 @@ class Unit(Entity):
                         distance_cell_to_unit = current_distance
                         updated_cell_X, updated_cell_Y = current_cell_X, current_cell_Y
 
-            self.cell_X, self.cell_Y = updated_cell_X, updated_cell_Y
+            uself = self.linked_map.remove_entity(self) # remove from the current cell
+            self.cell_X, self.cell_Y = updated_cell_X, updated_cell_Y # update the cell
+            self.change_cell_on_map()
+
+    def change_cell_on_map(self):
+        region = self.linked_map.entity_matrix.get((self.cell_Y//self.linked_map.region_division, self.cell_X//self.linked_map.region_division))
+
+        if (region):
+            current_set = region.get((self.cell_Y, self.cell_X))
+
+            if(current_set):
+                current_set.add(self)
+            else:
+                current_set = set()
+                current_set.add(self)
+                region[(self.cell_Y, self.cell_X)] = current_set
+        else:
+            region = {}
+            current_set = set()
+            current_set.add(self)
+            region[(self.cell_Y, self.cell_X)] = current_set
+
+            self.linked_map.entity_matrix[(self.cell_Y//self.linked_map.region_division, self.cell_X//self.linked_map.region_division)] = region    
+
+
+
 
     def move_to_position(self,current_time, position):
         if (current_time - self.last_time_moved > ONE_SEC/(self.move_per_sec*self.speed)):
@@ -129,7 +155,8 @@ class Unit(Entity):
                 
 
             self.track_cell_position()
-    def try_to_move(self,current_time,position):
+
+    def try_to_move(self, current_time, position):
         if self.state == UNIT_WALKING:
             if self.position == position:
                 print("STOPPED")

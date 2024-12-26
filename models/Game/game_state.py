@@ -1,7 +1,7 @@
 import pygame
 import random 
 from ImageProcessingDisplay import UserInterface, Camera, TerminalCamera 
-from GameField.map import Map
+from GameField.map import *
 from GLOBAL_VAR import *
 
 class GameState:

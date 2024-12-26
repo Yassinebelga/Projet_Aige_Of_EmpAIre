@@ -84,13 +84,27 @@ class Map:
 
         assert(_entity != None), 0x0011
         
-        del self.entity_matrix[(_entity.Cell_Y, _entity.Cell_X)] # not finished yet !!!
-        
-    
-        return 1 # added the entity succesfully
+        # we are going to return the entity, cause sometimes we need to put it else where in the map, like units when moving for exemple 
 
-    def update_dynamic_entity_matrix(self):
-        pass 
+        for Y_to_remove in range(_entity.cell_Y,_entity.cell_Y - _entity.sq_size, -1):
+            for X_to_remove in range(_entity.cell_X,_entity.cell_X - _entity.sq_size, -1):
+
+                REG_Y, REG_X = Y_to_remove//self.region_division, X_to_remove//self.region_division
+                region = self.entity_matrix.get((REG_Y, REG_X))
+
+                # no need to check the region cause it has at least the entity it self
+                current_set = region.get((Y_to_remove, X_to_remove))
+
+                current_set.remove(_entity) # remove the entity from this cell 
+
+                if not(current_set):
+                    region.pop((Y_to_remove, X_to_remove)) # so we remove the set from the region ( the region is empty )
+                
+                if not(region):
+                    self.entity_matrix.pop((REG_Y, REG_X))
+
+        return _entity
+
     
     def display(self, current_time, screen, camera, g_width, g_height):
         
@@ -238,7 +252,6 @@ class Map:
         
         
         self._place_player_starting_areas(num_players)
-
         
         self._generate_forests()
         self._generate_gold()

@@ -2,6 +2,7 @@ import pygame
 
 from ImageProcessingDisplay import UserInterface
 from GLOBAL_VAR import *
+from Game.game_state import *
 
 class GameLoop:
     def __init__(self):
@@ -16,10 +17,14 @@ class GameLoop:
 
         self.clock = pygame.time.Clock()
 
-        from Game import GameState
+        
         self.state = GameState(self.screen)
 
     def run(self):
+        
+        horse = HorseMan(5, 5, PVector2(0, 0), 1) # debugging
+        target_pos = PVector2(0,0)
+        self.state.map.add_entity(horse)
 
         running = True
         while running:
@@ -45,6 +50,13 @@ class GameLoop:
                 else:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         self.state.mouse_held = True
+                        
+                        x, y = self.state.camera.convert_from_isometric_2d(mouse_x, mouse_y)
+
+                        target_pos.x = x
+                        target_pos.y = y
+                        horse.state = UNIT_WALKING
+                        
                         print(f"screen( width:{SCREEN_WIDTH}, {SCREEN_HEIGHT}), mouse( x:{mouse_x}, y:{mouse_y})")
                     elif event.type == pygame.MOUSEBUTTONUP:
                         self.state.mouse_held = False
@@ -56,9 +68,9 @@ class GameLoop:
             keys = pygame.key.get_pressed()
             if not (self.state.states == START):
                 # Zoom de la caméra
-                if keys[pygame.K_KP_PLUS]:  # Touche + du pavé numérique
+                if keys[pygame.K_KP_PLUS] or keys[pygame.K_k]:  # Touche + du pavé numérique
                     self.state.camera.adjust_zoom(pygame.time.get_ticks(), 0.1, SCREEN_WIDTH, SCREEN_HEIGHT)
-                elif keys[pygame.K_KP_MINUS]:  # Touche - du pavé numérique
+                elif keys[pygame.K_KP_MINUS] or keys[pygame.K_j]:  # Touche - du pavé numérique
                     self.state.camera.adjust_zoom(pygame.time.get_ticks(), -0.1, SCREEN_WIDTH, SCREEN_HEIGHT)
 
                 # Basculer le mode d'affichage
@@ -100,7 +112,9 @@ class GameLoop:
             else:
                 if (self.state.display_mode == ISO2D): # everything in the iso2d 
                     self.screen.fill((0, 0, 0))
+
                     self.state.map.display(current_time, self.state.screen, self.state.camera, SCREEN_WIDTH, SCREEN_HEIGHT)
+
                     fps = int(self.clock.get_fps())
                     fps_text = self.font.render(f"FPS: {fps}", True, (255, 255, 255))
                     screen.blit(fps_text, (10, 10))
@@ -111,6 +125,7 @@ class GameLoop:
                 elif (self.state.display_mode == TERMINAL):
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
 
+                horse.try_to_move(current_time, target_pos)
             
             pygame.display.flip()
             self.clock.tick(FPS)
