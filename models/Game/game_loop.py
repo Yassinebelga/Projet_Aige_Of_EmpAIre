@@ -75,7 +75,7 @@ class GameLoop:
                     self.state.camera.adjust_zoom(pygame.time.get_ticks(), -0.1, SCREEN_WIDTH, SCREEN_HEIGHT)
 
                 # Basculer le mode d'affichage
-                if keys[pygame.K_t]:
+                if keys[pygame.K_F12]:
                     self.state.toggle_display_mode(self)
 
                 #génerer fichier html
