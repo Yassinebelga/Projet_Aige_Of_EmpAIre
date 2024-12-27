@@ -108,7 +108,7 @@ class Unit(Entity):
 
 
 
-    def move_to_position(self,current_time, position):
+    def move_to_position(self,current_time, position, camera):
         if (current_time - self.last_time_moved > ONE_SEC/(self.move_per_sec*self.speed)):
 
             self.last_time_moved = current_time
@@ -116,8 +116,12 @@ class Unit(Entity):
 
             if self.path_to_position != None and self.current_to_position == position:
                 
-                
-                if len(self.path_to_position) <= 1:
+                end_index = len(self.path_to_position) - 1
+                end_path_X = self.path_to_position[end_index][0]
+                end_path_Y = self.path_to_position[end_index][1]
+
+                if self.cell_X == end_path_X and self.cell_Y == end_path_Y: # if we entered the last last cell we dont go to the center of the cell, straight to the position
+                    
                     
                     self.direction = self.position.alpha_angle(position)
                     self.set_direction_index()
@@ -131,7 +135,7 @@ class Unit(Entity):
                     if self.position == position:
                         self.path_to_position = None
                 else:
-                    """
+                    
                     for i in range(len(self.path_to_position) - 1):
                         
                         (X1, Y1) = self.path_to_position[i]
@@ -143,7 +147,11 @@ class Unit(Entity):
                         
                         # Draw a line between these two points
                         pygame.draw.line(screen, (255, 0, 0), (iso_x1, iso_y1), (iso_x2, iso_y2), 2)
-                    """
+                    
+
+
+
+
                     current_path_node_position = PVector2(self.path_to_position[0][0] * TILE_SIZE_2D + TILE_SIZE_2D/2, self.path_to_position[0][1] * TILE_SIZE_2D + TILE_SIZE_2D/2)
                     self.direction = self.position.alpha_angle(current_path_node_position)
                     self.set_direction_index()
@@ -165,13 +173,13 @@ class Unit(Entity):
 
             self.track_cell_position()
 
-    def try_to_move(self, current_time, position):
+    def try_to_move(self, current_time, position, camera):
         if self.state == UNIT_WALKING:
             if self.position == position:
                 self.change_state(UNIT_IDLE)
         
             if self.state == UNIT_WALKING:
-                self.move_to_position(current_time, position)
+                self.move_to_position(current_time, position, camera)
         
     def change_state(self, new_state):
         self.animation_frame = 0 

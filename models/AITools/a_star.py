@@ -26,12 +26,13 @@ class Node:
     def __str__(self):
         return f"({self.X},{self.Y}): G={self.G_cost} H={self.H_cost} F={self.F_cost}"
 
-def A_STAR(start_X, start_Y, end_X, end_Y, _map):
+def A_STAR(start_X, start_Y, end_X, end_Y, _map, _entity_optional_target = None):
     if not (0 <= start_X < _map.nb_CellX and 0 <= start_Y < _map.nb_CellY and 
             0 <= end_X < _map.nb_CellX and 0 <= end_Y < _map.nb_CellY):
         return None # Invalid start or end
 
     start_node = Node(start_X, start_Y)
+    
     target_node = Node(end_X, end_Y)
 
     start_node.H_cost = start_node.dist_to(target_node)
@@ -43,12 +44,37 @@ def A_STAR(start_X, start_Y, end_X, end_Y, _map):
     discoverd = {}
     searched = set()
 
+    
+    collided_with_entity = False # these 3 variables are used in case we have an entity as target
+
+    current_region = _map.entity_matrix.get((target_node.Y//_map.region_division, target_node.X//_map.region_division), None)
+
+    if (current_region != None):
+        current_entities = current_region.get((target_node.Y, target_node.X), None)
+        if(current_entities):
+            for current_entity in current_entities:
+                _entity_optional_target = current_entity
+
     while searching:
         _, best_node = heapq.heappop(searching)
         
+        # these conditions are have only sense when the target is an entity 
+        # not a normal position path finding, but it doesnt affect 
+        # the algo in the case of normal pathfinding
+
+        current_region = _map.entity_matrix.get((best_node.Y//_map.region_division, best_node.X//_map.region_division), None)
+
+        if (current_region != None):
+            current_entities = current_region.get((best_node.Y, best_node.X), None)
+            if(current_entities):
+                for current_entity in current_entities:
+                    if (current_entity == _entity_optional_target):
+                        collided_with_entity = True
+                        break
+
 
         ##found path !!###
-        if best_node == target_node:
+        if best_node == target_node or collided_with_entity:
             # Reconstruct path
             path = []
             while best_node:
@@ -78,13 +104,18 @@ def A_STAR(start_X, start_Y, end_X, end_Y, _map):
                     if(entities): # entities exists so the cell is occupied
             
                         for entity in entities:
-                            #if not(isinstance(entity, Unit)): # we can skip units, so if it is not a unit check
+                            if (entity == _entity_optional_target):
+                                cell_walkable = True 
+                                break
+
                             if isinstance(entity, Building): # some building can be walkable
                                 if not(entity.walkable):    # if it is not , False and break
                                     cell_walkable = False
                                     break
+
                             elif isinstance(entity, Resources):
                                 cell_walkable = False
+                                break
 
                 if not(cell_walkable):
                     continue

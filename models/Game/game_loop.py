@@ -125,7 +125,7 @@ class GameLoop:
                 elif (self.state.display_mode == TERMINAL):
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
 
-                horse.try_to_move(current_time, target_pos)
+                horse.try_to_move(current_time, target_pos, self.state.camera)
             
             pygame.display.flip()
             self.clock.tick(FPS)
