@@ -74,10 +74,10 @@ class Map:
         _entity.box_size = bottomright_cell.x - _entity.position.x  # distance from the center to the corners of the collision box
 
         if isinstance(_entity, Unit):
-            _entity.box_size += TILE_SIZE_2D/(2 * 3)
+            _entity.box_size += TILE_SIZE_2D/(2 * 2)
             _entity.linked_map = self
         else:
-            _entity.box_size += TILE_SIZE_2D/(2 * 2)
+            _entity.box_size += TILE_SIZE_2D/(2 * 1.5)
         
         return 1 # added the entity succesfully
     

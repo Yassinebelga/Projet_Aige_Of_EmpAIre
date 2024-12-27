@@ -213,13 +213,14 @@ class Unit(Entity):
         
         iso_x, iso_y = camera.convert_to_isometric_2d(self.position.x, self.position.y)
         
+        px, py = camera.convert_to_isometric_2d(self.cell_X*TILE_SIZE_2D + TILE_SIZE_2D/2, self.cell_Y*TILE_SIZE_2D + TILE_SIZE_2D/2)
         if (camera.check_in_point_of_view(iso_x, iso_y, g_width, g_height)):
             
             camera.draw_box(screen, self)
             self.update_animation_frame(current_time)
             display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.state, self.animation_direction, self.animation_frame], camera = camera), iso_x, iso_y, screen, 0x04, 1)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)
-
+            draw_point(screen, (0, 0, 0), px, py, radius=5)
     def check_collision_with(self, _entity):
 
         topleft = PVector2(self.position.x - self.box_size, self.position.y - self.box_size)
@@ -248,7 +249,7 @@ class Unit(Entity):
 
                         if (current_set):
                             for entity in current_set:
-                                if isinstance(entity, Building) and entity.walkable:
+                                if isinstance(entity, Building) and not(entity.walkable):
                                     if (self.check_collision_with(entity)):
                                         collided = True # all we need is to get one collision with a non walkable entity
                                         break 

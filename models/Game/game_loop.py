@@ -53,14 +53,20 @@ class GameLoop:
                         self.state.states = PLAY
                 else:
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        self.state.mouse_held = True
-                        
-                        x, y = self.state.camera.convert_from_isometric_2d(mouse_x, mouse_y)
+                        if event.button == LEFT_CLICK:
+                            self.state.mouse_held = True
+                            
+                            x, y = self.state.camera.convert_from_isometric_2d(mouse_x, mouse_y)
 
-                        target_pos.x = x
-                        target_pos.y = y
-                        horse.change_state(UNIT_WALKING)
-                        
+                            target_pos.x = x
+                            target_pos.y = y
+                            horse.change_state(UNIT_WALKING)
+                        elif event.button == RIGHT_CLICK:
+                            bx, by = self.state.camera.convert_from_isometric_2d(mouse_x, mouse_y)
+
+                            self.state.map.add_entity(ArcheryRange(int(by//TILE_SIZE_2D), int(bx//TILE_SIZE_2D), PVector2(0, 0), 1))
+
+
                         print(f"screen( width:{SCREEN_WIDTH}, {SCREEN_HEIGHT}), mouse( x:{mouse_x}, y:{mouse_y})")
                     elif event.type == pygame.MOUSEBUTTONUP:
                         self.state.mouse_held = False
@@ -136,7 +142,7 @@ class GameLoop:
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
 
                 horse.try_to_move(current_time, target_pos, self.state.camera)
-            
+                
             pygame.display.flip()
             self.clock.tick(FPS)
             

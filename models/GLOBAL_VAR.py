@@ -33,6 +33,8 @@ TEAM_COLORS = {
     3:GREEN_COLOR
 }
 
+LEFT_CLICK = 1 
+RIGHT_CLICK = 3 
 #state
 
 START = 0
