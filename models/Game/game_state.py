@@ -21,13 +21,8 @@ class GameState:
         self.switch_cooldown = ONE_SEC*(0.2)  # Délai de 200ms (0,2 secondes)
         self.full_screen = True
         self.mouse_held = False
-<<<<<<< HEAD
-        # Pause
-        self.pause_cooldown = 500
-=======
 
-        
->>>>>>> 112b03fd9f656584c1b7917d7c01c2a8a50b208b
+
     def start_game(self):
         """Méthode pour démarrer la génération de la carte après que l'utilisateur ait validé ses choix."""
         self.map.generate_map()

@@ -100,10 +100,15 @@ class GameLoop:
                 # Basculer le mode d'affichage
                 if keys[pygame.K_t]:
                     self.state.toggle_display_mode(self)
+
+                #génerer fichier html
+                if keys[pygame.K_TAB]:
+                    generate_html_file()
+
                 # Pause
                 if keys[pygame.K_p]:
                     self.state.toggle_pause()
-                    generate_html_file()
+                    
                 # Mouvement de la caméra
                 if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
                     scale = 2
