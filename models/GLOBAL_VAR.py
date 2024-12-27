@@ -24,13 +24,17 @@ WHITE_COLOR = (255, 255, 255)
 RED_COLOR = (255, 0, 0)
 GREEN_COLOR = (0,255, 0)
 BLUE_COLOR = (0, 0, 255)
+
 GOLD_COLOR = (255, 215, 0) 
 BROWN_TREE_COLOR = (139, 69, 19)
 MINIMAP_COLOR = (53, 94, 59)
+
 TEAM_COLORS = {
+    0: WHITE_COLOR, # white is for no one ( for all teams )
     1: BLUE_COLOR,
     2: RED_COLOR,
     3:GREEN_COLOR
+    # ....
 }
 
 LEFT_CLICK = 1 

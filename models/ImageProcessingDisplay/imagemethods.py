@@ -114,7 +114,7 @@ def draw_rectangle_with_borders(screen, topleftx, toplefty, bottomrightx, bottom
     # Draw the rectangle's border
     pygame.draw.rect(screen, color, rect, border_thickness)
 
-def draw_percentage_bar(screen,camera, iso_x, iso_y, _current , _max, sq_size, color = (255, 0, 0)):
+def draw_percentage_bar(screen,camera, iso_x, iso_y, _current , _max, sq_size, team = 0):
 
     factor = camera.zoom*max(1,sq_size/1.5)
     topleftx = iso_x - factor*BARBOX_WIDTH//2

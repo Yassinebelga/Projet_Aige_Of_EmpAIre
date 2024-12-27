@@ -221,6 +221,7 @@ class Unit(Entity):
             display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.state, self.animation_direction, self.animation_frame], camera = camera), iso_x, iso_y, screen, 0x04, 1)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)
             draw_point(screen, (0, 0, 0), px, py, radius=5)
+            
     def check_collision_with(self, _entity):
 
         topleft = PVector2(self.position.x - self.box_size, self.position.y - self.box_size)
