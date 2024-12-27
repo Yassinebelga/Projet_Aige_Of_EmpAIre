@@ -74,6 +74,30 @@ class GameState:
         if (self.states != PAUSE):
             pass
 
+    def generate_html_file(self):
+        with open("Game/test_html_2.html", "r") as template_file:
+            html_content = template_file.read()
+    
+        buildings_positions = [(1, 2), (3, 4)]
+        building_list_html = ""
+        for i, position in enumerate(buildings_positions, start=1):  # Utiliser enumerate pour avoir un index
+            building_list_html += f"""<li class="building">Building {i} : {position}</li>"""
+
+        unit_list_html = ""
+        for i in range(1,3):
+            unit_list_html += f'<li class="unit">Villager {i} : {i}, {i+1}</li>'
+        # unit_list_html = ""
+        # for unit in units:
+        #     unit_list_html+=f'<li class="unit" > {unit.get_x()}, {unit.get_y()}'
+    
+        # Replace the placeholder in the template with the actual building list
+        html_content = html_content.replace("{{BUILDINGS}}", building_list_html)
+        html_content = html_content.replace("{{UNITS}}", unit_list_html)
+
+        # Write the modified HTML content to a new file
+        with open("game_map.html", "w") as output_file:
+            output_file.write(html_content)
+
 
     # def draw_pause_text(self, screen):
     #     """Affiche le texte 'Jeu en pause' au centre de l'écran."""
