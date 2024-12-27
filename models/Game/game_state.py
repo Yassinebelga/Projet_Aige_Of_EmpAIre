@@ -75,7 +75,7 @@ class GameState:
             pass
 
     def generate_html_file(self):
-        with open("Game/test_html_2.html", "r") as template_file:
+        with open("Game/generate.html", "r") as template_file:
             html_content = template_file.read()
     
         buildings_positions = [(1, 2), (3, 4)]
@@ -95,7 +95,7 @@ class GameState:
         html_content = html_content.replace("{{UNITS}}", unit_list_html)
 
         # Write the modified HTML content to a new file
-        with open("game_map.html", "w") as output_file:
+        with open("overview.html", "w") as output_file:
             output_file.write(html_content)
 
 
