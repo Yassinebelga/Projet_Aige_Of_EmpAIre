@@ -41,6 +41,9 @@ class GameLoop:
                 if event.type == pygame.QUIT:
                     running = False
                 if self.state.states == START:
+                    if pygame.key.get_pressed()[pygame.K_F12]:
+                        #load a savegame
+                        pass
                     if event.type == pygame.MOUSEBUTTONDOWN and self.state.menu.handle_click(event.pos):
                         # Mise à jour des paramètres du jeu en quittant le menu
                         self.state.set_map_type(self.state.menu.map_options[self.state.menu.selected_map_index])
