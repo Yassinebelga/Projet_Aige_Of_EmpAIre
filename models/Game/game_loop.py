@@ -4,6 +4,7 @@ from ImageProcessingDisplay import UserInterface
 from GLOBAL_VAR import *
 from Game.game_state import *
 
+
 class GameLoop:
     def __init__(self):
         pygame.init()
@@ -76,9 +77,15 @@ class GameLoop:
                 # Basculer le mode d'affichage
                 if keys[pygame.K_t]:
                     self.state.toggle_display_mode(self)
+
+                #génerer fichier html
+                if keys[pygame.K_TAB]:
+                    self.state.generate_html_file()
+
                 # Pause
                 if keys[pygame.K_p]:
                     self.state.toggle_pause()
+                    
                 # Mouvement de la caméra
                 if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
                     scale = 2
