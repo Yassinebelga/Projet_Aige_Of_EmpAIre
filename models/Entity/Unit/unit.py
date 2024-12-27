@@ -55,6 +55,7 @@ class Unit(Entity):
             self.last_animation_time = current_time
 
             self.animation_frame = (self.animation_frame + 1)%len(self.image.get(self.state,None).get(0, None)) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
+    
     def changed_cell_position(self):
         topleft = PVector2(self.cell_X*TILE_SIZE_2D, self.cell_Y*TILE_SIZE_2D)
         bottomright = PVector2((self.cell_X + 1)*TILE_SIZE_2D, (self.cell_Y + 1)*TILE_SIZE_2D)
@@ -112,15 +113,20 @@ class Unit(Entity):
         if (current_time - self.last_time_moved > ONE_SEC/(self.move_per_sec*self.speed)):
 
             self.last_time_moved = current_time
-            #print(self.path_to_position)
+            print(self.path_to_position)
 
             if self.path_to_position != None and self.current_to_position == position:
                 
-                end_index = len(self.path_to_position) - 1
-                end_path_X = self.path_to_position[end_index][0]
-                end_path_Y = self.path_to_position[end_index][1]
+                end_index = None
+                end_path_X = None
+                end_path_Y = None
 
-                if self.cell_X == end_path_X and self.cell_Y == end_path_Y: # if we entered the last last cell we dont go to the center of the cell, straight to the position
+                if self.path_to_position: # if not empty 
+                    end_index = len(self.path_to_position) - 1
+                    end_path_X = self.path_to_position[end_index][0]
+                    end_path_Y = self.path_to_position[end_index][1]
+
+                if self.path_to_position == [] or (self.cell_X == end_path_X and self.cell_Y == end_path_Y): # if we entered the last last cell we dont go to the center of the cell, straight to the position
                     
                     
                     self.direction = self.position.alpha_angle(position)
@@ -136,6 +142,7 @@ class Unit(Entity):
                         self.path_to_position = None
                 else:
                     
+                    # for debugging purposes
                     for i in range(len(self.path_to_position) - 1):
                         
                         (X1, Y1) = self.path_to_position[i]
