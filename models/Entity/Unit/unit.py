@@ -117,6 +117,9 @@ class Unit(Entity):
 
             if self.path_to_position != None and self.current_to_position == position:
                 
+                if (self.check_collision_around()):
+                    self.check_and_set_path(position)
+
                 end_index = None
                 end_path_X = None
                 end_path_Y = None
@@ -172,13 +175,18 @@ class Unit(Entity):
                     if self.position == current_path_node_position:
                         self.path_to_position = self.path_to_position[1:]
             else:
-                self.path_to_position = A_STAR(self.cell_X, self.cell_Y, math.floor(position.x/TILE_SIZE_2D), math.floor(position.y/TILE_SIZE_2D), self.linked_map)
-                self.current_to_position = PVector2(position.x, position.y)
-                if self.path_to_position != None:
-                    self.path_to_position = self.path_to_position[1:] # we skip the tile we are on, no need to pass by the center of the unit cell
-                
+                self.check_and_set_path(position)
 
             self.track_cell_position()
+
+    def check_and_set_path(self, position):
+        self.path_to_position = A_STAR(self.cell_X, self.cell_Y, math.floor(position.x/TILE_SIZE_2D), math.floor(position.y/TILE_SIZE_2D), self.linked_map)
+                
+        if self.path_to_position != None:
+            self.current_to_position = PVector2(position.x, position.y)
+            self.path_to_position = self.path_to_position[1:] # we skip the tile we are on, no need to pass by the center of the unit cell
+        else : 
+            self.change_state(UNIT_IDLE)
 
     def try_to_move(self, current_time, position, camera):
         if self.state == UNIT_WALKING:
@@ -187,6 +195,7 @@ class Unit(Entity):
         
             if self.state == UNIT_WALKING:
                 self.move_to_position(current_time, position, camera)
+
         
     def change_state(self, new_state):
         self.animation_frame = 0 
@@ -211,9 +220,10 @@ class Unit(Entity):
             display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.state, self.animation_direction, self.animation_frame], camera = camera), iso_x, iso_y, screen, 0x04, 1)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)
 
-    def check_collision_with(self, new_x, new_y, _entity):
-        topleft = PVector2(new_x - self.box_size, new_y - self.box_size)
-        bottomright = PVector2(new_x + self.box_size, new_y + self.box_size)
+    def check_collision_with(self, _entity):
+
+        topleft = PVector2(self.position.x - self.box_size, self.position.y - self.box_size)
+        bottomright = PVector2(self.position.x + self.box_size, self.position.y + self.box_size)
 
         ent_topleft = PVector2(_entity.position.x - _entity.box_size, _entity.position.y - _entity.box_size)
         ent_bottomright = PVector2(_entity.position.x + _entity.box_size, _entity.position.y + _entity.box_size )
@@ -221,8 +231,38 @@ class Unit(Entity):
         return (topleft>ent_topleft and topleft<ent_bottomright) or \
                 (bottomright>ent_topleft and bottomright<ent_bottomright)
 
-    def check_collision_around(self):
-        pass
+    def check_collision_around(self): # this function is only made to se if we need to recalculate the path for the unit
+        collided = False
+
+        for offsetY in [-1, 0, 1]:
+            for offsetX in [-1, 0, 1]:
+
+                currentY = self.cell_Y + offsetY
+                currentX = self.cell_X + offsetX
+
+                if not(self.cell_X != currentX and self.cell_Y != currentY):
+                    current_region = self.linked_map.entity_matrix.get((currentY//self.linked_map.region_division, currentX//self.linked_map.region_division))
+
+                    if (current_region):
+                        current_set = current_region.get((currentY, currentX))
+
+                        if (current_set):
+                            for entity in current_set:
+                                if isinstance(entity, Building) and entity.walkable:
+                                    if (self.check_collision_with(entity)):
+                                        collided = True # all we need is to get one collision with a non walkable entity
+                                        break 
+                                elif isinstance(entity, Resources):
+                                    if (self.check_collision_with(entity)):
+                                        collided = True 
+                                        break
+                if (collided):
+                    break
+            if (collided):
+                break
+        
+        return collided 
+
 
 
  
