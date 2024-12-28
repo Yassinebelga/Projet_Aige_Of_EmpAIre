@@ -47,13 +47,17 @@ class GameLoop:
                     if pygame.key.get_pressed()[pygame.K_F12]:
                         #load a savegame
                         pass
-                    if event.type == pygame.MOUSEBUTTONDOWN and self.state.menu.handle_click(event.pos):
+                    if event.type == pygame.MOUSEBUTTONDOWN and self.state.startmenu.handle_click(event.pos):
                         # Mise à jour des paramètres du jeu en quittant le menu
-                        self.state.set_map_type(self.state.menu.map_options[self.state.menu.selected_map_index])
-                        self.state.set_difficulty_mode(self.state.menu.selected_mode_index)
-                        self.state.set_display_mode(self.state.menu.display_mode)
+                        self.state.set_map_type(self.state.startmenu.map_options[self.state.startmenu.selected_map_index])
+                        self.state.set_difficulty_mode(self.state.startmenu.selected_mode_index)
+                        self.state.set_display_mode(self.state.startmenu.display_mode)
                         self.state.start_game()
                         self.state.states = PLAY
+                if self.state.states == PAUSE:
+                     if event.type == pygame.MOUSEBUTTONDOWN:
+                        self.state.pausemenu.handle_click(event.pos, self.state) 
+
                 else:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == LEFT_CLICK:
@@ -116,14 +120,32 @@ class GameLoop:
                     self.state.terminal_camera.move_flags = move_flags
                     self.state.terminal_camera.move(current_time)
                     self.state.camera.move(current_time, 5*scale)
+
+
+
+                # Overlay ressource etc
+                if keys[pygame.K_F1]:
+                    self.state.toggle_resources()
+
+                if keys[pygame.K_F2]:
+                    self.state.toggle_units()
+
+                if keys[pygame.K_F3]:
+                    self.state.toggle_builds()
+
+                if keys[pygame.K_F4]:
+                    self.state.toggle_all()
+
+                
             # Mettre à jour l'état du jeu
             if not (self.state.states == PAUSE):
                 self.state.update()
+                
 
             # Effacer l'écran avant de dessiner
             
             if self.state.states == START:
-                self.state.menu.draw()
+                self.state.startmenu.draw()
                 screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
             else:
                 if (self.state.display_mode == ISO2D): # everything in the iso2d 
@@ -134,7 +156,7 @@ class GameLoop:
                     fps = int(self.clock.get_fps())
                     fps_text = self.font.render(f"FPS: {fps}", True, (255, 255, 255))
                     screen.blit(fps_text, (10, 10))
-
+                    self.state.ui.draw_resources(self.state.map.entity_matrix)
                     screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
                     # Rafraîchissement de l'affichage
                    
@@ -143,6 +165,11 @@ class GameLoop:
 
                 horse.try_to_attack(current_time, entity, self.state.camera)
                 villager.try_to_move(current_time, target_pos, self.state.camera)
+                
+                if self.state.states == PAUSE:
+                    self.state.pausemenu.draw()
+                    screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
+                
             pygame.display.flip()
             self.clock.tick(FPS)
             

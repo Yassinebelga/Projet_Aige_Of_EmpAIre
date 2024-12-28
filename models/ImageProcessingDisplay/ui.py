@@ -4,91 +4,88 @@ from GLOBAL_VAR import *
 class UserInterface:
     def __init__(self, screen):
         self.screen = screen
-        self.map_options = ["Carte Normal", "Carte Centrée"]
-        self.selected_map_index = MAP_NORMAL
-        
-        self.game_mode_options = ["Lean", "Mean", "Marines"]
-        self.selected_mode_index = LEAN
-        
-        self.display_mode = TERMINAL  # Default display mode
-        self.buttons = {
-            "left_map": pygame.Rect(0, 0, 50, 50),  # Left button for map
-            "right_map": pygame.Rect(0, 0, 50, 50),  # Right button for map
-            "left_mode": pygame.Rect(0, 0, 50, 50),  # Left button for game mode
-            "right_mode": pygame.Rect(0, 0, 50, 50),  # Right button for game mode
-            "Terminal": pygame.Rect(0, 0, 115, 50),  # Terminal view button
-            "2.5D": pygame.Rect(0, 0, 115, 50),  # 2.5D view button
-            "Lancer la Partie": pygame.Rect(0, 0, 300, 50)  # Start game button
+        self.font = pygame.font.SysFont(None, 36)
+        self.display_resources = False
+        self.display_units = False
+        self.display_builds = False
+
+    def draw_resources(self, entity_matrix):
+        player_1_data = {
+            'Food': 500,  # Ressources alimentaires
+            'Wood': 300,  # Ressources bois
+            'Gold': 150,  # Ressources or
+            'Units': {
+                'Villagers': 10,  # Nombre de villageois
+                'Soldiers': 5     # Nombre de soldats
+            },
+            'Builds': 3  # Nombre de bâtiments construits
         }
 
-    def draw(self):
-        """Draw buttons and selected options on the screen."""
-        self.screen.fill((255, 255, 255))  # Fill the screen with white
-        screen_width, screen_height = self.screen.get_size()
+        player_2_data = {
+            'Food': 450,  # Ressources alimentaires
+            'Wood': 350,  # Ressources bois
+            'Gold': 200,  # Ressources or
+            'Units': {
+                'Villagers': 8,   # Nombre de villageois
+                'Soldiers': 7     # Nombre de soldats
+            },
+            'Builds': 4  # Nombre de bâtiments construits
+        }
+        # Position des joueurs
+        player_1_pos = (10, 10)
+        player_2_pos = (self.screen.get_width()//2, 10)
 
-        # Calculate positions based on screen size
-        center_x = screen_width // 2
-        center_y = screen_height // 2
+        # Y offsets distincts pour chaque joueur
+        y_offset_player_1 = 0
+        y_offset_player_2 = 0
+        
+        # Affichage des données des joueurs
+        if self.display_resources:
+            resources = f"Player 1 - Food: {player_1_data['Food']} | Wood: {player_1_data['Wood']} | Gold: {player_1_data['Gold']}"
+            text = self.font.render(resources, True, WHITE_COLOR)
+            self.screen.blit(text, (player_1_pos[0], player_1_pos[1] + y_offset_player_1))
+            y_offset_player_1 += 20
 
-        self.buttons["left_map"].topleft = (center_x - 215, center_y - 100)
-        self.buttons["right_map"].topleft = (center_x + 165, center_y - 100)
-        self.buttons["left_mode"].topleft = (center_x - 215, center_y - 40)
-        self.buttons["right_mode"].topleft = (center_x + 165, center_y - 40)
-        self.buttons["Terminal"].topleft = (center_x - 120, center_y + 20)
-        self.buttons["2.5D"].topleft = (center_x + 5, center_y + 20)
-        self.buttons["Lancer la Partie"].topleft = (center_x - 150, center_y + 80)
+        if self.display_units:
+            units = f"Units - Villagers: {player_1_data['Units']['Villagers']} | Soldiers: {player_1_data['Units']['Soldiers']}"
+            text = self.font.render(units, True, WHITE_COLOR)
+            self.screen.blit(text, (player_1_pos[0], player_1_pos[1] + y_offset_player_1))
+            y_offset_player_1 += 20
 
-        # Draw map selection
-        self._draw_button("left_map", "<")  # Left button for map
-        map_label = f"Map: {self.map_options[self.selected_map_index]}"
-        self._draw_text(map_label, (center_x, center_y - 85), centered=True)
-        self._draw_button("right_map", ">")  # Right button for map
+        if self.display_builds:
+            builds = f"Builds: {player_1_data['Builds']}"
+            text = self.font.render(builds, True, WHITE_COLOR)
+            self.screen.blit(text, (player_1_pos[0], player_1_pos[1] + y_offset_player_1))
+            y_offset_player_1 += 20
 
-        # Draw game mode selection
-        self._draw_button("left_mode", "<")  # Left button for game mode
-        mode_label = f"Mode de jeu: {self.game_mode_options[self.selected_mode_index]}"
-        self._draw_text(mode_label, (center_x, center_y - 25), centered=True)
-        self._draw_button("right_mode", ">")  # Right button for game mode
+        # Affichage des données pour Player 2
+        if self.display_resources:
+            resources = f"Player 2 - Food: {player_2_data['Food']} | Wood: {player_2_data['Wood']} | Gold: {player_2_data['Gold']}"
+            text = self.font.render(resources, True, WHITE_COLOR)
+            self.screen.blit(text, (player_2_pos[0], player_2_pos[1] + y_offset_player_2))
+            y_offset_player_2 += 20
 
-        # Draw display mode buttons
-        self._draw_button("Terminal", "Terminal", self.display_mode == TERMINAL)
-        self._draw_button("2.5D", "2.5D", self.display_mode == ISO2D)
+        if self.display_units:
+            units = f"Units - Villagers: {player_2_data['Units']['Villagers']} | Soldiers: {player_2_data['Units']['Soldiers']}"
+            text = self.font.render(units, True, WHITE_COLOR)
+            self.screen.blit(text, (player_2_pos[0], player_2_pos[1] + y_offset_player_2))
+            y_offset_player_2 += 20
 
-        # Draw launch game button
-        self._draw_button("Lancer la Partie", "Lancer la Partie")
+        if self.display_builds:
+            builds = f"Builds: {player_2_data['Builds']}"
+            text = self.font.render(builds, True, WHITE_COLOR)
+            self.screen.blit(text, (player_2_pos[0], player_2_pos[1] + y_offset_player_2))
+            y_offset_player_2 += 20
 
-    def _draw_button(self, key, text, selected=False):
-        """Draw a button with text."""
-        rect = self.buttons[key]
-        color = (0, 128, 0) if selected else (128, 128, 128)  # Green if selected, grey otherwise
-        pygame.draw.rect(self.screen, color, rect)
-        font = pygame.font.SysFont(None, 36)
-        button_text = font.render(text, True, (255, 255, 255))
-        text_rect = button_text.get_rect(center=rect.center)
-        self.screen.blit(button_text, text_rect)
+    def toggle_resources(self):
+        self.display_resources = not self.display_resources
 
-    def _draw_text(self, text, pos, centered=False):
-        """Draw text at a specific position."""
-        font = pygame.font.SysFont(None, 36)
-        rendered_text = font.render(text, True, (0, 0, 0))
-        text_rect = rendered_text.get_rect(center=pos if centered else None)
-        self.screen.blit(rendered_text, text_rect if centered else pos)
-
-    def handle_click(self, pos):
-        """Handle clicks on buttons."""
-        if self.buttons["left_map"].collidepoint(pos):
-            self.selected_map_index = (self.selected_map_index - 1) % len(self.map_options)
-        elif self.buttons["right_map"].collidepoint(pos):
-            self.selected_map_index = (self.selected_map_index + 1) % len(self.map_options)
-        elif self.buttons["left_mode"].collidepoint(pos):
-            self.selected_mode_index = (self.selected_mode_index - 1) % len(self.game_mode_options)
-        elif self.buttons["right_mode"].collidepoint(pos):
-            self.selected_mode_index = (self.selected_mode_index + 1) % len(self.game_mode_options)
-        elif self.buttons["Terminal"].collidepoint(pos):
-            self.display_mode = TERMINAL
-        elif self.buttons["2.5D"].collidepoint(pos):
-            self.display_mode = ISO2D
-        elif self.buttons["Lancer la Partie"].collidepoint(pos):
-            return True  # Indicate that the game can start
-
-        return False  # Indicate that the game cannot start
+    def toggle_units(self):
+        self.display_units = not self.display_units
+    def toggle_builds(self):
+        self.display_builds = not self.display_builds
+    
+    def toggle_all(self):
+        self.display_resources = not self.display_resources
+        self.display_units = not self.display_units
+        self.display_builds = not self.display_builds
