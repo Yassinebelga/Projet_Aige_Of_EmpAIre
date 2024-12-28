@@ -53,6 +53,10 @@ class GameLoop:
                         self.state.set_display_mode(self.state.startmenu.display_mode)
                         self.state.start_game()
                         self.state.states = PLAY
+                if self.state.states == PAUSE:
+                     if event.type == pygame.MOUSEBUTTONDOWN:
+                        self.state.pausemenu.handle_click(event.pos, self.state) 
+
                 else:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == LEFT_CLICK:
@@ -159,6 +163,9 @@ class GameLoop:
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
 
                 horse.try_to_attack(current_time, entity, self.state.camera)
+                if self.state.states == PAUSE:
+                    self.state.pausemenu.draw()
+                    screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
                 
             pygame.display.flip()
             self.clock.tick(FPS)
