@@ -19,8 +19,8 @@ class Unit(Entity):
         self.will_attack = False
         self.attack_frame = 0
         self.entity_target = None
-        self.will_stop = False
-
+        self.check_range_with_target = False
+        self.first_time_pass = True
 
         self.speed=speed
         self.last_time_moved = pygame.time.get_ticks()
@@ -139,7 +139,6 @@ class Unit(Entity):
                     
                     
                     self.direction = self.position.alpha_angle(position)
-                    self.set_direction_index()
 
                     amount_x = math.cos(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
                     amount_y = math.sin(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
@@ -170,7 +169,6 @@ class Unit(Entity):
 
                     current_path_node_position = PVector2(self.path_to_position[0][0] * TILE_SIZE_2D + TILE_SIZE_2D/2, self.path_to_position[0][1] * TILE_SIZE_2D + TILE_SIZE_2D/2)
                     self.direction = self.position.alpha_angle(current_path_node_position)
-                    self.set_direction_index()
 
                     amount_x = math.cos(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
                     amount_y = math.sin(self.direction)*(TILE_SIZE_2D/self.move_per_sec)
@@ -224,6 +222,7 @@ class Unit(Entity):
             
             camera.draw_box(screen, self)
             self.update_animation_frame(current_time)
+            self.set_direction_index()
             display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.state, self.animation_direction, self.animation_frame], camera = camera), iso_x, iso_y, screen, 0x04, 1)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size, self.team)
             draw_point(screen, (0, 0, 0), px, py, radius=5)
@@ -281,7 +280,11 @@ class Unit(Entity):
     
     def try_to_damage(self, current_time, entity, camera):
         
-        if current_time - self.last_time_attacked > self.attack_speed * ONE_SEC:
+        if self.first_time_pass or (current_time - self.last_time_attacked > self.attack_speed * ONE_SEC):
+            if (self.first_time_pass):
+                self.first_time_pass = False
+            if not(self.state == UNIT_ATTACKING):
+                self.change_state(UNIT_ATTACKING)
             self.last_time_attacked = current_time
 
             self.will_attack = True
@@ -293,10 +296,10 @@ class Unit(Entity):
 
                 if entity.is_dead():
                     self.linked_map.remove_entity(entity)
-                    self.will_stop = True
+                    
 
-            elif self.animation_frame == (self.len_current_animation_frames() - 1) and self.will_stop:
-                self.will_stop = False
+            elif self.animation_frame == (self.len_current_animation_frames() - 1):
+                self.check_range_with_target = False # we need to recheck if it is still in range
                 self.change_state(UNIT_IDLE) # if the entity is killed we stop 
 
 
@@ -305,20 +308,34 @@ class Unit(Entity):
 
     def try_to_attack(self,current_time, entity, camera):
         if (entity != None): 
-            if (entity.is_dead() == False):
-                if (self.range == 1): # for melee attack 
 
-                    if (self.check_collision_with(entity)):
-                        if not(self.state == UNIT_ATTACKING):
-                            self.change_state(UNIT_ATTACKING)
-                    
-                        print(f"animation_frame:{self.animation_frame}")
-                        self.try_to_damage(current_time, entity, camera)
-                    else:
-                        if not(self.state == UNIT_WALKING):
-                            self.change_state(UNIT_WALKING)
-                        
-                        self.try_to_move(current_time, entity.position, camera)
+            if (entity.is_dead() == False):
+                
+                
+                if (self.range == 1): # for melee attack 
+                    if not(self.check_range_with_target):
+                        if (self.check_collision_with(entity)):
+                            self.check_range_with_target = True
+                            
+                            print(f"animation_frame:{self.animation_frame}")
+                            
+                        else:
+                            if not(self.state == UNIT_WALKING):
+                                self.change_state(UNIT_WALKING)
+                            self.first_time_pass = True
+                            self.try_to_move(current_time, entity.position, camera)
+                    else: # collided 
+                        self.direction = self.position.alpha_angle(entity.position)
+                        dist_to_entity = self.position.abs_distance(entity.position)
+
+                        if (dist_to_entity <= (self.range * entity.sq_size * TILE_SIZE_2D)):
+                            self.try_to_damage(current_time, entity, camera)
+                        else:
+                            self.check_range_with_target = False
+                            if not(self.state == UNIT_IDLE):
+                                self.change_state(UNIT_IDLE)
+            
+            
             else:
                 if not(self.state == UNIT_IDLE):
                     self.change_state(UNIT_IDLE)

@@ -5,5 +5,5 @@ class HorseMan(Unit):
         global HORSEMAN_ARRAY_3D
         super().__init__(cell_X, cell_Y, position, team, representation, hp, cost, training_time, speed, attack, attack_speed)
         self.image = HORSEMAN_ARRAY_3D
-        self.animation_speed = [30,70,45/attack_speed,30]
+        self.animation_speed = [30,70,45,30]
         self.attack_frame = 33

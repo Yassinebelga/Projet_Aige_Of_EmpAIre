@@ -146,7 +146,9 @@ class GameLoop:
             
             if self.state.states == START:
                 self.state.startmenu.draw()
-                screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
+                
+            elif self.state.states == PAUSE:
+                self.state.pausemenu.draw()
             else:
                 if (self.state.display_mode == ISO2D): # everything in the iso2d 
                     self.screen.fill((0, 0, 0))
@@ -165,10 +167,9 @@ class GameLoop:
 
                 horse.try_to_attack(current_time, entity, self.state.camera)
                 villager.try_to_move(current_time, target_pos, self.state.camera)
+
                 
-                if self.state.states == PAUSE:
-                    self.state.pausemenu.draw()
-                    screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
+            screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
                 
             pygame.display.flip()
             self.clock.tick(FPS)
