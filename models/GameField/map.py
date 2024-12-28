@@ -357,10 +357,9 @@ class Map:
             current_set = region.get((cell_Y, cell_X))
 
             if (current_set):
-                for entity in current_set:
-                    if not(isinstance(entity, Unit)):
-                        res_entity = entity
-                        break
+                for entity in current_set:    
+                    res_entity = entity
+                    break
         
         return res_entity
             

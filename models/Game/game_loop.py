@@ -24,11 +24,12 @@ class GameLoop:
     def run(self):
         
         horse = HorseMan(5, 5, PVector2(0, 0), 1) # debugging
+        villager = Villager(7,7,PVector2(0, 0), 2)
         entity = None
 
         target_pos = PVector2(0,0)
         self.state.map.add_entity(horse)
-
+        self.state.map.add_entity(villager)
         running = True
         while running:
             move_flags = 0
@@ -62,8 +63,8 @@ class GameLoop:
 
                         elif event.button == RIGHT_CLICK:
                             bx, by = self.state.camera.convert_from_isometric_2d(mouse_x, mouse_y)
-
-                            self.state.map.add_entity(ArcheryRange(int(by//TILE_SIZE_2D), int(bx//TILE_SIZE_2D), PVector2(0, 0), 2))
+                            target_pos.x = bx
+                            target_pos.y = by
 
 
                         print(f"screen( width:{SCREEN_WIDTH}, {SCREEN_HEIGHT}), mouse( x:{mouse_x}, y:{mouse_y})")
@@ -141,7 +142,7 @@ class GameLoop:
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
 
                 horse.try_to_attack(current_time, entity, self.state.camera)
-                
+                villager.try_to_move(current_time, target_pos, self.state.camera)
             pygame.display.flip()
             self.clock.tick(FPS)
             

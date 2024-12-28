@@ -195,12 +195,12 @@ class Unit(Entity):
             self.change_state(UNIT_IDLE)
 
     def try_to_move(self, current_time, position, camera):
-        if self.state == UNIT_WALKING:
-            if self.position == position:
-                self.change_state(UNIT_IDLE)
-        
-            if self.state == UNIT_WALKING:
-                self.move_to_position(current_time, position, camera)
+        if self.position == position:
+            self.change_state(UNIT_IDLE)
+        else:
+            if not(self.state == UNIT_WALKING):
+                self.change_state(UNIT_WALKING)
+            self.move_to_position(current_time, position, camera)
 
         
     def change_state(self, new_state):
@@ -232,12 +232,17 @@ class Unit(Entity):
 
         topleft = PVector2(self.position.x - self.box_size, self.position.y - self.box_size)
         bottomright = PVector2(self.position.x + self.box_size, self.position.y + self.box_size)
+        topright = PVector2(self.position.x + self.box_size, self.position.y - self.box_size)
+        bottomleft = PVector2(self.position.x - self.box_size, self.position.y + self.box_size)
+
 
         ent_topleft = PVector2(_entity.position.x - _entity.box_size, _entity.position.y - _entity.box_size)
         ent_bottomright = PVector2(_entity.position.x + _entity.box_size, _entity.position.y + _entity.box_size )
 
         return (topleft>ent_topleft and topleft<ent_bottomright) or \
-                (bottomright>ent_topleft and bottomright<ent_bottomright)
+                (bottomright>ent_topleft and bottomright<ent_bottomright) or \
+                 (topright>ent_topleft and topright<ent_bottomright) or \
+                  (bottomleft>ent_topleft and bottomleft<ent_bottomright) 
 
     def check_collision_around(self): # this function is only made to se if we need to recalculate the path for the unit
         collided = False
@@ -287,7 +292,7 @@ class Unit(Entity):
                 entity.hp -= self.attack
 
                 if entity.is_dead():
-
+                    self.linked_map.remove_entity(entity)
                     self.will_stop = True
 
             elif self.animation_frame == (self.len_current_animation_frames() - 1) and self.will_stop:
@@ -314,11 +319,12 @@ class Unit(Entity):
                             self.change_state(UNIT_WALKING)
                         
                         self.try_to_move(current_time, entity.position, camera)
-
             else:
-                self.linked_map.remove_entity(entity)
                 if not(self.state == UNIT_IDLE):
                     self.change_state(UNIT_IDLE)
+        else:        
+            if not(self.state == UNIT_IDLE):
+                self.change_state(UNIT_IDLE)
 
 
     
