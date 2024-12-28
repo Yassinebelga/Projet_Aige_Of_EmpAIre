@@ -75,36 +75,36 @@ class Map:
 
         if isinstance(_entity, Unit):
             _entity.box_size += TILE_SIZE_2D/(2 * 2)
-            _entity.linked_map = self
+            
         else:
             _entity.box_size += TILE_SIZE_2D/(2 * 1.5)
         
+        _entity.linked_map = self
         return 1 # added the entity succesfully
     
     def remove_entity(self,_entity):
 
-        assert(_entity != None), 0x0011
-        
-        # we are going to return the entity, cause sometimes we need to put it else where in the map, like units when moving for exemple 
+        assert _entity is not None, "Entity cannot be None (Error 0x0011)"
 
-        for Y_to_remove in range(_entity.cell_Y,_entity.cell_Y - _entity.sq_size, -1):
-            for X_to_remove in range(_entity.cell_X,_entity.cell_X - _entity.sq_size, -1):
-
-                REG_Y, REG_X = Y_to_remove//self.region_division, X_to_remove//self.region_division
+        for Y_to_remove in range(_entity.cell_Y, _entity.cell_Y - _entity.sq_size, -1):
+            for X_to_remove in range(_entity.cell_X, _entity.cell_X - _entity.sq_size, -1):
+                REG_Y, REG_X = Y_to_remove // self.region_division, X_to_remove // self.region_division
                 region = self.entity_matrix.get((REG_Y, REG_X))
 
-                # no need to check the region cause it has at least the entity it self
-                current_set = region.get((Y_to_remove, X_to_remove))
+                if region:
+                    current_set = region.get((Y_to_remove, X_to_remove))
 
-                current_set.remove(_entity) # remove the entity from this cell 
+                    if current_set:
+                        current_set.discard(_entity)  # Safe removal
 
-                if not(current_set):
-                    region.pop((Y_to_remove, X_to_remove)) # so we remove the set from the region ( the region is empty )
-                
-                if not(region):
-                    self.entity_matrix.pop((REG_Y, REG_X))
+                        if not current_set:
+                            region.pop((Y_to_remove, X_to_remove), None)  # Safely remove key if set is empty
 
-        return _entity
+                    if not region:  # Remove empty regions
+                        self.entity_matrix.pop((REG_Y, REG_X), None)
+
+        return _entity  # Return the entity if needed elsewhere
+
 
     
     def display(self, current_time, screen, camera, g_width, g_height):
@@ -341,3 +341,40 @@ class Map:
             if not(self.check_cell(tree_Y, tree_Y)):  
                 tree = Tree(tree_Y, tree_X, None)
                 self.add_entity(tree)
+
+
+    def mouse_get_entity(self, camera, iso_x, iso_y):
+
+        res_entity = None
+
+        x, y = camera.convert_from_isometric_2d(iso_x, iso_y)
+
+        cell_X, cell_Y = int(x/camera.tile_size_2d), int(y/camera.tile_size_2d)
+
+        region = self.entity_matrix.get((cell_Y//self.region_division, cell_X//self.region_division))
+
+        if region:
+            current_set = region.get((cell_Y, cell_X))
+
+            if (current_set):
+                for entity in current_set:
+                    if not(isinstance(entity, Unit)):
+                        res_entity = entity
+                        break
+        
+        return res_entity
+            
+    def remove_dead_entities(self):
+        for reg_key in list(self.entity_matrix.keys()):
+            region = self.entity_matrix[reg_key]
+            
+            for set_key in list(region.keys()):
+                entity_set = region[set_key]
+
+                region[set_key] = {entity for entity in entity_set if not entity.is_dead()}
+
+                if not region[set_key]:
+                    del region[set_key]
+            
+            if not region:
+                del self.entity_matrix[reg_key]

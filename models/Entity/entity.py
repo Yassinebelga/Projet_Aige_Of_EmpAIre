@@ -1,4 +1,5 @@
 from GLOBAL_VAR import *
+import gc 
 class Entity():
     def __init__(self, cell_Y, cell_X, position, team, representation, sq_size = 1):
         self.cell_Y = cell_Y
@@ -9,6 +10,7 @@ class Entity():
         self.sq_size = sq_size
         self.image = None
 
-    
+        
+        
     def __str__(self):
         return f"ent<{self.representation}>"

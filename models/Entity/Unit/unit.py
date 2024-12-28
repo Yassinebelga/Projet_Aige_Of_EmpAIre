@@ -3,7 +3,7 @@ from AITools.a_star import *
 
 class Unit(Entity):
 
-    def __init__(self, cell_Y, cell_X, position, team, representation, hp, cost, training_time, speed, attack, attack_speed = ONE_SEC, _range=1):
+    def __init__(self, cell_Y, cell_X, position, team, representation, hp, cost, training_time, speed, attack, attack_speed = 1, _range=1):
         super().__init__(cell_Y, cell_X, position, team, representation)
         self.hp = hp
         self.max_hp = hp
@@ -11,14 +11,15 @@ class Unit(Entity):
         self.cost=cost
 
 
-
+        
         self.attack = attack
         self.attack_speed = attack_speed
         self.range= _range
-
+        self.last_time_attacked = pygame.time.get_ticks()
         self.will_attack = False
+        self.attack_frame = 0
         self.entity_target = None
-
+        self.will_stop = False
 
 
         self.speed=speed
@@ -49,12 +50,17 @@ class Unit(Entity):
     def set_direction_index(self):
         self.animation_direction = MAP_ANGLE_INDEX(self.direction, UNIT_ANGLE_MAPPING) # map the animation index for the direction with repect to the sprites sheet
 
+
+
+    def len_current_animation_frames(self):
+        return len(self.image.get(self.state,None).get(0, None)) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
+ 
     def update_animation_frame(self, current_time):
         global ONE_SEC
         if current_time - self.last_animation_time > ONE_SEC/self.animation_speed[self.state]:
             self.last_animation_time = current_time
 
-            self.animation_frame = (self.animation_frame + 1)%len(self.image.get(self.state,None).get(0, None)) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
+            self.animation_frame = (self.animation_frame + 1)%(self.len_current_animation_frames()) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
     
     def changed_cell_position(self):
         topleft = PVector2(self.cell_X*TILE_SIZE_2D, self.cell_Y*TILE_SIZE_2D)
@@ -219,9 +225,9 @@ class Unit(Entity):
             camera.draw_box(screen, self)
             self.update_animation_frame(current_time)
             display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.state, self.animation_direction, self.animation_frame], camera = camera), iso_x, iso_y, screen, 0x04, 1)
-            draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size)
+            draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size, self.team)
             draw_point(screen, (0, 0, 0), px, py, radius=5)
-            
+
     def check_collision_with(self, _entity):
 
         topleft = PVector2(self.position.x - self.box_size, self.position.y - self.box_size)
@@ -265,6 +271,55 @@ class Unit(Entity):
         
         return collided 
 
+    def is_dead(self):
+        return self.hp <= 0
+    
+    def try_to_damage(self, current_time, entity, camera):
+        
+        if current_time - self.last_time_attacked > self.attack_speed * ONE_SEC:
+            self.last_time_attacked = current_time
+
+            self.will_attack = True
+        
+        if self.state == UNIT_ATTACKING:
+            if self.animation_frame == self.attack_frame and self.will_attack:
+                self.will_attack = False
+                entity.hp -= self.attack
+
+                if entity.is_dead():
+
+                    self.will_stop = True
+
+            elif self.animation_frame == (self.len_current_animation_frames() - 1) and self.will_stop:
+                self.will_stop = False
+                self.change_state(UNIT_IDLE) # if the entity is killed we stop 
 
 
+
+            
+
+    def try_to_attack(self,current_time, entity, camera):
+        if (entity != None): 
+            if (entity.is_dead() == False):
+                if (self.range == 1): # for melee attack 
+
+                    if (self.check_collision_with(entity)):
+                        if not(self.state == UNIT_ATTACKING):
+                            self.change_state(UNIT_ATTACKING)
+                    
+                        print(f"animation_frame:{self.animation_frame}")
+                        self.try_to_damage(current_time, entity, camera)
+                    else:
+                        if not(self.state == UNIT_WALKING):
+                            self.change_state(UNIT_WALKING)
+                        
+                        self.try_to_move(current_time, entity.position, camera)
+
+            else:
+                self.linked_map.remove_entity(entity)
+                if not(self.state == UNIT_IDLE):
+                    self.change_state(UNIT_IDLE)
+
+
+    
  
