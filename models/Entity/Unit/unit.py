@@ -1,5 +1,6 @@
 from Entity.entity import *
 from AITools.a_star import *
+from math import floor
 
 class Unit(Entity):
 
@@ -70,29 +71,27 @@ class Unit(Entity):
 
     def track_cell_position(self):
         if (self.changed_cell_position()):
-            distance_cell_to_unit = TILE_SIZE_2D * 10 # big enough to start the sort 
-            updated_cell_X, updated_cell_Y =None, None
-            current_cell_position = PVector2(self.cell_X*TILE_SIZE_2D +TILE_SIZE_2D/2, self.cell_Y*TILE_SIZE_2D +TILE_SIZE_2D/2)
+            
+            live_cell_X = int(floor(self.position.x//self.linked_map.tile_size_2d))
+            live_cell_Y = int(floor(self.position.y//self.linked_map.tile_size_2d))
+            cell_free = True 
 
-            for offset_Y in range(-1,2):
-                for offset_X in range(-1,2):
-                    current_cell_X = self.cell_X + offset_X
-                    current_cell_Y = self.cell_Y + offset_Y
+            live_region = self.linked_map.entity_matrix.get((live_cell_Y//self.linked_map.region_division, live_cell_X//self.linked_map.region_division))
+            if (live_region):
 
-                    current_cell_position.x = current_cell_X*TILE_SIZE_2D + TILE_SIZE_2D/2
-                    current_cell_position.y = current_cell_Y*TILE_SIZE_2D + TILE_SIZE_2D/2
-                    
-                    current_distance = self.position.abs_distance(current_cell_position)
+                live_entity_set = live_region.get((live_cell_Y, live_cell_X))
+                if(live_entity_set):
 
-                    if current_distance < distance_cell_to_unit:
-                        distance_cell_to_unit = current_distance
-                        updated_cell_X, updated_cell_Y = current_cell_X, current_cell_Y
+                    for live_entity in live_entity_set:
+                        if isinstance(live_entity, Building) and not(live_entity.walkable) or \
+                            isinstance(live_entity, Resources):
+                                cell_free = False
+            if cell_free:
+                uself = self.linked_map.remove_entity(self) # remove from the current cell
+                self.cell_X, self.cell_Y = live_cell_X, live_cell_Y # update the cell
+                self.change_cell_on_map()
 
-            uself = self.linked_map.remove_entity(self) # remove from the current cell
-            self.cell_X, self.cell_Y = updated_cell_X, updated_cell_Y # update the cell
-            self.change_cell_on_map()
-
-    def change_cell_on_map(self):
+    def change_cell_on_map(self): # to change the cell position on the map 
         region = self.linked_map.entity_matrix.get((self.cell_Y//self.linked_map.region_division, self.cell_X//self.linked_map.region_division))
 
         if (region):
@@ -188,7 +187,7 @@ class Unit(Entity):
                 
         if self.path_to_position != None:
             self.current_to_position = PVector2(position.x, position.y)
-            self.path_to_position = self.path_to_position[1:] # we skip the tile we are on, no need to pass by the center of the unit cell
+            self.path_to_position = self.path_to_position[1:]
         else : 
             self.change_state(UNIT_IDLE)
 

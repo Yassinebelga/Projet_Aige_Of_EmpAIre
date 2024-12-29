@@ -196,6 +196,7 @@ ARROW_ARRAY_2D = load_sprite_sheet("Sprites/Projectile/arrow.webp",32, 11, skip_
 SPRITES = {
     'G': GRASS,
     'A': ARCHERYRANGE,
+    'B': BARRACKS,
     'C': CAMP,
     'K': KEEP,
     'T': TOWNCENTER,
