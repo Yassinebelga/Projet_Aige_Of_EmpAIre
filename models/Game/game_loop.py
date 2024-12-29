@@ -94,6 +94,7 @@ class GameLoop:
                 #génerer fichier html
                 if keys[pygame.K_TAB]:
                     self.state.generate_html_file()
+                    self.state.toggle_pause()
 
                 # Pause
                 if keys[pygame.K_p]:

@@ -1,5 +1,6 @@
 import pygame
 import random 
+import webbrowser
 from ImageProcessingDisplay import UserInterface, StartMenu, PauseMenu, Camera, TerminalCamera 
 from GameField.map import *
 from GLOBAL_VAR import *
@@ -99,6 +100,7 @@ class GameState:
         # Write the modified HTML content to a new file
         with open("overview.html", "w") as output_file:
             output_file.write(html_content)
+        webbrowser.open_new_tab('overview.html')
 
 
     def toggle_resources(self):
