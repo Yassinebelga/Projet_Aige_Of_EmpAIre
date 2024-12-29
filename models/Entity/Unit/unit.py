@@ -64,8 +64,8 @@ class Unit(Entity):
             self.animation_frame = (self.animation_frame + 1)%(self.len_current_animation_frames()) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
     
     def changed_cell_position(self):
-        topleft = PVector2(self.cell_X*TILE_SIZE_2D, self.cell_Y*TILE_SIZE_2D)
-        bottomright = PVector2((self.cell_X + 1)*TILE_SIZE_2D, (self.cell_Y + 1)*TILE_SIZE_2D)
+        topleft = PVector2(self.cell_X*self.linked_map.tile_size_2d, self.cell_Y*self.linked_map.tile_size_2d)
+        bottomright = PVector2((self.cell_X + 1)*self.linked_map.tile_size_2d, (self.cell_Y + 1)*self.linked_map.tile_size_2d)
 
         return not(self.position < bottomright and self.position > topleft)
 
@@ -118,7 +118,7 @@ class Unit(Entity):
         if (current_time - self.last_time_moved > ONE_SEC/(self.move_per_sec*self.speed)):
 
             self.last_time_moved = current_time
-            print(self.path_to_position)
+            
 
             if self.path_to_position != None and self.current_to_position == position:
                 
@@ -201,7 +201,7 @@ class Unit(Entity):
 
         
     def change_state(self, new_state):
-        self.animation_frame = 0 
+        self.animation_frame = 0 # we put the animationframe index to 0 in order
         # to avoid index out of bound in the animationframes list, 
         # for exmample for Archer 
         # idle has 60 frames, move has 30
@@ -327,7 +327,7 @@ class Unit(Entity):
                         self.direction = self.position.alpha_angle(entity.position)
                         dist_to_entity = self.position.abs_distance(entity.position)
 
-                        if (dist_to_entity <= (self.range * entity.sq_size * TILE_SIZE_2D)):
+                        if (dist_to_entity <= (self.range * (entity.sq_size/2) * TILE_SIZE_2D + entity.box_size + self.box_size)):
                             self.try_to_damage(current_time, entity, camera)
                         else:
                             self.check_range_with_target = False

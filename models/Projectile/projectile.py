@@ -1,14 +1,19 @@
 from GLOBAL_VAR import *
+from math import floor
+
 class Projectile:
     
-    def __init__(self, position, entity_target, damage):
+    def __init__(self, cell_Y, cell_X, position, entity_target, _map, damage):
         global ONE_SEC
         global PROJECTILE_ANGLE_MAPPING
+        self.cell_Y = cell_Y
+        self.cell_X = cell_X
 
         self.position = position 
+        
         self.damage = damage
         self.entity_target = entity_target
-
+        self.reached_target = False
         self.time_to_get_target = ONE_SEC
         
         self.time_left = self.time_to_get_target
@@ -22,17 +27,30 @@ class Projectile:
         self.animation_frame = 0
         
         self.projectile_peak = self.position.abs_distance(entity_target.position)
-        self.projectile_z_pos = 0
         self.representation = 'p'
-    def update_position(self, current_time):
+        
+        self.linked_map = _map
+
+    def update_event(self, current_time):
         time_elapsed = current_time - self.last_time_changed_pos
         
+        self.update_cell_on_map()
         if time_elapsed > 0:
+            
             # Calculate the angle to the target
             if (self.entity_target):
-                self.direction = self.position.alpha_angle(self.entity_target.position)
-                self.distance_left = self.position.abs_distance(self.entity_target.position)
-            if self.time_left > 0:
+                
+                if (self.position == self.entity_target.position):
+
+                    self.reached_target = True
+                    self.entity_target.hp -= self.damage
+                    
+                else:
+
+                    self.direction = self.position.alpha_angle(self.entity_target.position)
+                    self.distance_left = self.position.abs_distance(self.entity_target.position)
+            
+            if self.time_left > 0 and not(self.reached_target):
                 distance_to_add = self.distance_left / (self.time_left / time_elapsed)
                 self.position.x = self.position.x + math.cos(self.direction) * distance_to_add 
                 self.position.y = self.position.y + math.sin(self.direction) * distance_to_add
@@ -44,7 +62,7 @@ class Projectile:
                 a = self.projectile_peak/(0.5)**2
                 b = 2 
                 # f(progress_ratio)
-                self.projectile_z_pos = -a*((progress_ratio)**(b) - 0.5)**2 + self.projectile_peak
+                self.position.z = -a*((progress_ratio)**(b) - 0.5)**2 + self.projectile_peak
                 
 
                 self.time_left -= time_elapsed
@@ -55,7 +73,28 @@ class Projectile:
 
                 self.position.x = self.position.x + math.cos(self.direction) * distance_to_add 
                 self.position.y = self.position.y + math.sin(self.direction) * distance_to_add
+    
+    def update_cell_on_map(self):
+        if self.changed_cell_position():
+            print("changing_cell")
+            self.change_cell_on_map()
+    
+    def is_in_region(self, reg_Y, reg_X):
+        return self.cell_Y//self.linked_map.region_division == reg_Y and \
+                self.cell_X//self.linked_map.region_division == reg_X
+    
+    def changed_cell_position(self):
+        topleft = PVector2(self.cell_X*self.linked_map.tile_size_2d, self.cell_Y*self.linked_map.tile_size_2d)
+        bottomright = PVector2((self.cell_X + 1)*self.linked_map.tile_size_2d, (self.cell_Y + 1)*self.linked_map.tile_size_2d)
 
+        return not(self.position < bottomright and self.position > topleft)
+
+    def change_cell_on_map(self): # to change the cell position on the map 
+        live_cell_X = int(floor(self.position.x//self.linked_map.tile_size_2d))
+        live_cell_Y = int(floor(self.position.y//self.linked_map.tile_size_2d))
+
+        self.cell_Y = live_cell_Y
+        self.cell_X = live_cell_X
 
     def update_animation_frame(self, current_time):
 
@@ -63,10 +102,11 @@ class Projectile:
             self.last_animation_time = current_time
             self.animation_frame = (self.animation_frame + 1)%len(self.image.get(0,None))
         
-    def display(self, current_time, screen, camera):
+    def display(self, current_time, screen, camera, g_width, g_height):
         
-        x, y = camera.convert_to_isometric_2d(self.position.x, self.position.y)
-
         self.update_animation_frame(current_time)
-        iso_x, iso_y = camera.convert_to_isometric_3d(self.position.x, self.position.y,self.projectile_z_pos)
+        iso_x, iso_y = camera.convert_to_isometric_3d(self.position.x, self.position.y, self.position.z)
         display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.animation_direction, self.animation_frame], camera = camera),iso_x, iso_y, screen, 0x04)
+
+    def __str__(self):
+        return f"Y:{self.cell_Y}, X:{self.cell_X}, reached:{self.reached_target}"

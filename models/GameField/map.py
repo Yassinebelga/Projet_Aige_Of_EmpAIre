@@ -15,7 +15,7 @@ class Map:
         self.tile_size_2d = TILE_SIZE_2D
         self.region_division = REGION_DIVISION
         self.entity_matrix = {} #sparse matrix
-
+        self.projectile_set = set()
         self.last_time_refershed = pygame.time.get_ticks() # refresh for the terminal display
 
 
@@ -82,6 +82,22 @@ class Map:
         _entity.linked_map = self
         return 1 # added the entity succesfully
     
+
+    def add_projectile(self, _projectile):
+        self.projectile_set.add(_projectile)
+
+    def remove_projectile(self, _projectile):
+        self.projectile_set.discard(_projectile)
+
+    def update_all_projectiles(self, current_time):
+        for proj in self.projectile_set.copy():
+            proj.update_event(current_time)
+
+            if proj.reached_target:
+                self.remove_projectile(proj)
+
+      
+    
     def remove_entity(self,_entity):
 
         assert _entity is not None, "Entity cannot be None (Error 0x0011)"
@@ -142,6 +158,16 @@ class Map:
 
         entity_to_display = set()
         
+
+        min_X, min_Y = range_left[1], range_top[0]
+        max_X, max_Y = range_right[1], range_bottom[0]
+
+        for proj in self.projectile_set:
+            if min_Y <= proj.cell_Y//self.region_division <= max_Y and \
+                min_X <= proj.cell_X//self.region_division <= max_X :
+                    entity_to_display.add(proj)
+
+
         for region_Y_to_display, region_X_to_display in isoRange(range_top, range_left, range_right, range_bottom):
 
                 if region_Y_to_display >= 0 and region_Y_to_display < self.nb_CellY//self.region_division \
@@ -179,8 +205,9 @@ class Map:
 
                 pygame.draw.circle(screen, (255, 0, 0), (iso_x, iso_y), 1, 0) 
         """ # debug purposes 
+        
                                                                                 # priority to the farm ( they are like grass so the ground is displayed first) then the normal deep sort 
-        for current_entity in sorted(entity_to_display, key=lambda entity: (not(isinstance(entity, Farm)), entity.position.y + entity.position.x, entity.position.y)):
+        for current_entity in sorted(entity_to_display, key=lambda entity: (not(isinstance(entity, Farm)), entity.position.z, entity.position.y + entity.position.x, entity.position.y)):
         
             current_entity.display(current_time, screen, camera, g_width, g_height)
         
@@ -325,6 +352,7 @@ class Map:
                 self._add_starting_resources(center_Y, center_X)
     
     def _add_starting_resources(self, center_Y, center_X):
+        
         GEN_DIS_G = 2
         GEN_DIS_T = 1
         for offset_X, offset_Y in [(-GEN_DIS_G, GEN_DIS_G), (GEN_DIS_G, -GEN_DIS_G), (GEN_DIS_G, GEN_DIS_G)]:
@@ -363,7 +391,7 @@ class Map:
         
         return res_entity
             
-    def remove_dead_entities(self):
+    def update_all_dead_entities(self, current_time):
         for reg_key in list(self.entity_matrix.keys()):
             region = self.entity_matrix[reg_key]
             
@@ -377,3 +405,8 @@ class Map:
             
             if not region:
                 del self.entity_matrix[reg_key]
+
+
+    def update_all_events(self, current_time):
+        self.update_all_projectiles(current_time)
+        #self.update_all_dead_entities(current_time)
