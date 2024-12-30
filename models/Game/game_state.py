@@ -78,21 +78,59 @@ class GameState:
         with open("Game/generate.html", "r") as template_file:
             html_content = template_file.read()
     
-        buildings_positions = [(1, 2), (3, 4)]
-        building_list_html = ""
-        for i, position in enumerate(buildings_positions, start=1):  # Utiliser enumerate pour avoir un index
-            building_list_html += f"""<li class="building">Building {i} : {position}</li>"""
+       
+        # buildings_positions = [(1, 2), (3, 4)]
+        # building_list_html = ""
+        # for i, position in enumerate(buildings_positions, start=1):  # Utiliser enumerate pour avoir un index
+        #     building_list_html += f"""<li class="building">Building {i} : {position}</li>"""
 
-        unit_list_html = ""
-        for i in range(1,3):
-            unit_list_html += f'<li class="unit">Villager {i} : {i}, {i+1}</li>'
+        dict_buildings1 = {}
+        dict_buildings2 = {}
+        dict_ressources1 = {}
+        dict_ressources2 = {}
+        dict_unit1 = {}
+        dict_unit2 = {}
+        for current_region in self.map.entity_matrix.values():
+            for entity_set in current_region.values():
+                for entity in entity_set:
+                        match type(entity):
+                            case Building if entity.team == 1 :
+                                dict_buildings1[len(dict_buildings1)] = entity.position
+                            case Building if entity.team == 2 :
+                                dict_buildings2[len(dict_buildings2)] = entity.position
+                            case Ressources if entity.team == 1 :
+                                dict_ressources1[len(dict_ressources1)] = entity.position
+                            case Ressources if entity.team == 2 : 
+                                dict_ressources2[len(dict_ressources2)] = entity.position
+                            case Unit if entity.team == 1 :
+                                dict_unit1[len(dict_unit1)] = entity.position
+                            case Unit if entity.team == 2 :
+                                dict_unit2[len(dict_unit2)] = entity.position
+           
         # unit_list_html = ""
-        # for unit in units:
-        #     unit_list_html+=f'<li class="unit" > {unit.get_x()}, {unit.get_y()}'
-    
-        # Replace the placeholder in the template with the actual building list
-        html_content = html_content.replace("{{BUILDINGS}}", building_list_html)
-        html_content = html_content.replace("{{UNITS}}", unit_list_html)
+        # for i in range(1,3):
+        #     unit_list_html += f'<li class="unit">Villager {i} : {i}, {i+1}</li>'
+
+        buildings1_list_html = ""
+        for i, e in dict_buildings1.items():
+            buildings1_list_html +=f'<li class="building">Building {i} : {e}</li>'
+
+        buildings2_list_html = ""
+        for i, e in dict_buildings2.items():
+            buildings2_list_html +=f'<li class="building">Building {i} : {e}</li>'
+
+        unit1_list_html = ""
+        for i, e in dict_unit1.items():
+            unit1_list_html +=f'<li class="unit">Unit {i} : {e}</li>'
+
+        unit2_list_html = ""
+        for i, e in dict_unit2.items():
+            unit2_list_html +=f'<li class="unit">Unit {i} : {e}</li>'
+        
+        html_content = html_content.replace("{{BUILDINGS1}}", buildings1_list_html)
+        html_content = html_content.replace("{{BUILDINGS2}}", buildings2_list_html)
+        html_content = html_content.replace("{{UNITS1}}", unit1_list_html)
+        html_content = html_content.replace("{{UNITS2}}", unit2_list_html)
 
         # Write the modified HTML content to a new file
         with open("overview.html", "w") as output_file:
