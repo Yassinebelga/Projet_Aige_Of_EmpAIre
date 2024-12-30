@@ -5,10 +5,12 @@ def is_almost(a, b, p=1e-7):
 
 class PVector2:
     def __init__(self,_x,_y, _z = 0):
+        global ID_GENERATOR
+
         self.x = _x #float
         self.y = _y #float
         self.z = _z # float
-        
+
     def __add__(self,other_vector):
         return PVector2(self.x + other_vector.x,self.y + other_vector.y)
 

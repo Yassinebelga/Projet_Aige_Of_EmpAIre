@@ -9,12 +9,16 @@ class Map:
 
     def __init__(self,_nb_CellX , _nb_CellY):
         
-
+        
         self.nb_CellX = _nb_CellX
         self.nb_CellY = _nb_CellY
         self.tile_size_2d = TILE_SIZE_2D
         self.region_division = REGION_DIVISION
         self.entity_matrix = {} #sparse matrix
+
+        self.entity_id_dict = {} # each element of this is an id
+        
+
         self.projectile_set = set()
         self.last_time_refershed = pygame.time.get_ticks() # refresh for the terminal display
 
@@ -22,6 +26,11 @@ class Map:
         # for the minimap
         self.minimap = MiniMap(PVector2(1000,300), _nb_CellX, _nb_CellY)
 
+
+
+    def get_entity_by_id(self, _entity_id):
+        return self.entity_id_dict.get(_entity_id, None)
+    
     def check_cell(self, Y_to_check, X_to_check):
         REG_Y_to_check, REG_X_to_check = Y_to_check//self.region_division, X_to_check//self.region_division
 
@@ -75,11 +84,17 @@ class Map:
 
         if isinstance(_entity, Unit):
             _entity.box_size += TILE_SIZE_2D/(2 * 3) # for the units hitbox is smaller 
+            _entity.move_position.x = _entity.position.x
+            _entity.move_position.y = _entity.position.y # well when the unit is added its target pos to move its it self se it doesnt move
             
         else:
             _entity.box_size += TILE_SIZE_2D/(2 * 1.5) # the factors used the box_size lines are to choosen values for a well scaled collision system with respec to the type and size of the entity
         
         _entity.linked_map = self
+
+        # at the end add the entity pointer to the id dict with the id dict 
+
+        self.entity_id_dict[_entity.id] = _entity
         return 1 # added the entity succesfully
     
 
@@ -118,6 +133,8 @@ class Map:
 
                     if not region:  # Remove empty regions
                         self.entity_matrix.pop((REG_Y, REG_X), None)
+
+        self.entity_id_dict.pop(_entity.id, None)
 
         return _entity  # Return the entity if needed elsewhere
 
@@ -352,7 +369,7 @@ class Map:
                 self._add_starting_resources(center_Y, center_X)
     
     def _add_starting_resources(self, center_Y, center_X):
-        
+
         GEN_DIS_G = 2
         GEN_DIS_T = 1
         for offset_X, offset_Y in [(-GEN_DIS_G, GEN_DIS_G), (GEN_DIS_G, -GEN_DIS_G), (GEN_DIS_G, GEN_DIS_G)]:
@@ -386,7 +403,7 @@ class Map:
 
             if (current_set):
                 for entity in current_set:    
-                    res_entity = entity
+                    res_entity = entity.id
                     break
         
         return res_entity
@@ -409,4 +426,4 @@ class Map:
 
     def update_all_events(self, current_time):
         self.update_all_projectiles(current_time)
-        #self.update_all_dead_entities(current_time)
+        self.update_all_dead_entities(current_time)

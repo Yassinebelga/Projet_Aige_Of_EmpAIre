@@ -4,7 +4,8 @@ import os
 import sys
 
 INITIAL_ZOOM = 1
-
+MIN_ZOOM = 1
+MAX_ZOOM = 7
 TILE_SIZE_2ISO = 15
 TILE_SIZE_2D = 40
 

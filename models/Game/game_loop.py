@@ -63,12 +63,12 @@ class GameLoop:
                         if event.button == LEFT_CLICK:
                             self.state.mouse_held = True
                             
-                            entity = self.state.map.mouse_get_entity(self.state.camera, mouse_x, mouse_y)
+                            entity_id = self.state.map.mouse_get_entity(self.state.camera, mouse_x, mouse_y)
 
                         elif event.button == RIGHT_CLICK:
                             bx, by = self.state.camera.convert_from_isometric_2d(mouse_x, mouse_y)
-                            target_pos.x = bx
-                            target_pos.y = by
+                            villager.move_position.x = bx
+                            villager.move_position.y = by
 
 
                         print(f"screen( width:{SCREEN_WIDTH}, {SCREEN_HEIGHT}), mouse( x:{mouse_x}, y:{mouse_y})")
@@ -166,8 +166,8 @@ class GameLoop:
                 elif (self.state.display_mode == TERMINAL):
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
 
-                archer.try_to_attack(current_time, entity, self.state.camera)
-                villager.try_to_move(current_time, target_pos, self.state.camera)
+                archer.try_to_attack(current_time, entity_id, self.state.camera)
+                villager.try_to_move(current_time, self.state.camera)
 
                 
             screen.blit(CURSOR_IMG,(mouse_x, mouse_y))

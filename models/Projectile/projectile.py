@@ -1,6 +1,7 @@
 from GLOBAL_VAR import *
 from math import floor
 
+
 class Projectile:
     
     def __init__(self, cell_Y, cell_X, position, entity_target, _map, damage):
