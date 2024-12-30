@@ -48,7 +48,8 @@ class GameLoop:
                 if self.state.states == START:
                     if pygame.key.get_pressed()[pygame.K_F12]:
                         #load a savegame
-                        self.state.save_manager.load_game()
+                        #self.state.save_manager.load_game()
+                        pass
                     if event.type == pygame.MOUSEBUTTONDOWN and self.state.startmenu.handle_click(event.pos):
                         # Mise à jour des paramètres du jeu en quittant le menu
                         self.state.set_map_type(self.state.startmenu.map_options[self.state.startmenu.selected_map_index])
@@ -94,10 +95,12 @@ class GameLoop:
                     self.state.toggle_display_mode(self)
                 #savegame
                 if keys[pygame.K_F11]:
-                    self.state.save_manager.save_game()
+                    #self.state.save_manager.save_game()
+                    pass
                 #loadgame
                 if keys[pygame.K_F12]:
-                    self.state.save_manager.load_game()
+                    #self.state.save_manager.load_game()
+                    pass
                 #génerer fichier html
                 if keys[pygame.K_TAB]:
                     self.state.generate_html_file()
