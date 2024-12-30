@@ -1,12 +1,14 @@
 import pygame
 import random 
 import webbrowser
+from Game.savegame import *
 from ImageProcessingDisplay import UserInterface, StartMenu, PauseMenu, Camera, TerminalCamera 
 from GameField.map import *
 from GLOBAL_VAR import *
 
 class GameState:
     def __init__(self, screen):
+        self.save_manager = Savegame(self)
         self.states = START
         self.screen = screen
         self.startmenu = StartMenu(screen)
