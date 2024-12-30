@@ -4,7 +4,7 @@ from math import floor
 
 class Projectile:
     
-    def __init__(self, cell_Y, cell_X, position, entity_target, _map, damage):
+    def __init__(self, cell_Y, cell_X, position, entity_target, _map, damage, representation = 'p'):
         global ONE_SEC
         global PROJECTILE_ANGLE_MAPPING
         self.cell_Y = cell_Y
@@ -17,7 +17,7 @@ class Projectile:
         self.reached_target = False
         
         self.distance_left = self.position.abs_distance(entity_target.position)
-        self.time_to_get_target = (ONE_SEC/6) * self.distance_left/_map.tile_size_2d
+        self.time_to_get_target = (ONE_SEC/5.3) * self.distance_left/_map.tile_size_2d
         
         self.time_left = self.time_to_get_target
         self.last_time_changed_pos = pygame.time.get_ticks()
@@ -29,7 +29,7 @@ class Projectile:
         self.animation_frame = 0
         
         self.projectile_peak = self.position.abs_distance(entity_target.position)
-        self.representation = 'p'
+        self.representation = representation
         
         self.linked_map = _map
 

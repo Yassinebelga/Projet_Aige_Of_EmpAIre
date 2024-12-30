@@ -196,22 +196,22 @@ VILLAGER_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/villager")
 ARROW_ARRAY_2D = load_sprite_sheet("Sprites/Projectile/arrow.webp",32, 11, skip_row = 2, limit_col = 1)
 
 SPRITES = {
-    'G': GRASS,
+    'g': GRASS,
     'A': ARCHERYRANGE,
     'B': BARRACKS,
     'C': CAMP,
     'K': KEEP,
     'T': TOWNCENTER,
     'F': FARM,
-    'g': GOLD_ARRAY_1D,
-    'w': TREES_ARRAY_1D,
+    'G': GOLD_ARRAY_1D,
+    'W': TREES_ARRAY_1D,
     'S': STABLE_ARRAY_1D,
     'H': HOUSES_ARRAY_1D,
     'h': HORSEMAN_ARRAY_3D,
     'a': ARCHER_ARRAY_3D,
     's': SWORDMAN_ARRAY_3D,
     'v': VILLAGER_ARRAY_3D,
-    'p': ARROW_ARRAY_2D
+    'na': ARROW_ARRAY_2D
 }
 
 

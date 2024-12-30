@@ -10,8 +10,8 @@ SAVE_MAPPING = {
     'K': Keep,
     'T': TownCenter,
     'F': Farm,
-    'g': Gold,
-    'w': Tree,
+    'G': Gold,
+    'W': Tree,
     'S': Stable,
     'H': House,
     'h': HorseMan,
@@ -19,7 +19,8 @@ SAVE_MAPPING = {
     's': SwordMan,
     'v': Villager,
     'p': Projectile,
-    'a': Arrow 
+    'a': Arrow,
+    'V': PVector2
 }
 
 
@@ -63,6 +64,7 @@ class Map:
         return False 
 
     def add_entity(self, _entity):
+        print(_entity)
         assert (_entity != None), 0x0001 # to check if the entity is not null in case there were some problem in the implementation
 
         entity_in_matrix = (_entity.cell_X - (_entity.sq_size - 1) >= 0 and _entity.cell_Y - (_entity.sq_size - 1) >= 0) and ( _entity.cell_X < self.nb_CellX and _entity.cell_Y < self.nb_CellY)
@@ -383,7 +385,7 @@ class Map:
             center_Y = max(0, min(self.nb_CellY - 1, base_Y + offset_Y))  
 
             if not(self.check_cell(center_Y, center_X)) :
-                town_center = TownCenter(center_Y, center_X, None, team=i + 1)
+                town_center = Barracks(center_Y, center_X, None, team=i + 1)
                 self.add_entity(town_center)
                 
                 self._add_starting_resources(center_Y, center_X)

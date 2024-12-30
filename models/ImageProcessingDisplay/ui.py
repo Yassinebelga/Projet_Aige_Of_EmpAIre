@@ -9,7 +9,7 @@ class UserInterface:
         self.display_units = False
         self.display_builds = False
 
-    def draw_resources(sef, entity_matrix):
+    def draw_resources(self, entity_matrix):
         player_1_data = {
             "F" : 0,
             "W" : 0,
@@ -44,7 +44,7 @@ class UserInterface:
             "A" : 0,
             "K" : 0
         }
-        for current_region in self.map.entity_matrix.values():
+        for current_region in entity_matrix.values():
             for entity_set in current_region.values():
                 for entity in entity_set:
                     if entity.team == 1:

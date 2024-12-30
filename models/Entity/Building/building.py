@@ -1,8 +1,8 @@
 from Entity.entity import * 
 class Building(Entity):
 
-    def __init__(self, cell_X, cell_Y, position, team,representation, sq_size, hp, cost, build_time, walkable = False):
-        super().__init__(cell_X, cell_Y, position, team, representation, sq_size)
+    def __init__(self, cell_Y, cell_X, position, team,representation, sq_size, hp, cost, build_time, walkable = False):
+        super().__init__(cell_Y, cell_X, position, team, representation, sq_size)
         self.hp = hp
         self.max_hp = hp
         self.cost = cost

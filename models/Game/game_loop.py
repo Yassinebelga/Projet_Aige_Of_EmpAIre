@@ -24,7 +24,7 @@ class GameLoop:
 
     def run(self):
         
-        archer = Archer(5, 5, PVector2(0, 0), 1) # debugging
+        archer = HorseMan(5, 5, PVector2(0, 0), 1) # debugging
         villager = Villager(7,7,PVector2(0, 0), 2)
         entity = None
 

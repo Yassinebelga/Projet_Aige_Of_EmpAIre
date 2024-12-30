@@ -1,5 +1,5 @@
-from Entity.Unit.unit import *
-class HorseMan(Unit):
+from Entity.Unit.MeleeUnit.meleeunit import *
+class HorseMan(MeleeUnit):
 
     def __init__(self, cell_Y, cell_X, position, team, representation = 'h', hp = 45, cost = 80, training_time = 30*ONE_SEC, speed = 1.2, attack = 4, attack_speed = 1.2):
         global HORSEMAN_ARRAY_3D

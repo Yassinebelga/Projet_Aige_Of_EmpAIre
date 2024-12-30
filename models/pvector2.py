@@ -11,7 +11,7 @@ class PVector2:
         self.x = _x #float
         self.y = _y #float
         self.z = _z # float
-        self.representation = "v"
+        self.representation = "V"
 
     def __add__(self,other_vector):
         return PVector2(self.x + other_vector.x,self.y + other_vector.y)
