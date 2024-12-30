@@ -3,6 +3,26 @@ from GLOBAL_IMPORT import *
 from ImageProcessingDisplay.minimap import *
 from AITools.isorange import *
 
+SAVE_MAPPING = {
+    'A': ArcheryRange,
+    'B': Barracks,
+    'C': Camp,
+    'K': Keep,
+    'T': TownCenter,
+    'F': Farm,
+    'g': Gold,
+    'w': Tree,
+    'S': Stable,
+    'H': House,
+    'h': HorseMan,
+    'a': Archer,
+    's': SwordMan,
+    'v': Villager,
+    'p': Projectile,
+    'a': Arrow 
+}
+
+
 #from AITools.raycastingrange import *
 
 class Map:

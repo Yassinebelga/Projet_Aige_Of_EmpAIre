@@ -27,12 +27,14 @@ class Entity():
 
         for attr_name, attr_value in self.__dict__.items():
 
-            if hasattr(attr_value, "save"):
-                current_data_to_save = attr_value.save()
-            else:
-                current_data_to_save = attr_value
+            if not(attr_name == "image"):
+                
+                if hasattr(attr_value, "save"):
+                    current_data_to_save = attr_value.save()
+                else:
+                    current_data_to_save = attr_value
 
-            data_to_save[attr_name] = current_data_to_save
+                data_to_save[attr_name] = current_data_to_save
 
         return data_to_save
     

@@ -44,6 +44,7 @@ class GameLoop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    print(archer.save())
                 if self.state.states == START:
                     if pygame.key.get_pressed()[pygame.K_F12]:
                         #load a savegame
