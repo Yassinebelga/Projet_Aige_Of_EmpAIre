@@ -327,7 +327,8 @@ class Unit(Entity):
                             else:
                                 if not(self.state == UNIT_WALKING):
                                     self.change_state(UNIT_WALKING)
-                                    self.move_position = entity.position
+                                self.move_position.x = entity.position.x
+                                self.move_position.y = entity.position.y
 
                                 self.first_time_pass = True
                                 self.try_to_move(current_time, camera)

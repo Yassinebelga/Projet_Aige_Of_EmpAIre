@@ -2,6 +2,7 @@ import math
 import random
 import os
 import sys
+import json
 
 INITIAL_ZOOM = 1
 MIN_ZOOM = 1
