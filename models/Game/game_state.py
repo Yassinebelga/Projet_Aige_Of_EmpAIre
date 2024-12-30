@@ -7,6 +7,7 @@ from GLOBAL_VAR import *
 
 class GameState:
     def __init__(self, screen):
+        self.save_manager = SaveGame(self)
         self.states = START
         self.screen = screen
         self.startmenu = StartMenu(screen)
