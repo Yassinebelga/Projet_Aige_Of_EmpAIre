@@ -4,7 +4,8 @@ import os
 import sys
 
 INITIAL_ZOOM = 1
-
+MIN_ZOOM = 1
+MAX_ZOOM = 7
 TILE_SIZE_2ISO = 15
 TILE_SIZE_2D = 40
 
@@ -24,15 +25,21 @@ WHITE_COLOR = (255, 255, 255)
 RED_COLOR = (255, 0, 0)
 GREEN_COLOR = (0,255, 0)
 BLUE_COLOR = (0, 0, 255)
+
 GOLD_COLOR = (255, 215, 0) 
 BROWN_TREE_COLOR = (139, 69, 19)
 MINIMAP_COLOR = (53, 94, 59)
+
 TEAM_COLORS = {
+    0: WHITE_COLOR, # white is for no one ( for all teams )
     1: BLUE_COLOR,
     2: RED_COLOR,
     3:GREEN_COLOR
+    # ....
 }
 
+LEFT_CLICK = 1 
+RIGHT_CLICK = 3 
 #state
 
 START = 0
@@ -190,6 +197,7 @@ ARROW_ARRAY_2D = load_sprite_sheet("Sprites/Projectile/arrow.webp",32, 11, skip_
 SPRITES = {
     'G': GRASS,
     'A': ARCHERYRANGE,
+    'B': BARRACKS,
     'C': CAMP,
     'K': KEEP,
     'T': TOWNCENTER,

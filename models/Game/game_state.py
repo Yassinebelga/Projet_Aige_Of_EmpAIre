@@ -1,6 +1,7 @@
 import pygame
 import random 
-from ImageProcessingDisplay import UserInterface, Camera, TerminalCamera 
+import webbrowser
+from ImageProcessingDisplay import UserInterface, StartMenu, PauseMenu, Camera, TerminalCamera 
 from GameField.map import *
 from GLOBAL_VAR import *
 
@@ -8,7 +9,9 @@ class GameState:
     def __init__(self, screen):
         self.states = START
         self.screen = screen
-        self.menu = UserInterface(screen)
+        self.startmenu = StartMenu(screen)
+        self.pausemenu = PauseMenu(screen)
+        self.ui = UserInterface(screen)
         self.speed = 1
         self.selected_map_type = MAP_NORMAL
         self.selected_mode = LEAN
@@ -135,7 +138,31 @@ class GameState:
         # Write the modified HTML content to a new file
         with open("overview.html", "w") as output_file:
             output_file.write(html_content)
+        webbrowser.open_new_tab('overview.html')
 
+
+    def toggle_resources(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_switch_time >= self.switch_cooldown:
+            self.ui.toggle_resources()
+            self.last_switch_time = current_time
+
+    def toggle_units(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_switch_time >= self.switch_cooldown:
+            self.ui.toggle_units()
+            self.last_switch_time = current_time
+    def toggle_builds(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_switch_time >= self.switch_cooldown:
+            self.ui.toggle_builds()
+            self.last_switch_time = current_time
+    
+    def toggle_all(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_switch_time >= self.switch_cooldown:
+            self.ui.toggle_all()
+            self.last_switch_time = current_time
 
     # def draw_pause_text(self, screen):
     #     """Affiche le texte 'Jeu en pause' au centre de l'écran."""

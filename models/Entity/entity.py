@@ -1,6 +1,8 @@
 from GLOBAL_VAR import *
+from idgen import *
 class Entity():
     def __init__(self, cell_Y, cell_X, position, team, representation, sq_size = 1):
+        global ID_GENERATOR
         self.cell_Y = cell_Y
         self.cell_X = cell_X
         self.position = position
@@ -8,7 +10,7 @@ class Entity():
         self.representation = representation
         self.sq_size = sq_size
         self.image = None
+        self.id = ID_GENERATOR.give_ticket()
 
-    
     def __str__(self):
         return f"ent<{self.representation}>"

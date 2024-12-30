@@ -9,19 +9,28 @@ class Map:
 
     def __init__(self,_nb_CellX , _nb_CellY):
         
-
+        
         self.nb_CellX = _nb_CellX
         self.nb_CellY = _nb_CellY
         self.tile_size_2d = TILE_SIZE_2D
         self.region_division = REGION_DIVISION
         self.entity_matrix = {} #sparse matrix
 
+        self.entity_id_dict = {} # each element of this is an id
+        
+
+        self.projectile_set = set()
         self.last_time_refershed = pygame.time.get_ticks() # refresh for the terminal display
 
 
         # for the minimap
         self.minimap = MiniMap(PVector2(1000,300), _nb_CellX, _nb_CellY)
 
+
+
+    def get_entity_by_id(self, _entity_id):
+        return self.entity_id_dict.get(_entity_id, None)
+    
     def check_cell(self, Y_to_check, X_to_check):
         REG_Y_to_check, REG_X_to_check = Y_to_check//self.region_division, X_to_check//self.region_division
 
@@ -74,37 +83,61 @@ class Map:
         _entity.box_size = bottomright_cell.x - _entity.position.x  # distance from the center to the corners of the collision box
 
         if isinstance(_entity, Unit):
-            _entity.box_size += TILE_SIZE_2D/(2 * 3)
-            _entity.linked_map = self
+            _entity.box_size += TILE_SIZE_2D/(2 * 3) # for the units hitbox is smaller 
+            _entity.move_position.x = _entity.position.x
+            _entity.move_position.y = _entity.position.y # well when the unit is added its target pos to move its it self se it doesnt move
+            
         else:
-            _entity.box_size += TILE_SIZE_2D/(2 * 2)
+            _entity.box_size += TILE_SIZE_2D/(2 * 1.5) # the factors used the box_size lines are to choosen values for a well scaled collision system with respec to the type and size of the entity
         
+        _entity.linked_map = self
+
+        # at the end add the entity pointer to the id dict with the id dict 
+
+        self.entity_id_dict[_entity.id] = _entity
         return 1 # added the entity succesfully
+    
+
+    def add_projectile(self, _projectile):
+        self.projectile_set.add(_projectile)
+
+    def remove_projectile(self, _projectile):
+        self.projectile_set.discard(_projectile)
+
+    def update_all_projectiles(self, current_time):
+        for proj in self.projectile_set.copy():
+            proj.update_event(current_time)
+
+            if proj.reached_target:
+                self.remove_projectile(proj)
+
+      
     
     def remove_entity(self,_entity):
 
-        assert(_entity != None), 0x0011
-        
-        # we are going to return the entity, cause sometimes we need to put it else where in the map, like units when moving for exemple 
+        assert _entity is not None, "Entity cannot be None (Error 0x0011)"
 
-        for Y_to_remove in range(_entity.cell_Y,_entity.cell_Y - _entity.sq_size, -1):
-            for X_to_remove in range(_entity.cell_X,_entity.cell_X - _entity.sq_size, -1):
-
-                REG_Y, REG_X = Y_to_remove//self.region_division, X_to_remove//self.region_division
+        for Y_to_remove in range(_entity.cell_Y, _entity.cell_Y - _entity.sq_size, -1):
+            for X_to_remove in range(_entity.cell_X, _entity.cell_X - _entity.sq_size, -1):
+                REG_Y, REG_X = Y_to_remove // self.region_division, X_to_remove // self.region_division
                 region = self.entity_matrix.get((REG_Y, REG_X))
 
-                # no need to check the region cause it has at least the entity it self
-                current_set = region.get((Y_to_remove, X_to_remove))
+                if region:
+                    current_set = region.get((Y_to_remove, X_to_remove))
 
-                current_set.remove(_entity) # remove the entity from this cell 
+                    if current_set:
+                        current_set.discard(_entity)  # Safe removal
 
-                if not(current_set):
-                    region.pop((Y_to_remove, X_to_remove)) # so we remove the set from the region ( the region is empty )
-                
-                if not(region):
-                    self.entity_matrix.pop((REG_Y, REG_X))
+                        if not current_set:
+                            region.pop((Y_to_remove, X_to_remove), None)  # Safely remove key if set is empty
 
-        return _entity
+                    if not region:  # Remove empty regions
+                        self.entity_matrix.pop((REG_Y, REG_X), None)
+
+        self.entity_id_dict.pop(_entity.id, None)
+
+        return _entity  # Return the entity if needed elsewhere
+
 
     
     def display(self, current_time, screen, camera, g_width, g_height):
@@ -142,6 +175,16 @@ class Map:
 
         entity_to_display = set()
         
+
+        min_X, min_Y = range_left[1], range_top[0]
+        max_X, max_Y = range_right[1], range_bottom[0]
+
+        for proj in self.projectile_set:
+            if min_Y <= proj.cell_Y//self.region_division <= max_Y and \
+                min_X <= proj.cell_X//self.region_division <= max_X :
+                    entity_to_display.add(proj)
+
+
         for region_Y_to_display, region_X_to_display in isoRange(range_top, range_left, range_right, range_bottom):
 
                 if region_Y_to_display >= 0 and region_Y_to_display < self.nb_CellY//self.region_division \
@@ -179,8 +222,9 @@ class Map:
 
                 pygame.draw.circle(screen, (255, 0, 0), (iso_x, iso_y), 1, 0) 
         """ # debug purposes 
+        
                                                                                 # priority to the farm ( they are like grass so the ground is displayed first) then the normal deep sort 
-        for current_entity in sorted(entity_to_display, key=lambda entity: (not(isinstance(entity, Farm)), entity.position.y + entity.position.x, entity.position.y)):
+        for current_entity in sorted(entity_to_display, key=lambda entity: (not(isinstance(entity, Farm)), entity.position.z, entity.position.y + entity.position.x, entity.position.y)):
         
             current_entity.display(current_time, screen, camera, g_width, g_height)
         
@@ -325,6 +369,7 @@ class Map:
                 self._add_starting_resources(center_Y, center_X)
     
     def _add_starting_resources(self, center_Y, center_X):
+
         GEN_DIS_G = 2
         GEN_DIS_T = 1
         for offset_X, offset_Y in [(-GEN_DIS_G, GEN_DIS_G), (GEN_DIS_G, -GEN_DIS_G), (GEN_DIS_G, GEN_DIS_G)]:
@@ -341,3 +386,45 @@ class Map:
             if not(self.check_cell(tree_Y, tree_Y)):  
                 tree = Tree(tree_Y, tree_X, None)
                 self.add_entity(tree)
+
+
+    def mouse_get_entity(self, camera, iso_x, iso_y):
+
+        res_entity = None
+
+        x, y = camera.convert_from_isometric_2d(iso_x, iso_y)
+
+        cell_X, cell_Y = int(x/camera.tile_size_2d), int(y/camera.tile_size_2d)
+
+        region = self.entity_matrix.get((cell_Y//self.region_division, cell_X//self.region_division))
+
+        if region:
+            current_set = region.get((cell_Y, cell_X))
+
+            if (current_set):
+                for entity in current_set:    
+                    res_entity = entity.id
+                    break
+        
+        return res_entity
+            
+    def update_all_dead_entities(self, current_time):
+        for reg_key in list(self.entity_matrix.keys()):
+            region = self.entity_matrix.get(reg_key, None)
+            
+            if(region):
+            
+                for set_key in list(region.keys()):
+                    
+                    entity_set = region.get(set_key, None)
+                    if entity_set:
+                        for entity in entity_set.copy():
+                            if entity.is_dead():
+                                self.remove_entity(entity)
+                    
+                
+
+
+    def update_all_events(self, current_time):
+        self.update_all_projectiles(current_time)
+        self.update_all_dead_entities(current_time)

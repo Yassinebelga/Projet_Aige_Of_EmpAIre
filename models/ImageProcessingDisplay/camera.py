@@ -87,7 +87,7 @@ class Camera:
 
         if current_time - self.last_time_adjusted_zoom > ONE_SEC/self.num_zoom_per_sec:
             self.last_time_adjusted_zoom = current_time
-            self.zoom = max(1, min(4, self.zoom + amount))
+            self.zoom = max(MIN_ZOOM, min(MAX_ZOOM, self.zoom + amount))
             self.width = g_width/self.zoom
             self.height = g_height/self.zoom
 
