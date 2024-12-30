@@ -410,18 +410,19 @@ class Map:
             
     def update_all_dead_entities(self, current_time):
         for reg_key in list(self.entity_matrix.keys()):
-            region = self.entity_matrix[reg_key]
+            region = self.entity_matrix.get(reg_key, None)
             
-            for set_key in list(region.keys()):
-                entity_set = region[set_key]
-
-                region[set_key] = {entity for entity in entity_set if not entity.is_dead()}
-
-                if not region[set_key]:
-                    del region[set_key]
+            if(region):
             
-            if not region:
-                del self.entity_matrix[reg_key]
+                for set_key in list(region.keys()):
+                    
+                    entity_set = region.get(set_key, None)
+                    if entity_set:
+                        for entity in entity_set.copy():
+                            if entity.is_dead():
+                                self.remove_entity(entity)
+                    
+                
 
 
     def update_all_events(self, current_time):

@@ -15,10 +15,11 @@ class Projectile:
         self.damage = damage
         self.entity_target = entity_target
         self.reached_target = False
-        self.time_to_get_target = ONE_SEC
+        
+        self.distance_left = self.position.abs_distance(entity_target.position)
+        self.time_to_get_target = (ONE_SEC/6) * self.distance_left/_map.tile_size_2d
         
         self.time_left = self.time_to_get_target
-        self.distance_left = self.position.abs_distance(entity_target.position)
         self.last_time_changed_pos = pygame.time.get_ticks()
         self.direction = self.position.alpha_angle(entity_target.position)
         
