@@ -98,17 +98,23 @@ class GameState:
                 for entity in entity_set:
                         match type(entity):
                             case Building if entity.team == 1 :
-                                dict_buildings1[len(dict_buildings1)] = entity.position
+                                if entity.position not in dict_buildings1.values():
+                                    dict_buildings1[len(dict_buildings1)] = entity.position
                             case Building if entity.team == 2 :
-                                dict_buildings2[len(dict_buildings2)] = entity.position
+                                if entity.position not in dict_buildings2.values():
+                                    dict_buildings2[len(dict_buildings2)] = entity.position
                             case Ressources if entity.team == 1 :
-                                dict_ressources1[len(dict_ressources1)] = entity.position
+                                if entity.position not in dict_ressources1.values():
+                                    dict_ressources1[len(dict_ressources1)] = entity.position
                             case Ressources if entity.team == 2 : 
-                                dict_ressources2[len(dict_ressources2)] = entity.position
+                                if entity.poition not in dict_ressources2.values():
+                                    dict_ressources2[len(dict_ressources2)] = entity.position
                             case Unit if entity.team == 1 :
-                                dict_unit1[len(dict_unit1)] = entity.position
+                                if entity.position not in dict_unit1.values():
+                                    dict_unit1[len(dict_unit1)] = entity.position
                             case Unit if entity.team == 2 :
-                                dict_unit2[len(dict_unit2)] = entity.position
+                                if entity.position not in dict_unit2.values():
+                                    dict_unit2[len(dict_unit2)] = entity.position
            
         # unit_list_html = ""
         # for i in range(1,3):
