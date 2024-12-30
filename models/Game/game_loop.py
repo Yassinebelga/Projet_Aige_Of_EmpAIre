@@ -2,7 +2,7 @@ import pygame
 
 from ImageProcessingDisplay import UserInterface
 from GLOBAL_VAR import *
-from Game.game_state import *
+from Game.game_state import * 
 
 
 class GameLoop:
