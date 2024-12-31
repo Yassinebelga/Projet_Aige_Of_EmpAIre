@@ -64,9 +64,10 @@ class UserInterface:
         
         # Affichage des données des joueurs
         if self.display_resources:
-            #display_image(TREES_ARRAY_1D, player_1_pos[0] + 60, player_1_pos[1]+y_offset_player_1, self.screen, 0x04)
-            #display_image(GOLD_ARRAY_1D, player_1_pos[0] + 80, player_1_pos[1]+y_offset_player_1, self.screen, 0x04)
-            resources = f"Ressources - Food: {player_1_data['F']} |  : {player_1_data['W']} |   : {player_1_data['G']}"
+            display_image(FOOD_ICON, player_1_pos[0], player_1_pos[1]+y_offset_player_1, self.screen, 0x04)
+            display_image(WOOD_ICON, player_1_pos[0] + 100, player_1_pos[1]+y_offset_player_1, self.screen, 0x04)
+            display_image(GOLD_ICON, player_1_pos[0] + 200, player_1_pos[1]+y_offset_player_1, self.screen, 0x04)
+            resources = f"     : {player_1_data['F']} |  : {player_1_data['W']} |   : {player_1_data['G']}"
             text = self.font.render(resources, True, WHITE_COLOR)
             self.screen.blit(text, (player_1_pos[0], player_1_pos[1] + y_offset_player_1))
             y_offset_player_1 += 20

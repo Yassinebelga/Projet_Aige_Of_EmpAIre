@@ -292,3 +292,24 @@ def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys, camera): # returns image to
 CURSOR_IMG = pygame.image.load("Sprites/cursor.png").convert_alpha()
 MINIMAP_IMG = pygame.image.load("Sprites/minimap_cus.png").convert_alpha()
 MINIMAP_IMG = adjust_sprite(MINIMAP_IMG, MINIMAP_WIDTH*(2 + 0.2), MINIMAP_HEIGHT/2 *(2 + 0.2))
+
+#Resources
+GOLD_ICON = pygame.image.load("Icons/Resources/Aoe2de_gold.webp").convert_alpha()
+WOOD_ICON = pygame.image.load("Icons/Resources/Aoe2de_wood.webp").convert_alpha()
+FOOD_ICON = pygame.image.load("Icons/Resources/Food.webp").convert_alpha()
+
+#Bulding
+ARCHERY_RANGE_ICON = pygame.image.load("Icons/Building/Archery_range_aoe2DE.webp").convert_alpha()
+BARRACKS_ICON = pygame.image.load("Icons/Building/Barracks_aoe2DE.webp").convert_alpha()
+FARM_ICON = pygame.image.load("Icons/Building/FarmDE.webp").convert_alpha()
+HOUSE_ICON = pygame.image.load("Icons/Building/House_aoe2DE.webp").convert_alpha()
+KEEP_ICON = pygame.image.load("Icons/Building/Keep_icon_AoE2DE.webp").convert_alpha()
+CAMP_ICON = pygame.image.load("Icons/Building/Lumber_camp_aoe2de.png").convert_alpha()
+STABLE_ICON = pygame.image.load("Icons/Building/Stable_aoe2DE.webp").convert_alpha()
+TOWNCENTRE_ICON = pygame.image.load("Icons/Building/Towncenter_aoe2DE.webp").convert_alpha()
+
+#Unit
+ARCHER_ICON = pygame.image.load("Icons/Unit/Archer_aoe2DE.webp").convert_alpha()
+HORSEMAN_ICON = pygame.image.load("Icons/Unit/Knight_aoe2DE.webp").convert_alpha()
+SWORDSMAN_ICON = pygame.image.load("Icons/Unit/Longswordsman_aoe2DE.webp").convert_alpha()
+VILLAGER_ICON = pygame.image.load("Icons/Unit/MaleVillDE.webp").convert_alpha()
