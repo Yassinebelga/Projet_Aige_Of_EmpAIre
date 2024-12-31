@@ -187,7 +187,6 @@ class GameLoop:
                    
                 elif (self.state.display_mode == TERMINAL):
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
-
                 self.state.map.update_all_events(current_time)
                 archer.try_to_attack(current_time, entity_id, self.state.camera)
                 villager.try_to_move(current_time, self.state.camera)

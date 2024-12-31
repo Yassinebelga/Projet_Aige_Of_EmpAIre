@@ -24,6 +24,27 @@ SAVE_MAPPING = {
 }
 """
 
+SAVE_MAPPING = {
+    'A': ArcheryRange,
+    'B': Barracks,
+    'C': Camp,
+    'K': Keep,
+    'T': TownCenter,
+    'F': Farm,
+    'G': Gold,
+    'W': Tree,
+    'S': Stable,
+    'H': House,
+    'h': HorseMan,
+    'a': Archer,
+    's': SwordMan,
+    'v': Villager,
+    'p': Projectile,
+    'a': Arrow,
+    'V': PVector2
+}
+
+
 #from AITools.raycastingrange import *
 
 class Map:

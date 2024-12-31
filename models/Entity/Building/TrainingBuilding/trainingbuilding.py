@@ -9,11 +9,13 @@ TRAINABLE_UNITS = {
     "a":Archer,
     "s":SwordMan
 }
+
 class TrainingBuilding(Building):
 
     def __init__(self, cell_Y, cell_X, position, team,representation, sq_size, hp, cost, build_time, trainable_units):
         super().__init__(cell_Y, cell_X, position, team,representation, sq_size, hp, cost, build_time)
         self.trainable_units = trainable_units
+
         self.time_left = None
         self.last_time_changed_delta = None 
         self.unit_being_trained = None
@@ -62,6 +64,7 @@ class TrainingBuilding(Building):
         if self.unit_being_trained:
             iso_x, iso_y = camera.convert_to_isometric_2d(self.position.x - self.linked_map.tile_size_2d/2, self.position.y - self.linked_map.tile_size_2d/2)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.unit_being_trained.training_time - self.time_left/ONE_SEC, self.unit_being_trained.training_time, self.sq_size)
+
 
 
 
