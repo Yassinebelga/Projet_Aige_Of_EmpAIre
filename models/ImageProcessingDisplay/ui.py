@@ -1,5 +1,6 @@
 import pygame
 from GLOBAL_VAR import *
+from ImageProcessingDisplay.imagemethods import *
 
 class UserInterface:
     def __init__(self, screen):
@@ -54,8 +55,8 @@ class UserInterface:
 
 
         # Position des joueurs
-        player_1_pos = (10, 10)
-        player_2_pos = (self.screen.get_width()//2, 10)
+        player_1_pos = (10, 15)
+        player_2_pos = (self.screen.get_width()//2, 15)
 
         # Y offsets distincts pour chaque joueur
         y_offset_player_1 = 0
@@ -63,7 +64,9 @@ class UserInterface:
         
         # Affichage des données des joueurs
         if self.display_resources:
-            resources = f"Ressources - Food: {player_1_data['F']} | Wood: {player_1_data['W']} | Gold: {player_1_data['G']}"
+            #display_image(TREES_ARRAY_1D, player_1_pos[0] + 60, player_1_pos[1]+y_offset_player_1, self.screen, 0x04)
+            #display_image(GOLD_ARRAY_1D, player_1_pos[0] + 80, player_1_pos[1]+y_offset_player_1, self.screen, 0x04)
+            resources = f"Ressources - Food: {player_1_data['F']} |  : {player_1_data['W']} |   : {player_1_data['G']}"
             text = self.font.render(resources, True, WHITE_COLOR)
             self.screen.blit(text, (player_1_pos[0], player_1_pos[1] + y_offset_player_1))
             y_offset_player_1 += 20
