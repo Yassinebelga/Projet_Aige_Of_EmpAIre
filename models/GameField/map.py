@@ -2,6 +2,27 @@ from GameField.cell import *
 from GLOBAL_IMPORT import *
 from ImageProcessingDisplay.minimap import *
 from AITools.isorange import *
+"""
+SAVE_MAPPING = {
+    'A': ArcheryRange,
+    'B': Barracks,
+    'C': Camp,
+    'K': Keep,
+    'T': TownCenter,
+    'F': Farm,
+    'G': Gold,
+    'W': Tree,
+    'S': Stable,
+    'H': House,
+    'h': HorseMan,
+    'a': Archer,
+    's': SwordMan,
+    'v': Villager,
+    'p': Projectile,
+    'a': Arrow,
+    'V': PVector2
+}
+"""
 
 #from AITools.raycastingrange import *
 
@@ -17,7 +38,7 @@ class Map:
         self.entity_matrix = {} #sparse matrix
 
         self.entity_id_dict = {} # each element of this is an id
-        
+        self.dead_entities = {}
 
         self.projectile_set = set()
         self.last_time_refershed = pygame.time.get_ticks() # refresh for the terminal display
@@ -32,17 +53,21 @@ class Map:
         return self.entity_id_dict.get(_entity_id, None)
     
     def check_cell(self, Y_to_check, X_to_check):
-        REG_Y_to_check, REG_X_to_check = Y_to_check//self.region_division, X_to_check//self.region_division
+        if 0<=Y_to_check<self.nb_CellY and 0<=X_to_check<self.nb_CellX:
+            REG_Y_to_check, REG_X_to_check = Y_to_check//self.region_division, X_to_check//self.region_division
 
-        region = self.entity_matrix.get((REG_Y_to_check, REG_X_to_check),None)
+            region = self.entity_matrix.get((REG_Y_to_check, REG_X_to_check),None)
 
-        if (region):
-            if region.get((Y_to_check, X_to_check), None) != None:
-                return True 
-        
-        return False 
+            if (region):
+                if region.get((Y_to_check, X_to_check), None) != None:
+                    return 1 
+            
+            return 0
+        else:
+            return 0xff
 
     def add_entity(self, _entity):
+        print(_entity)
         assert (_entity != None), 0x0001 # to check if the entity is not null in case there were some problem in the implementation
 
         entity_in_matrix = (_entity.cell_X - (_entity.sq_size - 1) >= 0 and _entity.cell_Y - (_entity.sq_size - 1) >= 0) and ( _entity.cell_X < self.nb_CellX and _entity.cell_Y < self.nb_CellY)
@@ -97,6 +122,39 @@ class Map:
         self.entity_id_dict[_entity.id] = _entity
         return 1 # added the entity succesfully
     
+    def add_entity_to_closest(self, entity, cell_Y, cell_X):
+        
+        
+        startY = cell_Y 
+        startX = cell_X
+
+        endY = cell_Y
+        endX = cell_X
+
+        added = False
+        while not(added):
+            print("hey")
+            startX -=1
+            startY -=1
+            endY += 1
+            endX += 1
+
+            for current_Y in range(endY, startY - 1, -1):
+                if not(added):
+                    for current_X in range(endX, startX - 1, -1):
+                        if not(added):
+                            entity.cell_Y = current_Y
+                            entity.cell_X = current_X
+
+                            if (self.add_entity(entity)):
+                                added = True
+                        else:
+                            break
+                else:
+                    break
+
+                        
+
 
     def add_projectile(self, _projectile):
         self.projectile_set.add(_projectile)
@@ -363,7 +421,7 @@ class Map:
             center_Y = max(0, min(self.nb_CellY - 1, base_Y + offset_Y))  
 
             if not(self.check_cell(center_Y, center_X)) :
-                town_center = TownCenter(center_Y, center_X, None, team=i + 1)
+                town_center = Barracks(center_Y, center_X, None, team=i + 1)
                 self.add_entity(town_center)
                 
                 self._add_starting_resources(center_Y, center_X)
@@ -409,22 +467,20 @@ class Map:
         return res_entity
             
     def update_all_dead_entities(self, current_time):
-        for reg_key in list(self.entity_matrix.keys()):
-            region = self.entity_matrix.get(reg_key, None)
-            
-            if(region):
-            
-                for set_key in list(region.keys()):
-                    
-                    entity_set = region.get(set_key, None)
-                    if entity_set:
-                        for entity in entity_set.copy():
-                            if entity.is_dead():
-                                self.remove_entity(entity)
-                    
+        for key in list(self.dead_entities.keys()):
+            entity = self.dead_entities.get(key, None)
+            if entity:
+                if entity.will_vanish():
+                    self.dead_entities.pop(key, 0)
+                    self.remove_entity(entity)
+
+    def update_all_entities(self, current_time):
+        for entity in self.entity_id_dict.values():
+            entity.update_animation_frame(current_time)
                 
 
 
     def update_all_events(self, current_time):
+        self.update_all_entities(current_time)
         self.update_all_projectiles(current_time)
         self.update_all_dead_entities(current_time)

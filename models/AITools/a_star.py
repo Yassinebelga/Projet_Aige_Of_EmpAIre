@@ -1,7 +1,9 @@
 import heapq
 import math
-from GLOBAL_IMPORT import *
 
+
+from Entity.Resources.resources import Resources
+from Entity.Building.building import Building
 class Node:
     def __init__(self, _X, _Y):
         self.X = _X

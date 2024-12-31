@@ -43,8 +43,10 @@ def state_load_sprite_sheet(path): # define for each state ( attacking, walking 
         content = file.read()
     content = content.split("\n")
     image_range = int(content[0])
+    print(image_range)
     content = content[1:len(content) - 1]   # in size_each there is info about how the state and sprites are organized
-    for i in range(len(content)):
+    print(content)
+    for i in range(image_range):
         content[i] = content[i].split(",")
         row = content[i][0]
         col = content[i][1] 

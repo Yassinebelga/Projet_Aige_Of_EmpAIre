@@ -1,8 +1,8 @@
 from Entity.entity import *
 class Resources(Entity):
 
-    def __init__(self, cell_X, cell_Y, position, representation, storage_capacity, team = 0):
-        super().__init__(cell_X, cell_Y, position, team, representation)
+    def __init__(self, cell_Y, cell_X, position, representation, storage_capacity, team = 0):
+        super().__init__(cell_Y, cell_X, position, team, representation)
         self.storage = storage_capacity 
         self.max_storage = storage_capacity
         self.display_choice = 0

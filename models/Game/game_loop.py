@@ -24,13 +24,24 @@ class GameLoop:
 
     def run(self):
         
-        archer = Archer(5, 5, PVector2(0, 0), 1) # debugging
-        villager = Villager(7,7,PVector2(0, 0), 2)
+        ar = Stable(5, 5, None, 1)
+        self.state.map.add_entity(ar)
+
+        player = Player(1,{"gold":300,"wood":300,"food":300})
+        
+        
+
+        archer = Archer(10, 10, PVector2(0, 0), 1) # debugging
+        
+        villager = HorseMan(7,7,PVector2(0, 0), 2)
+        keep = Stable(9,3,PVector2(0, 0), 2)
+        
         entity = None
 
         target_pos = PVector2(0,0)
         self.state.map.add_entity(archer)
         self.state.map.add_entity(villager)
+        self.state.map.add_entity(keep)
         running = True
         while running:
             move_flags = 0
@@ -44,10 +55,12 @@ class GameLoop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    print(archer.save())
                 if self.state.states == START:
                     if pygame.key.get_pressed()[pygame.K_F12]:
                         #load a savegame
-                        self.state.save_manager.load_game()
+                        #self.state.save_manager.load_game()
+                        pass
                     if event.type == pygame.MOUSEBUTTONDOWN and self.state.startmenu.handle_click(event.pos):
                         # Mise à jour des paramètres du jeu en quittant le menu
                         self.state.set_map_type(self.state.startmenu.map_options[self.state.startmenu.selected_map_index])
@@ -65,7 +78,7 @@ class GameLoop:
                             self.state.mouse_held = True
                             
                             entity_id = self.state.map.mouse_get_entity(self.state.camera, mouse_x, mouse_y)
-
+                            ar.train_unit(player, current_time, 'h')
                         elif event.button == RIGHT_CLICK:
                             bx, by = self.state.camera.convert_from_isometric_2d(mouse_x, mouse_y)
                             villager.move_position.x = bx
@@ -93,10 +106,12 @@ class GameLoop:
                     self.state.toggle_display_mode(self)
                 #savegame
                 if keys[pygame.K_F11]:
-                    self.state.save_manager.save_game()
+                    #self.state.save_manager.save_game()
+                    pass
                 #loadgame
                 if keys[pygame.K_F12]:
-                    self.state.save_manager.load_game()
+                    #self.state.save_manager.load_game()
+                    pass
                 #génerer fichier html
                 if keys[pygame.K_TAB]:
                     self.state.generate_html_file()
@@ -157,24 +172,26 @@ class GameLoop:
             elif self.state.states == PAUSE:
                 self.state.pausemenu.draw()
             else:
+                self.screen.fill((0, 0, 0))
                 if (self.state.display_mode == ISO2D): # everything in the iso2d 
-                    self.screen.fill((0, 0, 0))
+                    
 
                     self.state.map.display(current_time, self.state.screen, self.state.camera, SCREEN_WIDTH, SCREEN_HEIGHT)
-                    self.state.map.update_all_events(current_time)
+                    
                     fps = int(self.clock.get_fps())
                     fps_text = self.font.render(f"FPS: {fps}", True, (255, 255, 255))
                     screen.blit(fps_text, (10, 10))
                     self.state.ui.draw_resources(self.state.map.entity_matrix)
-                    screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
+                    
                     # Rafraîchissement de l'affichage
                    
                 elif (self.state.display_mode == TERMINAL):
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
 
+                self.state.map.update_all_events(current_time)
                 archer.try_to_attack(current_time, entity_id, self.state.camera)
                 villager.try_to_move(current_time, self.state.camera)
-
+                ar.try_to_train(current_time)
                 
             screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
                 

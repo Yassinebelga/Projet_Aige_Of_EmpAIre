@@ -2,6 +2,7 @@ import math
 import random
 import os
 import sys
+import json
 
 INITIAL_ZOOM = 1
 MIN_ZOOM = 1
@@ -67,6 +68,10 @@ UNIT_WALKING = 1
 UNIT_ATTACKING = 2
 UNIT_DYING = 3
 UNIT_TASK = 4
+
+BUILDING_INPROGRESS= 0
+BUILDING_ACTIVE = 1
+BUILDING_DYING = 2
 
 TREE_CAPACITY = 100
 GOLD_CAPACITY = 800
@@ -177,42 +182,78 @@ region_surface = resize_sprite(region_surface, 1/(camera.img_scale*50))
 pygame.image.save(region_surface, "region.png")
 """
 GRASS = load_sprite("Sprites/region.webp")
-ARCHERYRANGE= load_sprite("Sprites/Building/archery_range.webp")
-BARRACKS = load_sprite("Sprites/Building/barracks.webp")
-CAMP = load_sprite("Sprites/Building/camp.webp")
-KEEP = load_sprite("Sprites/Building/keep.webp")
 
-TOWNCENTER = load_sprite("Sprites/Building/town_center_1.webp")
-FARM = load_sprite("Sprites/Building/farm.webp")
+ARCHERYRANGE_ARRAY_3D= state_load_sprite_sheet("Sprites/Building/archeryrange")
+BARRACKS_ARRAY_3D = state_load_sprite_sheet("Sprites/Building/barracks")
+CAMP_ARRAY_3D = state_load_sprite_sheet("Sprites/Building/camp")
+KEEP_ARRAY_3D = state_load_sprite_sheet("Sprites/Building/keep")
+STABLE_ARRAY_3D = state_load_sprite_sheet("Sprites/Building/stable")
+HOUSES_ARRAY_3D = state_load_sprite_sheet("Sprites/Building/house")
+TOWNCENTER_ARRAY_3D = state_load_sprite_sheet("Sprites/Building/towncenter")
+FARM_ARRAY_3D = state_load_sprite_sheet("Sprites/Building/farm")
+
 GOLD_ARRAY_1D = load_single_sprites("Sprites/Resources/gold.webp",7)
 TREES_ARRAY_1D = load_single_sprites("Sprites/Resources/trees.webp",42)
-STABLE_ARRAY_1D = load_single_sprites("Sprites/Building/stable.webp", 27)
-HOUSES_ARRAY_1D = load_single_sprites("Sprites/Building/houses.webp",3)
+
+
+
 HORSEMAN_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/horseman")
 ARCHER_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/archer")
 SWORDMAN_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/swordman")
 VILLAGER_ARRAY_3D = state_load_sprite_sheet("Sprites/Unit/villager")
+
 ARROW_ARRAY_2D = load_sprite_sheet("Sprites/Projectile/arrow.webp",32, 11, skip_row = 2, limit_col = 1)
 
 SPRITES = {
-    'G': GRASS,
-    'A': ARCHERYRANGE,
-    'B': BARRACKS,
-    'C': CAMP,
-    'K': KEEP,
-    'T': TOWNCENTER,
-    'F': FARM,
-    'g': GOLD_ARRAY_1D,
-    'w': TREES_ARRAY_1D,
-    'S': STABLE_ARRAY_1D,
-    'H': HOUSES_ARRAY_1D,
+    'g': GRASS,
+    'A': ARCHERYRANGE_ARRAY_3D,
+    'B': BARRACKS_ARRAY_3D,
+    'C': CAMP_ARRAY_3D,
+    'K': KEEP_ARRAY_3D,
+    'T': TOWNCENTER_ARRAY_3D,
+    'F': FARM_ARRAY_3D,
+    'G': GOLD_ARRAY_1D,
+    'W': TREES_ARRAY_1D,
+    'S': STABLE_ARRAY_3D,
+    'H': HOUSES_ARRAY_3D,
     'h': HORSEMAN_ARRAY_3D,
     'a': ARCHER_ARRAY_3D,
     's': SWORDMAN_ARRAY_3D,
     'v': VILLAGER_ARRAY_3D,
-    'p': ARROW_ARRAY_2D
+    'na': ARROW_ARRAY_2D
 }
 
+UNIT_SATES = {
+    "dying": UNIT_DYING
+}
+BUILDING_STATES = {
+    "dying": BUILDING_DYING
+}
+
+STATES = {
+    'A': BUILDING_STATES,
+    'B': BUILDING_STATES,
+    'C': BUILDING_STATES,
+    'K': BUILDING_STATES,
+    'T': BUILDING_STATES,
+    'F': BUILDING_STATES,
+    'S': BUILDING_STATES,
+    'H': BUILDING_STATES,
+    'h': UNIT_SATES,
+    'a': UNIT_SATES,
+    's': UNIT_SATES,
+    'v': UNIT_SATES
+}
+
+WATER_MARK_SKIP = {
+    "A":[(2,0,10), (2,0,15)],
+    "B":[(2,0,20), (2,0,18)],
+    "C":[(2,0,20), (2,0,17)],
+    "H":[(2,0,7), (2,2,17)],
+    "K":[(2,0,4), (2,0,16)],
+    "S":[(2,0,20), (2,0,18)],
+    "T":[(2,0,4), (2,0,16)]
+}
 META_SPRITES_CACHE ={}
 
 def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys, camera): # returns image to display
@@ -251,3 +292,24 @@ def META_SPRITES_CACHE_HANDLE(zoom_level, list_keys, camera): # returns image to
 CURSOR_IMG = pygame.image.load("Sprites/cursor.png").convert_alpha()
 MINIMAP_IMG = pygame.image.load("Sprites/minimap_cus.png").convert_alpha()
 MINIMAP_IMG = adjust_sprite(MINIMAP_IMG, MINIMAP_WIDTH*(2 + 0.2), MINIMAP_HEIGHT/2 *(2 + 0.2))
+
+#Resources
+GOLD_ICON = pygame.image.load("Icons/Resources/Aoe2de_gold.webp").convert_alpha()
+WOOD_ICON = pygame.image.load("Icons/Resources/Aoe2de_wood.webp").convert_alpha()
+FOOD_ICON = pygame.image.load("Icons/Resources/Food.webp").convert_alpha()
+
+#Bulding
+ARCHERY_RANGE_ICON = pygame.image.load("Icons/Building/Archery_range_aoe2DE.webp").convert_alpha()
+BARRACKS_ICON = pygame.image.load("Icons/Building/Barracks_aoe2DE.webp").convert_alpha()
+FARM_ICON = pygame.image.load("Icons/Building/FarmDE.webp").convert_alpha()
+HOUSE_ICON = pygame.image.load("Icons/Building/House_aoe2DE.webp").convert_alpha()
+KEEP_ICON = pygame.image.load("Icons/Building/Keep_icon_AoE2DE.webp").convert_alpha()
+CAMP_ICON = pygame.image.load("Icons/Building/Lumber_camp_aoe2de.png").convert_alpha()
+STABLE_ICON = pygame.image.load("Icons/Building/Stable_aoe2DE.webp").convert_alpha()
+TOWNCENTRE_ICON = pygame.image.load("Icons/Building/Towncenter_aoe2DE.webp").convert_alpha()
+
+#Unit
+ARCHER_ICON = pygame.image.load("Icons/Unit/Archer_aoe2DE.webp").convert_alpha()
+HORSEMAN_ICON = pygame.image.load("Icons/Unit/Knight_aoe2DE.webp").convert_alpha()
+SWORDSMAN_ICON = pygame.image.load("Icons/Unit/Longswordsman_aoe2DE.webp").convert_alpha()
+VILLAGER_ICON = pygame.image.load("Icons/Unit/MaleVillDE.webp").convert_alpha()
