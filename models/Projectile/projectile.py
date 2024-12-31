@@ -46,7 +46,11 @@ class Projectile:
 
                     self.reached_target = True
                     self.entity_target.hp -= self.damage
-                    
+                    if self.entity_target.is_dead():
+                        self.linked_map.dead_entities[self.entity_target.id] = self.entity_target
+                        print(STATES.get(self.entity_target.representation, None).get("dying", None))
+                        self.entity_target.change_state(STATES.get(self.entity_target.representation, None).get("dying", None))
+                        
                 else:
 
                     self.direction = self.position.alpha_angle(self.entity_target.position)

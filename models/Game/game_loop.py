@@ -24,13 +24,16 @@ class GameLoop:
 
     def run(self):
         
-        archer = HorseMan(5, 5, PVector2(0, 0), 1) # debugging
-        villager = Villager(7,7,PVector2(0, 0), 2)
+        archer = Archer(5, 5, PVector2(0, 0), 1) # debugging
+        villager = HorseMan(7,7,PVector2(0, 0), 2)
+        keep = Stable(9,3,PVector2(0, 0), 2)
+        
         entity = None
 
         target_pos = PVector2(0,0)
         self.state.map.add_entity(archer)
         self.state.map.add_entity(villager)
+        self.state.map.add_entity(keep)
         running = True
         while running:
             move_flags = 0
@@ -161,21 +164,23 @@ class GameLoop:
             elif self.state.states == PAUSE:
                 self.state.pausemenu.draw()
             else:
+                self.screen.fill((0, 0, 0))
                 if (self.state.display_mode == ISO2D): # everything in the iso2d 
-                    self.screen.fill((0, 0, 0))
+                    
 
                     self.state.map.display(current_time, self.state.screen, self.state.camera, SCREEN_WIDTH, SCREEN_HEIGHT)
-                    self.state.map.update_all_events(current_time)
+                    
                     fps = int(self.clock.get_fps())
                     fps_text = self.font.render(f"FPS: {fps}", True, (255, 255, 255))
                     screen.blit(fps_text, (10, 10))
                     self.state.ui.draw_resources(self.state.map.entity_matrix)
-                    screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
+                    
                     # Rafraîchissement de l'affichage
                    
                 elif (self.state.display_mode == TERMINAL):
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
-
+                    
+                self.state.map.update_all_events(current_time)
                 archer.try_to_attack(current_time, entity_id, self.state.camera)
                 villager.try_to_move(current_time, self.state.camera)
 

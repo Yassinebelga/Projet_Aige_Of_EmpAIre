@@ -3,7 +3,7 @@ from Projectile.arrow import *
 
 class Archer(RangedUnit):
 
-    def __init__(self, cell_Y, cell_X, position, team, representation = 'a', hp = 30, cost = 25, training_time = 35*ONE_SEC, speed = 1, attack =4, attack_speed = 1, _range = 5, _projectile_type = "na"):
+    def __init__(self, cell_Y, cell_X, position, team, representation = 'a', hp = 30, cost = 25, training_time = 35*ONE_SEC, speed = 1, attack =500, attack_speed = 1, _range = 5, _projectile_type = "na"):
         super().__init__(cell_Y, cell_X, position, team, representation, hp, cost, training_time, speed, attack, attack_speed, _range, _projectile_type)
         self.image = ARCHER_ARRAY_3D
         self.last_time_sent_arrow = pygame.time.get_ticks()

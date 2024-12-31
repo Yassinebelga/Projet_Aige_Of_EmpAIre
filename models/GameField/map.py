@@ -38,7 +38,7 @@ class Map:
         self.entity_matrix = {} #sparse matrix
 
         self.entity_id_dict = {} # each element of this is an id
-        
+        self.dead_entities = {}
 
         self.projectile_set = set()
         self.last_time_refershed = pygame.time.get_ticks() # refresh for the terminal display
@@ -431,22 +431,20 @@ class Map:
         return res_entity
             
     def update_all_dead_entities(self, current_time):
-        for reg_key in list(self.entity_matrix.keys()):
-            region = self.entity_matrix.get(reg_key, None)
-            
-            if(region):
-            
-                for set_key in list(region.keys()):
-                    
-                    entity_set = region.get(set_key, None)
-                    if entity_set:
-                        for entity in entity_set.copy():
-                            if entity.is_dead():
-                                self.remove_entity(entity)
-                    
+        for key in list(self.dead_entities.keys()):
+            entity = self.dead_entities.get(key, None)
+            if entity:
+                if entity.will_vanish():
+                    self.dead_entities.pop(key, 0)
+                    self.remove_entity(entity)
+
+    def update_all_entities(self, current_time):
+        for entity in self.entity_id_dict.values():
+            entity.update_animation_frame(current_time)
                 
 
 
     def update_all_events(self, current_time):
+        self.update_all_entities(current_time)
         self.update_all_projectiles(current_time)
         self.update_all_dead_entities(current_time)

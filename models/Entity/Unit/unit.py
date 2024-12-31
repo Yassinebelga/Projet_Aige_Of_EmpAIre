@@ -63,7 +63,7 @@ class Unit(Entity):
             self.last_animation_time = current_time
 
             self.animation_frame = (self.animation_frame + 1)%(self.len_current_animation_frames()) #the length changes with respect to the state but the zoom and direction does not change the animation frame count
-    
+
     def changed_cell_position(self):
         topleft = PVector2(self.cell_X*self.linked_map.tile_size_2d, self.cell_Y*self.linked_map.tile_size_2d)
         bottomright = PVector2((self.cell_X + 1)*self.linked_map.tile_size_2d, (self.cell_Y + 1)*self.linked_map.tile_size_2d)
@@ -194,14 +194,14 @@ class Unit(Entity):
             self.change_state(UNIT_IDLE)
 
     def try_to_move(self, current_time, camera):
-        
-        if self.position == self.move_position:
-            if not(self.state == UNIT_IDLE):
-                self.change_state(UNIT_IDLE)
-        else:
-            if not(self.state == UNIT_WALKING):
-                self.change_state(UNIT_WALKING)
-            self.move_to_position(current_time, camera)
+        if (self.state != UNIT_DYING):
+            if self.position == self.move_position:
+                if not(self.state == UNIT_IDLE):
+                    self.change_state(UNIT_IDLE)
+            else:
+                if not(self.state == UNIT_WALKING):
+                    self.change_state(UNIT_WALKING)
+                self.move_to_position(current_time, camera)
 
         
     def change_state(self, new_state):
@@ -224,7 +224,6 @@ class Unit(Entity):
         if (camera.check_in_point_of_view(iso_x, iso_y, g_width, g_height)):
             
             camera.draw_box(screen, self)
-            self.update_animation_frame(current_time)
             self.set_direction_index()
             display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.representation, self.state, self.animation_direction, self.animation_frame], camera = camera), iso_x, iso_y, screen, 0x04, 1)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.hp, self.max_hp, self.sq_size, self.team)
@@ -281,6 +280,8 @@ class Unit(Entity):
     def is_dead(self):
         return self.hp <= 0
     
+    def will_vanish(self):
+        return self.is_dead() and self.animation_frame == self.len_current_animation_frames() - 1
     
 
 
