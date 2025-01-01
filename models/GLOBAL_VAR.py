@@ -59,6 +59,35 @@ LEAN = 0
 MEAN = 1
 MARINES = 2
 
+#smart way for generation
+MODE_GENERATION = {
+    LEAN:{
+        "resources":{"gold":50, "wood":200, "food":50},
+        "entities":{
+            "T":1,
+            "v":3
+        }
+
+    },
+    MEAN:{
+        "resources":{"gold":2000, "wood":2000, "food":2000},
+        "entities":{
+            "T":1,
+            "v":3
+        }
+    },
+    MARINES:{
+        "resources":{"gold":20000, "wood":20000, "food":20000},
+        "entities":{
+            "T":3,
+            "v":15,
+            "B":2,
+            "S":2,
+            "A":2
+        }
+    }
+}
+
 #display
 TERMINAL = 0
 ISO2D = 1

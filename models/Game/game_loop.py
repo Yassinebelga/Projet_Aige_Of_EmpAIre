@@ -23,7 +23,7 @@ class GameLoop:
         
 
     def run(self):
-        
+        """
         ar = TownCenter(5, 5, PVector2(0, 0), 2)
         camp = Camp(15,15, None, 2)
         self.state.map.add_entity(ar)
@@ -39,6 +39,7 @@ class GameLoop:
         self.state.map.add_entity(villager)
         self.state.map.add_entity(keep)
         self.state.map.add_entity(camp)
+        """
         running = True
         while running:
             move_flags = 0
@@ -52,7 +53,7 @@ class GameLoop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                    print(villager.save())
+                    
                 if self.state.states == START:
                     if pygame.key.get_pressed()[pygame.K_F12]:
                         #load a savegame
@@ -76,12 +77,12 @@ class GameLoop:
                         if event.button == LEFT_CLICK:
                             self.state.mouse_held = True
                             
-                            villager.drop_to_entity(entity_id)
+                            #villager.drop_to_entity(entity_id)
 
-                            ar.train_unit(player, current_time, 'v')
+                            #ar.train_unit(player, current_time, 'v')
                         elif event.button == RIGHT_CLICK:
                             print("a")
-                            villager.collect_entity(entity_id)
+                            #villager.collect_entity(entity_id)
 
 
                         print(f"screen( width:{SCREEN_WIDTH}, {SCREEN_HEIGHT}), mouse( x:{mouse_x}, y:{mouse_y})")
@@ -187,11 +188,12 @@ class GameLoop:
                 elif (self.state.display_mode == TERMINAL):
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
                 self.state.map.update_all_events(current_time)
+                """
                 villager.try_to_attack(current_time, self.state.camera)
                 villager.try_to_drop(current_time, self.state.camera)
                 villager.try_to_collect(current_time, self.state.camera)
                 ar.try_to_train(current_time)
-                
+                """
             screen.blit(CURSOR_IMG,(mouse_x, mouse_y))
                 
             pygame.display.flip()

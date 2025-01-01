@@ -9,7 +9,6 @@ class Entity():
         self.position = position
         self.team = team
         self.representation = representation
-        print("we are adding sqz", sq_size)
         if id:
             self.id = id
         else:

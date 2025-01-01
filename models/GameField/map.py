@@ -2,8 +2,9 @@ from GameField.cell import *
 from GLOBAL_IMPORT import *
 from ImageProcessingDisplay.minimap import *
 from AITools.isorange import *
-"""
-SAVE_MAPPING = {
+import random 
+
+CLASS_MAPPING = {
     'A': ArcheryRange,
     'B': Barracks,
     'C': Camp,
@@ -22,7 +23,7 @@ SAVE_MAPPING = {
     'a': Arrow,
     'V': PVector2
 }
-"""
+
 
 SAVE_MAPPING = {
     'A': ArcheryRange,
@@ -64,6 +65,7 @@ class Map:
         self.projectile_set = set()
         self.last_time_refershed = pygame.time.get_ticks() # refresh for the terminal display
 
+        self.player_team_dict = {} # each element is a player, and the key is the team number 1 : team1 2 : team2
 
         # for the minimap
         self.minimap = MiniMap(PVector2(1000,300), _nb_CellX, _nb_CellY)
@@ -88,7 +90,7 @@ class Map:
             return 0xff
 
     def add_entity(self, _entity):
-        print(_entity)
+
         assert (_entity != None), 0x0001 # to check if the entity is not null in case there were some problem in the implementation
 
         entity_in_matrix = (_entity.cell_X - (_entity.sq_size - 1) >= 0 and _entity.cell_Y - (_entity.sq_size - 1) >= 0) and ( _entity.cell_X < self.nb_CellX and _entity.cell_Y < self.nb_CellY)
@@ -143,7 +145,7 @@ class Map:
         self.entity_id_dict[_entity.id] = _entity
         return 1 # added the entity succesfully
     
-    def add_entity_to_closest(self, entity, cell_Y, cell_X):
+    def add_entity_to_closest(self, entity, cell_Y, cell_X, random_padding = 0x00, min_spacing = 4, max_spacing = 5):
         
         
         startY = cell_Y 
@@ -153,26 +155,40 @@ class Map:
         endX = cell_X
 
         added = False
+        ite_list = None
+        offsetX = 1
+        offsetY = 1
+
         while not(added):
-            print("hey")
+            
             startX -=1
             startY -=1
             endY += 1
             endX += 1
 
-            for current_Y in range(endY, startY - 1, -1):
-                if not(added):
-                    for current_X in range(endX, startX - 1, -1):
-                        if not(added):
-                            entity.cell_Y = current_Y
-                            entity.cell_X = current_X
+            ite_list = []
 
-                            if (self.add_entity(entity)):
-                                added = True
-                        else:
-                            break
+            if random_padding:
+                offsetY = random.randint(min_spacing, max_spacing)
+                offsetX = random.randint(min_spacing, max_spacing)
+            
+            for current_Y in range(endY, (startY - 1), -offsetY):
+                for current_X in range(endX, (startX - 1), -offsetX):
+                    ite_list.append((current_Y, current_X))
+        
+            if random_padding:
+                random.shuffle(ite_list)
+
+            for current_Y, current_X in ite_list:
+                if not(added):
+                    entity.cell_Y = current_Y
+                    entity.cell_X = current_X
+
+                    if (self.add_entity(entity)):
+                        added = True
                 else:
                     break
+                        
 
                         
 
@@ -369,13 +385,13 @@ class Map:
                                 
         
 
-    def generate_map(self, num_players=2):
+    def generate_map(self, mode = MARINES ,num_players=3):
         
         # Ensure consistent random generation
         random.seed(0xba)
         
         
-        self._place_player_starting_areas(num_players)
+        self._place_player_starting_areas(mode, num_players)
         
         self._generate_forests()
         self._generate_gold()
@@ -427,10 +443,12 @@ class Map:
                         gold = Gold(gold_Y, gold_X, None)
                         self.add_entity(gold)
     
-    def _place_player_starting_areas(self, num_players):
+    def _place_player_starting_areas(self, mode, num_players):
         
         spacing = self.nb_CellX // num_players 
         for i in range(num_players):
+            current_player = Player(i + 1)
+            print(f"for player {current_player.team}")
             # Base position for this player's starting area
             base_X = spacing * i + spacing // 2
             base_Y = self.nb_CellY // 2
@@ -442,11 +460,25 @@ class Map:
             center_Y = max(0, min(self.nb_CellY - 1, base_Y + offset_Y))  
 
             if not(self.check_cell(center_Y, center_X)) :
-                town_center = Barracks(center_Y, center_X, None, team=i + 1)
-                self.add_entity(town_center)
+
+                gen_option = MODE_GENERATION.get(mode)
                 
-                self._add_starting_resources(center_Y, center_X)
-    
+                current_player.resources = gen_option.get("resources").copy() # we dont want togive it as a pointer else all players will share the same resources haha
+                entities_gen = gen_option.get("entities")
+                print(entities_gen)
+                for entity_type, number in entities_gen.items():
+                    print("key is ",number)
+                    EntityClass = CLASS_MAPPING.get(entity_type, None)
+                    
+                    
+                    for _ in range(number):
+                        entity_instance = EntityClass(None, None, None, current_player.team)
+                        print(entity_instance)
+                        self.add_entity_to_closest(entity_instance, center_Y, center_X, random_padding=0x01)
+
+
+
+
     def _add_starting_resources(self, center_Y, center_X):
 
         GEN_DIS_G = 2
