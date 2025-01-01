@@ -40,23 +40,27 @@ class RangedUnit(Unit):
                 self.change_state(UNIT_IDLE) # if the entity is killed we stop
 
 
-    def try_to_attack(self,current_time, entity_id, camera):
+    def try_to_attack(self,current_time, camera):
         if (self.state != UNIT_DYING):
-            entity = self.linked_map.get_entity_by_id(entity_id)
-
-            if (entity != None): 
+            entity = self.linked_map.get_entity_by_id(self.entity_target_id)
+            print(entity)
+            if (entity != None):
+                print("not none")
                 if (entity.team != 0 and entity.team != self.team):
-
+                    print("different team")
                     if (entity.is_dead() == False):
-                        
+                        print("not dead")
                         
                         if not(self.check_range_with_target):
+                            print("not check")
                             if (self.check_in_range_with(entity)):
+                                print("now checked")
                                 self.check_range_with_target = True
                                 
                                 print(f"animation_frame:{self.animation_frame}")
                                 
                             else:
+                                print("will walk")
                                 if not(self.state == UNIT_WALKING): # we need to reach it in range
                                     self.change_state(UNIT_WALKING)
                                     self.move_position = entity.position
@@ -66,7 +70,7 @@ class RangedUnit(Unit):
                             self.direction = self.position.alpha_angle(entity.position)
                             dist_to_entity = self.position.abs_distance(entity.position)
 
-                            if (dist_to_entity <= (self.range * (entity.sq_size) * TILE_SIZE_2D + entity.box_size + self.box_size)):
+                            if (dist_to_entity <= (self.range * (entity.sq_size) * self.linked_map.tile_size_2d + entity.box_size + self.box_size)):
                                 self.try_to_damage(current_time, entity, camera)
                             else:
                                 self.check_range_with_target = False

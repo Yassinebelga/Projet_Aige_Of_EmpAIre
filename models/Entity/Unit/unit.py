@@ -19,7 +19,8 @@ class Unit(Entity):
         self.last_time_attacked = pygame.time.get_ticks()
         self.will_attack = False
         self.attack_frame = 0
-        self.entity_target = None
+        self.entity_target_id= None
+
         self.check_range_with_target = False
         self.first_time_pass = True
 
@@ -46,8 +47,6 @@ class Unit(Entity):
         self.animation_speed = []  # Animation frame interval in milliseconds for each unit_state
         self.linked_map = None
 
-    def set_target(self, entity_target):
-        self.entity_target = entity_target
 
     #def affordable_by()
     def set_direction_index(self):
@@ -227,6 +226,9 @@ class Unit(Entity):
 
         self.state = new_state  
 
+    def attack_entity(self, entity_id):
+            
+        self.entity_target_id = entity_id
 
     def display(self, current_time, screen, camera, g_width, g_height):
         

@@ -31,16 +31,15 @@ class MeleeUnit(Unit):
     
 
         
-    def try_to_attack(self,current_time, entity_id, camera):
+    def try_to_attack(self,current_time, camera):
         if (self.state != UNIT_DYING):
-            entity = self.linked_map.get_entity_by_id(entity_id)
-            print(entity)
-            if (entity != None): 
-                if (entity.team != 0 and entity.team != self.team):
-                    if (entity.is_dead() == False):
-                        
-                        
-                        if (self.range == 1): # for melee attack 
+            if self.entity_target_id != None:
+                entity = self.linked_map.get_entity_by_id(self.entity_target_id)
+                print(entity)
+                if (entity != None): 
+                    if (entity.team != 0 and entity.team != self.team):
+                        if (entity.is_dead() == False):
+                            
                             if not(self.check_range_with_target):
                                 if (self.check_collision_with(entity)):
                                     self.check_range_with_target = True
@@ -65,14 +64,13 @@ class MeleeUnit(Unit):
                                     self.check_range_with_target = False
                                     if not(self.state == UNIT_IDLE):
                                         self.change_state(UNIT_IDLE)
-                    
-                    
+                        else:
+                            if not(self.state == UNIT_IDLE):
+                                self.change_state(UNIT_IDLE)
                     else:
                         if not(self.state == UNIT_IDLE):
                             self.change_state(UNIT_IDLE)
                 else:
                     if not(self.state == UNIT_IDLE):
-                            self.change_state(UNIT_IDLE)
-            else:        
-                if not(self.state == UNIT_IDLE):
-                    self.change_state(UNIT_IDLE)
+                        self.change_state(UNIT_IDLE)
+            

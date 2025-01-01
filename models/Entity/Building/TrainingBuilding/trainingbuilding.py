@@ -22,20 +22,20 @@ class TrainingBuilding(Building):
 
 
     def try_to_train(self, current_time):
-        print(self.unit_being_trained)
+        
         if self.time_left != None and self.unit_being_trained:# if not None
             
             if self.time_left > (0 + 1e-5):
 
                 elapsed_time = max(3,current_time - self.last_time_changed_delta) # to ensure that timeleft is decresing
-                print(elapsed_time)
+                
                 self.time_left = self.time_left - elapsed_time
                 self.last_time_changed_delta  = current_time
 
             else:
-                print("finished")
+                
                 if self.unit_being_trained:
-                    print("adding")
+                    
                     self.linked_map.add_entity_to_closest(self.unit_being_trained, self.cell_Y, self.cell_X)
 
                     self.unit_being_trained = None
@@ -51,9 +51,9 @@ class TrainingBuilding(Building):
                 unit = UnitClass(None, None, None, player.team)
 
                 if unit.affordable_by(player):
-                    print("before",player.resources)
+                    
                     player.remove_resources(unit.cost)
-                    print("before",player.resources) 
+                    
                     self.unit_being_trained = unit
 
                     self.time_left = self.unit_being_trained.training_time * ONE_SEC
@@ -64,6 +64,8 @@ class TrainingBuilding(Building):
         if self.unit_being_trained:
             iso_x, iso_y = camera.convert_to_isometric_2d(self.position.x - self.linked_map.tile_size_2d/2, self.position.y - self.linked_map.tile_size_2d/2)
             draw_percentage_bar(screen, camera, iso_x, iso_y, self.unit_being_trained.training_time - self.time_left/ONE_SEC, self.unit_being_trained.training_time, self.sq_size)
+            display_image(META_SPRITES_CACHE_HANDLE(camera.zoom, list_keys = [self.unit_being_trained.representation + "i"], camera = camera), iso_x, iso_y, screen, 0x04, 1)
+
 
 
 

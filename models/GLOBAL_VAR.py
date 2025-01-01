@@ -154,7 +154,6 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE
 pygame.display.set_caption("AOE2")
 
 
-
 """  DONT DELETE THIS SECTION !!!, WE MAY USE IT LATER 
 GRASS= load_sprite("Sprites/grass.webp")
 g =resize_sprite(GRASS, camera.img_scale*50)
@@ -296,7 +295,7 @@ MINIMAP_IMG = adjust_sprite(MINIMAP_IMG, MINIMAP_WIDTH*(2 + 0.2), MINIMAP_HEIGHT
 #Resources
 GOLD_ICON = pygame.image.load("Icons/Resources/Aoe2de_gold.png").convert_alpha()
 WOOD_ICON = pygame.image.load("Icons/Resources/Aoe2de_wood.png").convert_alpha()
-FOOD_ICON = pygame.image.load("Icons/Resources/Food.png").convert_alpha()
+FOOD_ICON = pygame.image.load("Icons/Resources/Aoe2de_food.png").convert_alpha()
 
 #Bulding
 ARCHERY_RANGE_ICON = pygame.image.load("Icons/Building/Archery_range_aoe2DE.png").convert_alpha()
@@ -313,3 +312,29 @@ ARCHER_ICON = pygame.image.load("Icons/Unit/Archer_aoe2DE.png").convert_alpha()
 HORSEMAN_ICON = pygame.image.load("Icons/Unit/Knight_aoe2DE.png").convert_alpha()
 SWORDSMAN_ICON = pygame.image.load("Icons/Unit/Longswordsman_aoe2DE.png").convert_alpha()
 VILLAGER_ICON = pygame.image.load("Icons/Unit/MaleVillDE.png").convert_alpha()
+
+ICONS = {
+    "Gi":GOLD_ICON,
+    "Wi":WOOD_ICON,
+    "Mi":FOOD_ICON,
+    "Ai":ARCHERY_RANGE_ICON,
+    "Bi":BARRACKS_ICON,
+    "Fi":FARM_ICON,
+    "Hi":HOUSE_ICON,
+    "Ki":KEEP_ICON,
+    "Ci":CAMP_ICON,
+    "Si":STABLE_ICON,
+    "Ti":TOWNCENTRE_ICON,
+    "ai":ARCHER_ICON,
+    "hi":HORSEMAN_ICON,
+    "si":SWORDSMAN_ICON,
+    "vi":VILLAGER_ICON
+}
+
+ICON_WIDTH, ICON_HEIGHT =  3*TILE_SIZE_2ISO, 3*TILE_SIZE_2ISO
+
+for key in ICONS:
+    ICONS[key] = adjust_sprite(ICONS[key], ICON_WIDTH, ICON_HEIGHT)
+
+
+SPRITES = SPRITES | ICONS

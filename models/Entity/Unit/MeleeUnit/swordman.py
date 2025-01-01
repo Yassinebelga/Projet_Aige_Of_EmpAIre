@@ -6,5 +6,5 @@ class SwordMan(MeleeUnit):
         super().__init__(cell_Y, cell_X, position, team, representation, hp, cost, training_time, speed, attack, attack_speed)
         self.image = SWORDMAN_ARRAY_3D
         
-        self.animation_speed = [30, 30, 30/self.attack_speed, 30]
+        self.animation_speed = [30, 30, 30, 30]
         self.attack_frame = 17

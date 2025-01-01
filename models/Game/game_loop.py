@@ -24,24 +24,21 @@ class GameLoop:
 
     def run(self):
         
-        ar = Stable(5, 5, None, 1)
+        ar = TownCenter(5, 5, PVector2(0, 0), 2)
+        camp = Camp(15,15, None, 2)
         self.state.map.add_entity(ar)
 
         player = Player(1,{"gold":300,"wood":300,"food":300})
         
         
-
-        archer = Archer(10, 10, PVector2(0, 0), 1) # debugging
         
-        villager = HorseMan(7,7,PVector2(0, 0), 2)
-        keep = Stable(9,3,PVector2(0, 0), 2)
+        villager = Villager(7,7,PVector2(0, 0), 2)
+        keep = Farm(9,3,PVector2(0, 0), 2)
         
-        entity = None
 
-        target_pos = PVector2(0,0)
-        self.state.map.add_entity(archer)
         self.state.map.add_entity(villager)
         self.state.map.add_entity(keep)
+        self.state.map.add_entity(camp)
         running = True
         while running:
             move_flags = 0
@@ -55,7 +52,7 @@ class GameLoop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                    print(archer.save())
+                    print(villager.save())
                 if self.state.states == START:
                     if pygame.key.get_pressed()[pygame.K_F12]:
                         #load a savegame
@@ -74,15 +71,17 @@ class GameLoop:
 
                 else:
                     if event.type == pygame.MOUSEBUTTONDOWN:
+                        entity_id = self.state.map.mouse_get_entity(self.state.camera, mouse_x, mouse_y)
+
                         if event.button == LEFT_CLICK:
                             self.state.mouse_held = True
                             
-                            entity_id = self.state.map.mouse_get_entity(self.state.camera, mouse_x, mouse_y)
-                            ar.train_unit(player, current_time, 'h')
+                            villager.drop_to_entity(entity_id)
+
+                            ar.train_unit(player, current_time, 'v')
                         elif event.button == RIGHT_CLICK:
-                            bx, by = self.state.camera.convert_from_isometric_2d(mouse_x, mouse_y)
-                            villager.move_position.x = bx
-                            villager.move_position.y = by
+                            print("a")
+                            villager.collect_entity(entity_id)
 
 
                         print(f"screen( width:{SCREEN_WIDTH}, {SCREEN_HEIGHT}), mouse( x:{mouse_x}, y:{mouse_y})")
@@ -188,8 +187,9 @@ class GameLoop:
                 elif (self.state.display_mode == TERMINAL):
                     self.state.map.terminal_display(current_time, self.state.terminal_camera)
                 self.state.map.update_all_events(current_time)
-                archer.try_to_attack(current_time, entity_id, self.state.camera)
-                villager.try_to_move(current_time, self.state.camera)
+                villager.try_to_attack(current_time, self.state.camera)
+                villager.try_to_drop(current_time, self.state.camera)
+                villager.try_to_collect(current_time, self.state.camera)
                 ar.try_to_train(current_time)
                 
             screen.blit(CURSOR_IMG,(mouse_x, mouse_y))

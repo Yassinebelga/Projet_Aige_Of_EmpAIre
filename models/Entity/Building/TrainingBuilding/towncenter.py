@@ -1,11 +1,11 @@
-from Entity.Building.building import *
-class Camp(Building):
+from Entity.Building.TrainingBuilding.trainingbuilding import *
 
-    def __init__(self, cell_Y, cell_X, position, team,representation = 'C', sq_size = 2, hp = 200, cost = {"gold":0,"wood":100,"food":0}, build_time = 25):
-        global CAMP_ARRAY_3D
+class TownCenter(TrainingBuilding):
 
-        super().__init__(cell_Y, cell_X, position, team,representation, sq_size, hp, cost, build_time)
-        self.image = CAMP_ARRAY_3D
+    def __init__(self, cell_Y, cell_X, position, team, representation = 'T', sq_size = 4, hp = 1000, cost = {"gold":0,"wood":350,"food":0}, build_time = 150, trainable_units = ['v']):
+        global TOWNCENTER_ARRAY_3D
+        super().__init__(cell_Y, cell_X, position, team, representation, sq_size, hp, cost, build_time, trainable_units)
+        self.image = TOWNCENTER_ARRAY_3D
         self.resources = {"gold":0, "wood":0, "food":0}
 
     def display(self, current_time, screen, camera, g_width, g_height):
